@@ -629,8 +629,25 @@ Direction choose_move(Controller& C, int round)
         // roomy-but-bottlenecked cell loses to an equally roomy open one. In
         // open water every direction ties on these, so growth/threat below
         // decide; inside a tightening coil they diverge and survival leads.
-        long const mobility = exits1 * 100L + exits2 * 20L;
-        long score = static_cast<long>(area) * 60 + mobility * 30;
+        // Weights are override-able (-D) for tuning; defaults are the shipped
+        // values.
+#ifndef W_AREA
+#define W_AREA 60
+#endif
+#ifndef W_MOB
+#define W_MOB 30
+#endif
+#ifndef W_EXIT1
+#define W_EXIT1 100
+#endif
+#ifndef W_EXIT2
+#define W_EXIT2 20
+#endif
+#ifndef W_BOTTLE
+#define W_BOTTLE 60000 // tuned: firmer bottleneck guard -> 93% win, fewer self-coils
+#endif
+        long const mobility = exits1 * (long)W_EXIT1 + exits2 * (long)W_EXIT2;
+        long score = static_cast<long>(area) * W_AREA + mobility * W_MOB;
 
         if (reach2)
             score += 200'000;        // safe two moves deep: strongly preferred
@@ -644,7 +661,7 @@ Direction choose_move(Controller& C, int round)
         // Bottleneck guard: a single exit with no safe loop is a corridor that
         // can seal behind us. Cheap topology signal on top of area/reach.
         if (exits1 <= 1 && !reach2)
-            score -= 30'000;
+            score -= W_BOTTLE;
 
         bool const mayGrow = length < growthCap;
         if (eat0)
