@@ -548,7 +548,15 @@ bool step_is_safe(Controller& C, Tile const* /*fromTile*/, Position from, Direct
     Tile const* dt = C.get_tile(dest);
     return dt == nullptr || dt->get_dragon() == nullptr; // unseen (portal far side) = accepted
 }
-// Cells holding a teammate's segment (from vision), for dispersion.
+// Cells to disperse away from. Proposal #12 suggested repelling from teammate
+// HEADS only (+ predicted next cell) instead of every body segment. Tested and
+// REJECTED: heads-only scored 28-4 vs all-segments 30-2, with self-coils
+// tripling (8->26). Repelling from a teammate's WHOLE body is what keeps us out
+// of its trap-zone, so it avoids getting boxed in. All-segments stays default;
+// -DDISPERSE_HEADS_ONLY=1 reproduces the (worse) heads-only experiment.
+#ifndef DISPERSE_HEADS_ONLY
+#define DISPERSE_HEADS_ONLY 0
+#endif
 std::vector<int> friendly_cells(Controller& C)
 {
     std::vector<int> out;
@@ -557,8 +565,19 @@ std::vector<int> friendly_cells(Controller& C)
     for (Tile const& t : C.get_tiles())
     {
         DragonPart const* p = t.get_dragon();
-        if (p && p->get_team() == us && p->get_id() != myId)
-            out.push_back(world.idx(t.get_position()));
+        if (!p || p->get_team() != us || p->get_id() == myId)
+            continue;
+#if DISPERSE_HEADS_ONLY
+        if (!p->is_head())
+            continue;
+        int const h = world.idx(t.get_position());
+        out.push_back(h);
+        int const ahead = world.cross(h, dir_index(p->get_dir())); // where it likely goes next
+        if (ahead >= 0)
+            out.push_back(ahead);
+#else
+        out.push_back(world.idx(t.get_position()));
+#endif
     }
     return out;
 }

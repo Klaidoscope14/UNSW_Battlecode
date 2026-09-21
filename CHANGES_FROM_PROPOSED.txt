@@ -105,9 +105,12 @@ C. NOT IMPLEMENTED — WITH REASONS
      Dragons share no memory and only see locally, so they cannot agree on who
      is "best positioned" without reliable comms. The fixed teamIndex==0 rule is
      coordination-free and reliable. Only viable after (unreliable) sonar.
-#12  Coordinate on heads, not every segment ...... NOT DONE (cheap, worth doing next)
-     Dispersion still repels from all teammate segments (a long teammate makes an
-     oversized field). Head-based repulsion is a few lines; a good small next win.
+#12  Coordinate on heads, not every segment ...... TESTED & REJECTED
+     Built it (repel from teammate heads + each head's predicted next cell,
+     -DDISPERSE_HEADS_ONLY=1) and A/B'd it: heads-only scored 28-4 vs the current
+     all-segments 30-2, with self-coils TRIPLING (8 -> 26). The doc's intuition is
+     wrong here: repelling from a teammate's WHOLE body is what keeps us out of
+     its trap-zone and avoids getting boxed in. All-segments dispersion kept.
 #14  Probabilistic enemy movement ............... DEFERRED (diminishing vs #13)
 #15  Enemy length in threat model ............... DEFERRED (needs persistent enemy tracking)
 #18,#19  Sprinting ............................. DEFERRED (high effort; simulator now ready)
