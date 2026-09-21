@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <deque>
+#include <unordered_map>
 #include <vector>
 
 using namespace unswbc;
@@ -144,6 +145,68 @@ struct World
         return e == E_OPEN || e == E_UNKNOWN;
     }
     bool threatened(int c) const { return threatStamp[c] == threatGen; }
+
+    // --- portals ----------------------------------------------------------
+    // Each physical edge has two (cell,dir) spellings; we canonicalise to the
+    // WEST or NORTH owner so a portal pair keys consistently. partnerOf maps one
+    // canonical portal edge to the other once both ends have been seen.
+    std::unordered_map<int, int> partnerOf; // canon edge code -> partner canon code
+    std::unordered_map<int, int> portalSeen; // portal id -> first canon code seen
+
+    int canon_code(int cell, int d) const
+    {
+        switch (d)
+        {
+        case 0:  return cell * 4 + 0;            // NORTH: (cell, NORTH)
+        case 1:  return nbr[cell][1] * 4 + 3;    // EAST : (east nbr, WEST)
+        case 2:  return nbr[cell][2] * 4 + 0;    // SOUTH: (south nbr, NORTH)
+        default: return cell * 4 + 3;            // WEST : (cell, WEST)
+        }
+    }
+
+    void register_portal(int cell, int d, int id)
+    {
+        if (id < 0)
+            return;
+        int const c = canon_code(cell, d);
+        auto const it = portalSeen.find(id);
+        if (it == portalSeen.end())
+            portalSeen[id] = c;
+        else if (it->second != c)
+        {
+            partnerOf[c] = it->second;
+            partnerOf[it->second] = c;
+        }
+    }
+
+    // The cell a head reaches by crossing edge (cell,d): the wrapped neighbour
+    // for open water; the partner's far cell for a KNOWN portal (both ends seen,
+    // continuing in the same direction); -1 for kelp, unseen edges, or a portal
+    // whose partner we have not found yet. This is the one place movement, flood
+    // and lookahead consult, so portals are handled uniformly and safely.
+    int cross(int cell, int d) const
+    {
+        std::uint8_t const e = edge[cell][d];
+        if (e == E_OPEN)
+            return nbr[cell][d];
+        // Portals ship OFF: fully implemented and correct, but measured neutral
+        // to slightly negative vs the local sparring bots (the far side is
+        // usually unseen, so crossing is semi-blind). Enable with -DUSE_PORTALS=1
+        // to revisit -- ideally against stronger opponents where a shortcut or
+        // escape route decides close games.
+#ifndef USE_PORTALS
+#define USE_PORTALS 0
+#endif
+        if (USE_PORTALS && e == E_PORTAL)
+        {
+            auto const it = partnerOf.find(canon_code(cell, d));
+            if (it == partnerOf.end())
+                return -1; // partner unknown -> do not use (safe)
+            int const pcell = it->second / 4;
+            return (d == 1 || d == 2) ? pcell : nbr[pcell][d]; // exit, same facing
+        }
+        return -1; // kelp, unseen, or (portals disabled) a portal
+    }
 };
 
 World world;
@@ -163,6 +226,7 @@ int g_chosenArea = 0; // reachable area of the move we committed to this turn
 int g_teamSize = 0;   // living team dragons on our first turn (initial fleet size)
 int g_teamIndex = 0;  // our slot within the fleet
 bool g_role = false;
+int g_lastMove = -1;  // dir index of our last move (-1 = split/none), for portal-aware body tracking
 
 void init_role(Controller& C)
 {
@@ -202,7 +266,12 @@ void absorb_vision(Controller& C, int round)
         world.pearlRound[c] = round;
         world.pearlNow[c] = t.has_pearl() ? 1 : 0;
         for (int d = 0; d < 4; d++)
-            record_edge(c, d, t.get_edge(dir_from_index(d)).get_edge_type());
+        {
+            Edge const& e = t.get_edge(dir_from_index(d));
+            record_edge(c, d, e.get_edge_type());
+            if (e.get_edge_type() == EdgeType::PORTAL)
+                world.register_portal(c, d, e.get_portal_id());
+        }
     }
 }
 
@@ -253,14 +322,19 @@ void update_body(Controller& C)
     }
     if (body.front() != headCell)
     {
-        bool adjacent = false;
-        for (int d = 0; d < 4; d++)
-            if (world.nbr[body.front()][d] == headCell)
-            {
-                adjacent = true;
-                break;
-            }
-        if (!adjacent)
+        // The head is where our last move -- possibly a portal jump -- predicts,
+        // so push it even though it may be far from the old head (a portal makes
+        // the body discontiguous in cell space, which occupancy handles fine).
+        // Only a genuine surprise triggers a rebuild.
+        bool expected = (g_lastMove >= 0 && world.cross(body.front(), g_lastMove) == headCell);
+        if (!expected)
+            for (int d = 0; d < 4; d++)
+                if (world.nbr[body.front()][d] == headCell)
+                {
+                    expected = true;
+                    break;
+                }
+        if (!expected)
         {
             rebuild_body(C);
             return;
@@ -335,10 +409,8 @@ int flood(int start, int tail)
         area++;
         for (int d = 0; d < 4; d++)
         {
-            if (!world.passable(c, d))
-                continue;
-            int const nc = world.nbr[c][d];
-            if (world.visit[nc] == world.visitGen || world.occupied(nc) || nc == tail)
+            int const nc = world.cross(c, d);
+            if (nc < 0 || world.visit[nc] == world.visitGen || world.occupied(nc) || nc == tail)
                 continue;
             world.visit[nc] = world.visitGen;
             world.queue.push_back(nc);
@@ -365,10 +437,8 @@ int flood_cap(int start, int tail, int cap)
         int const c = world.queue[qi];
         for (int d = 0; d < 4; d++)
         {
-            if (!world.passable(c, d))
-                continue;
-            int const nc = world.nbr[c][d];
-            if (world.visit[nc] == world.visitGen || world.occupied(nc) || nc == tail)
+            int const nc = world.cross(c, d);
+            if (nc < 0 || world.visit[nc] == world.visitGen || world.occupied(nc) || nc == tail)
                 continue;
             world.visit[nc] = world.visitGen;
             world.queue.push_back(nc);
@@ -395,10 +465,8 @@ bool reaches_tail(int start, int tail)
             return true;
         for (int d = 0; d < 4; d++)
         {
-            if (!world.passable(c, d))
-                continue;
-            int const nc = world.nbr[c][d];
-            if (world.visit[nc] == world.visitGen || world.occupied(nc))
+            int const nc = world.cross(c, d);
+            if (nc < 0 || world.visit[nc] == world.visitGen || world.occupied(nc))
                 continue;
             world.visit[nc] = world.visitGen;
             world.queue.push_back(nc);
@@ -452,10 +520,8 @@ int pearl_direction(Controller& C, int round, int& outDist)
         }
         for (int d = 0; d < 4; d++)
         {
-            if (!world.passable(c, d))
-                continue;
-            int const nc = world.nbr[c][d];
-            if (world.visit[nc] == world.visitGen || world.occupied(nc))
+            int const nc = world.cross(c, d);
+            if (nc < 0 || world.visit[nc] == world.visitGen || world.occupied(nc))
                 continue;
             world.visit[nc] = world.visitGen;
             world.dist[nc] = cd + 1;
@@ -469,19 +535,18 @@ int pearl_direction(Controller& C, int round, int& outDist)
 
 // --- immediate-move safety (this turn's authoritative vision) ---------------
 
-bool edge_ok(Tile const* tile, Direction d)
+// A single immediate move is safe if we can cross the edge (open water, or a
+// KNOWN portal) and the destination holds no dragon. For a portal the exit is
+// usually beyond our vision; we cannot verify it is empty, so crossing there is
+// a calculated risk we accept only because portals otherwise sit unused.
+bool step_is_safe(Controller& C, Tile const* /*fromTile*/, Position from, Direction d)
 {
-    if (!tile)
-        return false;
-    Edge const& e = tile->get_edge(d);
-    return e.is_passable() && !e.is_portal();
-}
-bool step_is_safe(Controller& C, Tile const* fromTile, Position from, Direction d)
-{
-    if (!edge_ok(fromTile, d))
-        return false;
-    Tile const* dt = C.get_tile(from.add_dir(d));
-    return dt != nullptr && dt->get_dragon() == nullptr;
+    int const nh = world.cross(world.idx(from), dir_index(d));
+    if (nh < 0)
+        return false; // kelp, unseen edge, or portal with unknown partner
+    Position const dest(nh % world.W, nh / world.W);
+    Tile const* dt = C.get_tile(dest);
+    return dt == nullptr || dt->get_dragon() == nullptr; // unseen (portal far side) = accepted
 }
 // Cells holding a teammate's segment (from vision), for dispersion.
 std::vector<int> friendly_cells(Controller& C)
@@ -528,23 +593,25 @@ void install(SimState const& s) { set_body(s.body); }
 // since the engine checks self-collision before the tail advances.
 bool can_step(SimState const& from, int dirIdx)
 {
-    int const h = from.body.front();
-    if (!world.passable(h, dirIdx))
-        return false;
-    int const nh = world.nbr[h][dirIdx];
-    return nh != from.body.back() && !world.occupied(nh);
+    int const nh = world.cross(from.body.front(), dirIdx);
+    return nh >= 0 && nh != from.body.back() && !world.occupied(nh);
 }
 
 // Apply one cardinal step to `from`, whose occupancy MUST already be installed.
 // `alive` reports whether the step is legal; the resulting body is always built
-// (the geometric wrapped move), so a caller that already trusts the step -- the
-// vision-checked depth-0 move -- can use the state regardless, while lookahead
-// filters on `alive`.
+// (from the portal-aware destination), so a caller that already trusts the step
+// -- the vision-checked depth-0 move -- can use the state regardless, while
+// lookahead filters on `alive`.
 SimState simulate_step(SimState const& from, int dirIdx, Controller& C)
 {
     SimState out;
     out.alive = can_step(from, dirIdx);
-    int const nh = world.nbr[from.body.front()][dirIdx];
+    int nh = world.cross(from.body.front(), dirIdx);
+    if (nh < 0)
+    {
+        out.body = from.body; // no legal destination; keep shape, alive already false
+        return out;
+    }
     out.ate = has_pearl_at(C, nh);
     out.body.reserve(from.body.size() + 1);
     out.body.push_back(nh);
@@ -797,6 +864,16 @@ Direction choose_move(Controller& C, int round)
         if (world.threatened(newHead))
             score -= 6000;
 
+        // A portal whose far side we cannot see is a blind step -- there may be a
+        // dragon waiting. Penalise it so portals are taken only when they clearly
+        // win (an escape or a real shortcut), not as a reflex flee.
+#ifndef W_PORTAL_BLIND
+#define W_PORTAL_BLIND 0 // a blind-crossing penalty was tried and hurt (27-5); off
+#endif
+        if (world.edge[world.idx(head)][di] == E_PORTAL &&
+            C.get_tile(Position(newHead % world.W, newHead / world.W)) == nullptr)
+            score -= W_PORTAL_BLIND;
+
         // Coordination: repel from nearby teammates so the fleet spreads across
         // the water instead of clumping on the same pearls. Weak enough that
         // survival and pearls still lead; it only decides otherwise-close moves.
@@ -908,9 +985,14 @@ int main()
         {
             C.do_split(child); // spawns a colonist from our rear segments
             didSplit = true;
+            g_lastMove = -1; // no move this turn
         }
         else
-            C.make_move(choose_move(C, round));
+        {
+            Direction const mv = choose_move(C, round);
+            C.make_move(mv);
+            g_lastMove = dir_index(mv); // remember for portal-aware body tracking
+        }
 
 #ifdef SEAD_TELEMETRY
         tel_note(C, round, didSplit);

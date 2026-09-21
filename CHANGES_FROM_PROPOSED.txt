@@ -1,0 +1,154 @@
+================================================================================
+SEA DRAGONS BOT — WHAT WAS IMPLEMENTED FROM Proposed_Changes.txt (AND WHAT WASN'T)
+================================================================================
+Bot: seadragon/ (C++)   Current: v5.0.0   Local strength: 30-2 (93% win) across
+8 maps x both sides x 2 sparring bots (starter=random, v1bot=vision-only flood).
+
+Every "done" item below was A/B-measured with the tools/bench.py telemetry
+harness (proposal #30), not eyeballed. Win-rate progression from the changes:
+   coordination baseline ... 75%  ->  #13 threat map 84%  ->  #4-6 topology 93%.
+
+--------------------------------------------------------------------------------
+A. IMPLEMENTED AND SHIPPED (active in v5.0.0)
+--------------------------------------------------------------------------------
+
+#30  Telemetry / benchmarking harness ......................... DONE
+     tools/bench.py runs a bot across all maps x both sides x opponents and
+     aggregates win/loss, game endings, and OUR death-reason breakdown
+     (self-coil / wall / collision / head-to-head) parsed from the engine, plus
+     per-dragon length / pearls / area from a compile-gated SEAD_TELEMETRY build
+     (zero overhead in the shipped bot). This is what made every later change
+     measurable instead of a guess. Result: immediately showed collisions were
+     the #1 death cause, which set the priority order below.
+
+#13  Enemy / head-to-head threat map ......................... DONE  (75%->84%)
+     compute_threat() marks every cell any OTHER head (enemy AND teammate) could
+     step into next turn; moving onto one is penalised, since a head-on kills
+     both dragons. NOTE: the data overturned intuition here — restricting the
+     threat to ENEMY heads only was WORSE (26-6, deaths ~doubled); teammate-head
+     avoidance genuinely helps our own crowded dragons. Kept all-heads.
+
+#4,#5,#6  Topology: bottlenecks, escape routes, body/space ... DONE  (84%->93%)
+     Openness is scored by free area AND mobility (exits1 = legal moves out of a
+     cell, exits2 = legal moves beyond those), plus a bottleneck guard when a
+     move has <=1 exit and no safe loop. This exposes a roomy-but-bottlenecked
+     cell (big area behind a one-cell neck) that raw area alone cannot see.
+     Result: win 84%->93% AND kelp-corridor (wall) deaths dropped 15 -> 0.
+     (#6 body/space ratio is present in spirit: the survival gates are
+     length-relative — area < length+1 is a trap, healthy = 2*length+4 — rather
+     than a separate explicit ratio term.)
+
+#3   One authoritative movement simulator .................... DONE
+     Consolidated all lookahead into SimState + simulate_step + can_step +
+     install (the single place that knows step/wrap/kelp/collision/eat/tail).
+     Bonus: the refactor EXPOSED and fixed a latent occupancy bug in the old
+     depth-2 loop (it read stale occupancy for later candidate moves). This is
+     the foundation the beam search and any future sprinting build on.
+
+Also shipped (coordination layer, from the "multi-dragon" work, overlaps
+#27-#29 but not identical):
+   - Teammate dispersion (fleet spreads out instead of clumping on one pearl).
+   - Splitting to colonise (the lead dragon never splits, preserving one long
+     dragon for the longest-dragon tiebreak). Basic version of #27/#28.
+   - Board-relative growth governor + a tuned bottleneck weight (60000).
+
+--------------------------------------------------------------------------------
+B. IMPLEMENTED, CORRECT, BUT SHIPPED DISABLED (enable with a -D flag)
+--------------------------------------------------------------------------------
+
+#20  Beam / deep survival search ............. BUILT, OFF (-DBEAM_DEPTH=4)
+     deep_search(): a bounded forward beam (depth, width, capped floods) from
+     each first move to catch multi-step traps the depth-2 check can't see.
+     Measured: IDENTICAL results to beam-off at every depth/weight tried — its
+     max-area metric saturates (there is almost always some roomy escape path
+     within the horizon), so it does not discriminate. Ships disabled to avoid
+     ~15% runtime for no measured gain; machinery kept.
+
+#16,#17  Portals ............................. BUILT, OFF (-DUSE_PORTALS=1)
+     World::cross() is one portal-aware step primitive used by all
+     flood/reach/pathing/simulation; partner tracking by canonicalised edge
+     codes; body-tracking handles the discontiguous portal jump. Exit geometry
+     is CORRECT (no death spike, wall deaths 3->1). But measured net-negative
+     locally: off 30-2, on 29-3, on+blind-penalty 27-5 (the far side is usually
+     unseen, so crossing is semi-blind). Ships disabled; machinery kept.
+
+     WHY OFF, not deleted: both features are plausibly valuable in CLOSE games
+     vs STRONG opponents (deep traps / shortcuts / escapes), which my two weak
+     sparring bots cannot exercise (the bot wins ~93% regardless). The only way
+     to settle it is a real ladder A/B. Both are one -D flag away.
+
+--------------------------------------------------------------------------------
+C. NOT IMPLEMENTED — WITH REASONS
+--------------------------------------------------------------------------------
+
+#1   Fix tail-reachability "bug" when eating ........ SKIPPED (overstated)
+     Real subtlety, but the primary survival signal (flood area) already treats
+     the tail as a solid wall, so it is honest. The eat decision gates on
+     (reach && reach2); the proposed naive fix makes reaches_tail return false
+     for every eating move, so the bot would NEVER eat (a failure mode already
+     proven to lose). Low practical ROI in the current openness-primary design.
+
+#2   Rebuild body via get_dir() .................... SKIPPED (low impact now)
+     rebuild_body only runs on turn 1 (snake is a straight length-3 line, zero
+     ambiguity) or a rare desync; every other turn uses exact incremental
+     tracking. Becomes worth doing IF sprinting is added (multi-cell head jumps
+     cause desyncs on possibly-coiled bodies).
+
+#7   Remove the N/10 growth cap ................... SKIPPED (cap empirically helps)
+     Tested: governor ON = 25-7, OFF = 23-9. The blunt cap prevents runaway
+     coiling on small boards; big maps hit no practical limit. Kept.
+
+#8   Multiplicative pearl value ................... DEFERRED (incremental)
+#9   Pearl-race ETA vs teammates/enemies ......... DEFERRED (dispersion partly covers)
+#10  State-dependent (hash) roles ................ DEFERRED (roles barely used today)
+#11  Dynamic "lead dragon" ...................... SKIPPED (needs global info we lack)
+     Dragons share no memory and only see locally, so they cannot agree on who
+     is "best positioned" without reliable comms. The fixed teamIndex==0 rule is
+     coordination-free and reliable. Only viable after (unreliable) sonar.
+#12  Coordinate on heads, not every segment ...... NOT DONE (cheap, worth doing next)
+     Dispersion still repels from all teammate segments (a long teammate makes an
+     oversized field). Head-based repulsion is a few lines; a good small next win.
+#14  Probabilistic enemy movement ............... DEFERRED (diminishing vs #13)
+#15  Enemy length in threat model ............... DEFERRED (needs persistent enemy tracking)
+#18,#19  Sprinting ............................. DEFERRED (high effort; simulator now ready)
+#21  Lexicographic scoring ..................... SKIPPED (recommended against)
+     No win-rate upside (same signals, reorganised) and real regression risk
+     (rigid: no intra-tier trade-offs). The current weights already behave
+     lexicographically via magnitude gaps (reach2 +200000 dominates the ~1000s
+     openness tier dominates the +1 tiebreak; verified the gaps don't leak). The
+     genuine value is code clarity, best captured later as a behaviour-preserving
+     refactor when the scoring grows.
+#22  Transposition caching ..................... SKIPPED (premature; beam shallow & off)
+#23  Pearl-spawn uncertainty ................... DEFERRED (real accuracy fix; speculative)
+     Once a tile's countdown expires unseen it re-rolls a random new value, so
+     our deterministic extrapolation goes stale-optimistic. Worth a later fix.
+#24  Exploit map symmetry ...................... DEFERRED (valuable, complex)
+     7/8 maps are symmetric and we already keep full-board pearl memory, so
+     mirroring known pearl countdowns to the unseen half is a real predictive
+     edge. Non-trivial (hypothesis elimination); good mid-term target.
+#25,#26  Sonar ............................... DEFERRED (reliability-limited)
+     Sonar carries no team/sender identity and hits the first dragon on the ray,
+     so a received message can't be trusted as friendly (an enemy could inject
+     bogus coordinates). Low ROI as anything but "bonus info".
+#27,#28  Split-value calc / asymmetric splits .. PARTIAL (basic split shipped)
+     Current: split ~in half above length 18 when safe/roomy. The asymmetric
+     "big anchor + tiny explorer" idea is a reasonable later experiment.
+#29  Voronoi territory assignment .............. SKIPPED (territory empirically HURT)
+     A simpler fixed-column territory anchor was built and TESTED — it regressed
+     (schooltime), and removing it took the head-to-head record 8-6 -> 11-5.
+     Territory is guilty-until-proven here; would need very careful testing.
+
+--------------------------------------------------------------------------------
+D. METHODOLOGY NOTE (why the priority order looked like this)
+--------------------------------------------------------------------------------
+Changes were ordered by measured ROI, not by the document's numbering:
+telemetry FIRST (so everything after is measurable), then the cheap high-value
+strategic wins (threat map, topology), then the simulator, then the big-lift
+search/portals. Three straight advanced features (beam, portals) came out
+neutral-to-negative LOCALLY — not because they are bad, but because at 93% vs
+two weak deterministic opponents the measurement ceiling is reached: every
+"does this help?" question returns noise. The next real signal must come from
+the ladder (strong, varied opponents). Recommended next steps once ladder data
+exists: #12 (head dispersion, cheap), #24 (symmetry), #23 (pearl uncertainty),
+and re-testing beam/portals ON against strong opponents.
+================================================================================
