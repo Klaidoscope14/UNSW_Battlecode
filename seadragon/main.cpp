@@ -474,6 +474,57 @@ bool has_pearl_at(Controller& C, int cell)
     return t && t->has_pearl();
 }
 
+// --- authoritative movement simulator --------------------------------------
+// One place that knows how a body moves: cardinal step, wrap, kelp, self- and
+// other-collision, pearl eating and tail advance. Everything that looks ahead
+// (survival, mobility, and later beam search / sprinting) goes through this so
+// the rules live in exactly one function.
+struct SimState
+{
+    std::vector<int> body; // front = head cell
+    bool alive = true;
+    bool ate = false;
+    int head() const { return body.front(); }
+    int tail() const { return body.back(); }
+    int length() const { return static_cast<int>(body.size()); }
+};
+
+// Load a state's occupancy into the stamps so flood / reaches_tail / the next
+// step see it (every segment except the tail, which may vacate).
+void install(SimState const& s) { set_body(s.body); }
+
+// Is a cardinal step from `from` legal, given its occupancy is installed? A step
+// dies on a wall we know, another dragon, or our own body -- the tail included,
+// since the engine checks self-collision before the tail advances.
+bool can_step(SimState const& from, int dirIdx)
+{
+    int const h = from.body.front();
+    if (!world.passable(h, dirIdx))
+        return false;
+    int const nh = world.nbr[h][dirIdx];
+    return nh != from.body.back() && !world.occupied(nh);
+}
+
+// Apply one cardinal step to `from`, whose occupancy MUST already be installed.
+// `alive` reports whether the step is legal; the resulting body is always built
+// (the geometric wrapped move), so a caller that already trusts the step -- the
+// vision-checked depth-0 move -- can use the state regardless, while lookahead
+// filters on `alive`.
+SimState simulate_step(SimState const& from, int dirIdx, Controller& C)
+{
+    SimState out;
+    out.alive = can_step(from, dirIdx);
+    int const nh = world.nbr[from.body.front()][dirIdx];
+    out.ate = has_pearl_at(C, nh);
+    out.body.reserve(from.body.size() + 1);
+    out.body.push_back(nh);
+    for (int c : from.body)
+        out.body.push_back(c);
+    if (!out.ate)
+        out.body.pop_back(); // tail advances unless we grew
+    return out;
+}
+
 // Split to colonise more water when we are long, safe and roomy. The lead
 // dragon of the fleet (teamIndex 0) never splits so the team always keeps one
 // dragon growing toward the longest-dragon tiebreak.
@@ -499,7 +550,6 @@ bool should_split(Controller& C, int& childOut)
 Direction choose_move(Controller& C, int round)
 {
     Position const head = C.get_position();
-    int const headCell = world.idx(head);
     Tile const* headTile = C.get_tile(head);
     int const length = C.get_length();
     auto const dirs = Direction::get_direction_list();
@@ -512,6 +562,7 @@ Direction choose_move(Controller& C, int round)
         return C.get_dir();
 
     std::vector<int> origBody(body.begin(), body.end());
+    SimState const base{origBody}; // our current shape, the root of every lookahead
 
     set_body(origBody);
     int pearlDist = 0;
@@ -533,64 +584,45 @@ Direction choose_move(Controller& C, int round)
     for (auto const d : safe)
     {
         int const di = dir_index(d);
-        int const newHead = world.nbr[headCell][di];
-        bool const eat0 = has_pearl_at(C, newHead);
 
-        // Simulate the body after this move.
-        std::vector<int> sim;
-        sim.reserve(origBody.size() + 1);
-        sim.push_back(newHead);
-        for (int c : origBody)
-            sim.push_back(c);
-        if (!eat0)
-            sim.pop_back(); // tail vacates on a non-eating move
-        int const tail1 = sim.back();
-        set_body(sim);
+        // Depth 0: the state after this move, via the one authoritative
+        // simulator. d is already vision-safe, so we trust it (the world model
+        // and live vision can differ by a stale cell; vision is authoritative).
+        install(base);
+        SimState const s0 = simulate_step(base, di, C);
+        bool const eat0 = s0.ate;
+        int const newHead = s0.head();
+        int const tail1 = s0.tail();
 
-        // Openness (honest open area, tail as wall) ranks how much room a move
-        // keeps, and reach-to-tail is the survival invariant. But 1-ply reach is
-        // blind to a move that itself leads to a forced trap next turn, so we
-        // also demand DEPTH-2 safety: after this move, at least one follow-up
-        // move must still keep the tail reachable.
+        // Openness (honest open area, tail as wall) and the reach-to-tail
+        // survival invariant, both from the moved state.
+        install(s0);
         bool const reach = reaches_tail(newHead, tail1);
         int const area = flood(newHead, tail1);
 
-        // Depth-2 pass: reach-to-tail, plus mobility -- how many escape routes we
-        // keep. `exits1` is the legal moves out of newHead; `exits2` is the legal
-        // moves beyond those. A move with a big area but only one exit is behind
-        // a bottleneck (an articulation point); mobility exposes it where raw
-        // area alone cannot.
-        bool reach2 = false;
-        int exits1 = 0, exits2 = 0;
+        // Depth 2: reach-to-tail plus mobility -- how many escape routes we keep.
+        // `exits1` is the legal moves out of s0; `exits2` the legal moves beyond
+        // those. A big area with only one exit is behind a bottleneck (an
+        // articulation point), which mobility exposes where area alone cannot.
+        std::array<SimState, 4> kids;
+        int exits1 = 0;
         for (int m2 = 0; m2 < 4; m2++)
         {
-            if (!world.passable(newHead, m2))
-                continue;
-            int const nh2 = world.nbr[newHead][m2];
-            if (nh2 == tail1 || world.occupied(nh2)) // occupancy is still `sim`
-                continue;
-            exits1++;
-            std::vector<int> sim2;
-            sim2.reserve(sim.size() + 1);
-            sim2.push_back(nh2);
-            for (int c : sim)
-                sim2.push_back(c);
-            if (!has_pearl_at(C, nh2))
-                sim2.pop_back();
-            int const tail2 = sim2.back();
-            set_body(sim2);
-            if (reaches_tail(nh2, tail2))
-                reach2 = true;
-            for (int m3 = 0; m3 < 4; m3++) // escape routes one step further
-            {
-                if (!world.passable(nh2, m3))
-                    continue;
-                int const nh3 = world.nbr[nh2][m3];
-                if (nh3 != tail2 && !world.occupied(nh3))
-                    exits2++;
-            }
+            SimState child = simulate_step(s0, m2, C); // s0 still installed
+            if (child.alive)
+                kids[exits1++] = std::move(child);
         }
-        set_body(sim); // restore this move's occupancy
+        bool reach2 = false;
+        int exits2 = 0;
+        for (int k = 0; k < exits1; k++)
+        {
+            install(kids[k]);
+            if (reaches_tail(kids[k].head(), kids[k].tail()))
+                reach2 = true;
+            for (int m3 = 0; m3 < 4; m3++)
+                if (can_step(kids[k], m3))
+                    exits2++;
+        }
 
         // --- score --------------------------------------------------------
         // Openness is PRIMARY, now measured by BOTH free area and mobility so a
