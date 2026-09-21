@@ -1,0 +1,311 @@
+OVERVIEW
+
+The probe has landed at the bottom of the ocean depths, and through the camera you can see hundreds upon thousands of pearls, scattered amongst the sea floor. Deep sea dragons live here too, so in order to blend in, you and your team will be controlling a group of magnificent leviathan-like automata.
+
+Each of your serpentine machines can collect pearls to grow in length; at the end of the mission, your longest robot (and its pearls) will be extracted back to the surface.
+
+As such, compete with other teams to stay alive and obtain the longest dragon!
+
+A game played on a 16 by 16 map. Team A (blue) wins after eliminating all dragons from team B (orange).
+
+
+SPECIFICATIONS
+
+Each team can control up to 64 dragons at a time. Your team will write exactly one program, which each dragon will execute, running its own copy of your program. A corollary of this is that individual dragons do not share any program memory with other dragons, and hence the only way to communicate dragon-to-dragon is via the sonar system.
+
+Each dragon gets approximately 25 milliseconds at most to compute and execute actions each turn. This is not entirely correct, so for more details about computational limits for each of your dragons, see the Timeouts section.
+
+
+GAMEPLAY
+
+Your resident games expert notices that the interactions between these sea dragons are similar to the rules of the retro video game Snake, save for some differences:
+
+- These dragons can spontaneously split in two.
+- Dragons only communicate through long-distance sonar.
+- A dragon can move multiple times within a turn, though at a cost.
+
+
+NEXT STEPS
+
+- You can read about the full rules of the game starting from Structure.
+- After that, feel free to start with your first bot at Quickstart!
+- Some more technical information about the engine and turn order starts from IO Protocol.
+- Once you've submitted your bot to the ladder, see ELO System to understand rating and matches.
+
+
+QUICKSTART
+
+For beginners, we recommend using Python to write your bots. Make sure you have Python installed on your machine.
+
+Install the toolkit
+
+The toolkit, unswbc, is a Python package. If you have uv, install it as a tool. Upgrade later with `uv tool upgrade unswbc`.
+
+    uv tool install unswbc
+
+If you do not have uv, install it with pip instead. You need Python 3.11 or newer, and the command is then called the same way. Should pip refuse and say `externally-managed-environment`, as Debian, Ubuntu and Homebrew do, install uv and use the line above.
+
+    pip install unswbc
+
+Check your machine
+
+Run `unswbc` on its own. It lists the commands and reports what it found here: a Python interpreter, the C and C++ compilers, and the replay viewer. Anything missing is named with the step that installs it.
+
+    unswbc
+
+Create a bot
+
+`unswbc init` creates a bot project in Python, C or C++. A Python project consists of `main.py` (your bot), `helper.py` (the library that reads and writes the engine protocol) and `bot.toml` (the language and the list of files to ship). C and C++ projects contain `helper.h` and `helper.c`, or `helper.hpp`, in place of `helper.py`. Maps go into a `maps/` folder beside the bot folder, which all your bots share.
+
+    unswbc init python mybot
+
+After upgrading the toolkit later, `unswbc maps` adds any newly bundled maps to that folder.
+
+Run a match
+
+`unswbc run` takes a map and two bot projects, rebuilds both bots, plays the match and writes a `.replay` file. The two bots may be the same project. `arena.map` is an 11×11 map to start on.
+
+    unswbc run maps/arena.map mybot mybot
+
+Open the replay
+
+If you use VS Code, Cursor or VSCodium, `init` has already installed the replay viewer, so clicking the `.replay` file plays the match. Install it by hand if your editor dived later.
+
+    unswbc vscode
+
+Otherwise open the visualiser and choose the file. Either way you see the whole board and every line your bots printed, neither of which a bot can see for itself.
+
+
+Log in
+
+Make an API key on your team page — it starts with `bc_` — and hand it to the toolkit. `unswbc auth status` then names the team the key belongs to.
+
+    unswbc auth set bc_...
+
+
+Submit
+
+`unswbc submit` zips the project and uploads it as a new version. `-n` names that version and `-d` records what changed. See Submitting via Website for what happens to the build afterwards.
+
+    unswbc submit mybot
+
+
+TEMPLATE STRUCTURE
+
+    import helper as unswbc
+
+    ct: unswbc.Controller
+    game: unswbc.Game
+
+    def execute_turn() -> None:
+        ct.make_move(unswbc.Direction.NORTH)
+
+    def main() -> None:
+        global ct, game
+        ct, game = unswbc.init()
+
+        while unswbc.update(ct, game):
+            execute_turn()
+            unswbc.end_turn()
+
+    if __name__ == "__main__":
+        main()
+
+The template provides you with a game loop. `init()` reads the initial setup information from the engine, and `update()` will read in information from a new turn (or false, if the game ends or dragon dies). You should make changes to the `execute_turn` function, and `end_turn` will finish the bot's turn. Advanced teams can choose to write their own interface with the engine (see interface docs).
+
+The starter bot shuffles the four directions from a generator seeded the same way every run, then steps onto the first neighboring tile that is not blocked by kelp or a dragon. All three starters do this, so a Python bot and a C++ bot behave alike. Take a look through the rest of the docs to improve this simple bot!
+
+
+NEXT STEPS
+
+Be sure to test your bots on multiple maps! It may be useful to create your own maps to test how your bot reacts to specific situations or edge cases. The CLI page lists every command and its options.
+
+
+SUBMITTING VIA WEBSITE
+
+Bots are submitted as a zip at Submissions, or with the CLI command `unswbc submit`. One build at a time is active and plays against other teams. You must join a team before submitting.
+
+Submission layout
+
+Upload your submission as a zip folder containing all the bot files. The config file `bot.toml` is required at the top level, see below for the contents for each language. The size limit is 4 MB, and you may make 12 submissions per hour. You can change the active submission an unlimited number of times.
+
+Python bot.toml:
+
+    [project]
+    language = "py"
+    include = ["*.py"]
+
+States
+
+State | Meaning
+Processing | Building.
+Ready | Built, not playing.
+Active | Built and playing ranked matches.
+Build failed | Did not compile, or the zip was formatted incorrectly.
+
+A version goes active as soon as it builds, replacing the one before it. Any Ready build can be activated, and earlier builds remain listed, so reverting is one click.
+
+Build failures
+
+Confirm that `bot.toml` is at the top level of the zip, that the language on the form matches it, and that `include` lists every file, the helper included. Then unzip the archive into an empty directory and run a match from there; if that fails the server build fails for the same reason. If it still fails, ask on Discord and quote the version number.
+
+
+STRUCTURE
+
+Rounds and Turns
+
+Each game lasts at most 500 rounds. Within each round, every currently living dragon will perform some number of actions. One of these time steps is known as a turn.
+
+Turns are carried out in ascending order of dragon ID. This means on a given dragon's turn, all dragons with lesser IDs have already acted, and all dragons with greater IDs have not. For more details about the game loop, see Execution Order.
+
+Scoring
+
+Each game has three possible outcomes: team A wins, team B wins, or a draw.
+
+Your team is eliminated when all of your dragons perish. Upon the elimination of any team, the game automatically ends, regardless of the current round number. If exactly one team is eliminated, the other wins. If both teams are eliminated in the same round, the game is a draw. Otherwise, after 500 rounds, the winner is decided by the following tiebreaks in order:
+
+1. The team with the longest living dragon.
+2. The team with the greatest total length across all of its dragons.
+3. Draw (no winning team decided).
+
+
+GAME MAP, PEARLS, KELP, PORTALS, AND VISION
+==========================================
+
+MAP DIMENSIONS AND COORDINATES
+------------------------------
+Maps are two-dimensional rectangular grids. Both width and height are between
+10 and 64 cells inclusive.
+
+The top-left corner is coordinate (0, 0). The x-coordinate increases to the
+right and the y-coordinate increases downward. North points upward.
+
+Query the map dimensions with:
+
+    width, height = game.get_map_size()
+
+
+MAP SYMMETRY
+------------
+Every map is guaranteed to be symmetric by one of these transformations:
+vertical mirroring, horizontal mirroring, or a 180-degree rotation.
+
+The symmetry type is not directly exposed through the API, so a bot must infer
+it if needed. On a symmetric map, each tile shares its pearl countdown with
+its mirror image. Thus, pearls attempt to spawn symmetrically. If one of the
+paired tiles is occupied when the countdown reaches zero, a pearl may spawn
+only on the other tile.
+
+
+MAP TOPOLOGY (WRAP-AROUND)
+-------------------------
+Map edges wrap around. A dragon moving beyond one map boundary reappears on
+the opposite side.
+
+In visual maps, the east and south borders are shown with dashed lines to
+indicate wrap-around. These borders themselves contain no rendered objects;
+they correspond to the west and north borders, respectively.
+
+
+PEARLS AND PEARL SPAWNING
+-------------------------
+Pearls are the only resource and are used to increase dragon length.
+
+Each tile has a pearl-spawn countdown visible to every dragon that can inspect
+that tile. The countdown is the number of rounds until the tile next attempts
+to spawn a pearl. It decreases by 1 at the start of each round, before any
+dragon moves.
+
+When the countdown reaches zero, the tile attempts to spawn a pearl. The
+countdown resets regardless of whether the spawn succeeds. A spawn succeeds
+only if the tile is empty: no dragon segment or pearl may occupy it.
+
+The reset countdown is drawn uniformly at random from the tile-specific
+interval [min_gap, max_gap]. These values are not publicly visible. If
+max_gap is 0, the tile never spawns pearls and always reports a countdown
+of -1.
+
+To find the tile with the soonest upcoming pearl spawn, inspect all tiles and
+choose the smallest non-negative pearl countdown:
+
+    soonest = None
+    for tile in ct.get_tiles():
+        if tile.get_pearl_time() < 0:
+            continue
+        if soonest is None or tile.get_pearl_time() < soonest.get_pearl_time():
+            soonest = tile
+
+    if soonest is not None:
+        where = soonest.get_position()
+        ct.set_indicator_string(
+            f"pearl at {where.x},{where.y} in {soonest.get_pearl_time()}"
+        )
+
+On symmetric maps, mirror tiles share a countdown. If one tile is blocked at
+spawn time, the pearl can spawn on the other tile.
+
+
+DRAGON DEATH
+------------
+When a dragon dies, it drops half its length in pearls.
+
+
+KELP
+----
+Kelp is a special edge type located between tiles, including edges along the
+map border. It acts as a barrier: a dragon cannot cross a kelp edge. Attempting
+to cross it causes the dragon to die (hit a wall) and drop pearls like any
+other dead dragon.
+
+A basic safety check for a proposed direction is:
+
+    def is_safe(direction: unswbc.Direction) -> bool:
+        here = ct.get_position()
+        tile = ct.get_tile(here)
+        if tile is None:
+            return False
+
+        edge = tile.get_edge(direction)
+        if edge.get_edge_type() == unswbc.EdgeType.KELP:
+            return False
+
+        ahead = ct.get_tile(here.add_dir(direction))
+        return ahead is None or ahead.get_dragon() is None
+
+
+PORTALS
+-------
+Portals are special edges between tiles, not tiles themselves. Each portal has
+an almost-unique non-negative integer ID, and exactly one other portal shares
+that ID; the pair is connected.
+
+The two portals in a pair have the same orientation (both horizontal or both
+vertical). Both are either on the map's line of symmetry or both are off it.
+This ensures each portal maps to exactly one partner.
+
+Portals are double-sided and can be entered from either side. Entering a
+horizontal portal from the left makes the dragon's head emerge from the right
+side of its partner, and vice versa. For vertical portals, the corresponding
+behavior follows the same idea: entry from one side exits from the opposite
+side of the paired portal.
+
+Dragons cannot see through portals. The far side is visible only when it is
+within the dragon's ordinary vision range; portals do not extend vision.
+
+Portal inspection example:
+
+    edge = tile.get_edge(direction)
+    if edge.get_edge_type() == unswbc.EdgeType.PORTAL:
+        ct.output_log(
+            f"portal {edge.get_portal_id()} to the {direction.value}"
+        )
+
+
+VISION
+------
+A dragon can see only the 7-by-7 square of tiles centered on its head: the
+49 tiles whose Chebyshev distance from the head is at most 3. Vision wraps
+around map boundaries.
+
+Vision does not extend through a portal. The far side of a portal is visible
+only if it is within three tiles of the dragon by ordinary distance.

@@ -1,0 +1,181 @@
+Dragon Game API Notes — Vision, Movement, Splitting, and Sonar
+
+Vision Information
+
+For each tile in view, the dragon receives: - Its absolute
+coordinates. - Its contents (pearls and dragon parts). - Its pearl
+countdown. - Its four edges.
+
+    tile = ct.get_tile(pos)                 # None when pos is outside the window
+
+    tile.get_position()                     # board coordinates, already wrapped
+    tile.get_pearl_time()                   # rounds until a pearl spawns here; -1 if never
+    tile.has_pearl()                        # True if a pearl is on it now
+
+    edge = tile.get_edge(unswbc.Direction.NORTH)
+    edge.get_edge_type()                    # EdgeType.EMPTY, EdgeType.KELP or EdgeType.PORTAL
+    edge.get_portal_id()                    # id shared with the partner edge; -1 if not a portal
+
+    part = tile.get_dragon()                # None if no dragon is on it
+    if part is not None:
+        part.get_team()                     # Team.A or Team.B
+        part.get_id()                       # which dragon
+        part.is_head()                      # True for the head
+        part.get_dir()                      # head: its heading; body: direction to the head
+
+A turn that steps onto a neighbouring pearl when it can see one, and
+onto a tile with no dragon otherwise:
+
+    def execute_turn() -> None:
+        here = ct.get_position()
+        fallback = unswbc.Direction.NORTH
+
+        for direction in unswbc.Direction.get_direction_list():
+            tile = ct.get_tile(here.add_dir(direction))
+            if tile is None:
+                continue
+            if tile.has_pearl():
+                ct.make_move(direction)
+                return
+            if tile.get_dragon() is None:
+                fallback = direction
+
+        ct.make_move(fallback)
+
+Movement
+
+Movement is an action that a dragon can perform on a turn. Each dragon
+must output at least one action per turn; only the last action is
+actually performed. The only other action type is splitting.
+
+Movement, like all other unit actions, is performed only once the turn
+is complete.
+
+Standard Movement
+
+Each dragon can move one tile in any cardinal direction (north, east,
+south, west) each turn. The head moves in that direction, and the rest
+of the body follows along.
+
+Dragons can move backwards, but doing so causes the head to squeeze into
+its own neck, which is often fatal.
+
+A dragon’s facing direction is the direction from its first body
+(non-head) segment to its head. The facing direction of body segments is
+defined similarly: direction to the next segment toward the head.
+
+    ct.make_move(unswbc.Direction.EAST)
+
+Eating Pearls
+
+When a dragon moves its head onto a pearl, the pearl is automatically
+eaten and the tail does not advance that turn. In other words, the
+dragon grows a body segment.
+
+Eating pearls is the only way to gain length.
+
+Collisions
+
+A dragon dies if its head moves into any obstacle. This includes kelp,
+any segment of another dragon, or any segment of itself.
+
+The death condition is checked before actual movement. Thus, a dragon
+dies moving into its own tail even if the tail would have moved away
+during that same turn.
+
+If the destination contains another dragon’s head, both dragons die,
+regardless of team.
+
+    ahead = ct.get_tile(here.add_dir(direction))
+    part = ahead.get_dragon() if ahead is not None else None
+    if part is not None:
+        if part.is_head():
+            continue  # both would die
+        continue      # this dragon would die
+
+A dragon that dies drops pearls along its body. See the game’s Death
+rules for details.
+
+Sprinting
+
+Dragons may decide to move several times in one turn, in varying
+directions.
+
+Although all moves happen within a single turn, collision checking (and
+pearl eating) is performed at every step. Therefore, a dragon might die
+performing NNE but survive performing ENN, even if both target the same
+destination.
+
+Every additional move costs a unit segment of the sprinting dragon. More
+rigorously, moving x steps in a turn removes x - 1 segments.
+
+Death by Sprint
+
+A move with more steps than the dragon can pay for is not truncated. The
+dragon performs the steps it can pay for, then pays for the next step
+with its own life.
+
+Splitting
+
+Splitting is another action dragons can perform. A dragon can only
+perform one action per turn.
+
+A dragon may split itself to create a new dragon on its team. The
+minimum length for any dragon is 2. The child consists of the parent’s
+rear segments in reverse order, so the parent’s old tail becomes the
+child’s head and the child faces away from the parent.
+
+The child receives the next unused dragon ID and takes its first turn
+later in the same round. The child is controlled by a brand-new instance
+of the program and has no memory of the parent.
+
+Split Constraints
+
+A split is legal only if all of the following hold: 1. The child has
+length at least 2. SPLIT 1 is never legal. 2. The parent has length at
+least 2 after the split. A dragon of length 6 may split 2, 3, or 4. 3.
+The team has fewer than 64 living dragons.
+
+Requesting an illegal split kills the parent, with no validation.
+
+    if ct.can_split(2):
+        ct.do_split(2)
+    else:
+        ct.make_move(unswbc.Direction.NORTH)
+
+Sonar
+
+Sending
+
+Once per turn, a dragon may send one unsigned 32-bit integer.
+
+After the dragon’s action has been applied, if the dragon is still
+alive, the signal travels in a straight line from its head in the
+direction it now faces. The signal wraps around the board and passes
+through portals, stopping at the first kelp or dragon part it hits.
+
+If it hits a dragon, the message is delivered to that dragon, which may
+be the sender itself. If it reaches no dragon within WIDTH + HEIGHT
+tiles, it is lost.
+
+    ct.send_sonar(1806)
+
+    for message in ct.get_sonar_messages():
+        ct.output_log(f"heard {message}")
+
+Receiving
+
+Signals are read at the start of the recipient’s next turn.
+
+A dragon with a higher ID than the sender receives the signal later in
+the same round; a dragon with a lower ID receives it in the following
+round.
+
+Several signals may arrive in one turn, in the order they were sent.
+
+A signal is lost if the sender died during its move (so no signal was
+cast), or if it reached nothing. The replay shows the ray in either
+case.
+
+A signal may be received by a dragon on either team. No information
+about the sender or team is carried.
