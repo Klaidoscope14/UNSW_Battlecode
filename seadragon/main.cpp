@@ -347,6 +347,36 @@ int flood(int start, int tail)
     return area;
 }
 
+// Like flood, but stops once `cap` cells are seen. Bounded cost per call, which
+// matters for the many nodes a beam search touches; the exact area beyond a few
+// body-lengths never changes a decision.
+int flood_cap(int start, int tail, int cap)
+{
+    world.visitGen++;
+    world.queue.clear();
+    world.queue.push_back(start);
+    world.visit[start] = world.visitGen;
+    int area = 0;
+    for (std::size_t qi = 0; qi < world.queue.size(); qi++)
+    {
+        area++;
+        if (area >= cap)
+            break;
+        int const c = world.queue[qi];
+        for (int d = 0; d < 4; d++)
+        {
+            if (!world.passable(c, d))
+                continue;
+            int const nc = world.nbr[c][d];
+            if (world.visit[nc] == world.visitGen || world.occupied(nc) || nc == tail)
+                continue;
+            world.visit[nc] = world.visitGen;
+            world.queue.push_back(nc);
+        }
+    }
+    return area;
+}
+
 // Can `start` reach `tail` through free water? If so, the head can chase the
 // tail indefinitely -- the one provably-safe survival invariant for a snake.
 // The tail cell itself is a valid target (it is not in the occupancy stamps).
@@ -525,6 +555,81 @@ SimState simulate_step(SimState const& from, int dirIdx, Controller& C)
     return out;
 }
 
+// --- deep survival beam search ---------------------------------------------
+// Look several moves past the depth-2 check, to catch multi-step traps (the
+// classic snake spiral) that only close a few moves out. From the state after
+// the first move we expand every legal move, keep the BEAM_WIDTH roomiest
+// states (ranked by a capped flood), and repeat for BEAM_DEPTH plies. If every
+// path dies, or none stays roomier than the body, the first move is a deep trap.
+//
+// Measured: against the local sparring bots the beam produced IDENTICAL results
+// (its max-area metric saturates -- there is almost always some roomy escape
+// path within the horizon, and the depth-2 + bottleneck checks already catch
+// the real traps). So it ships DISABLED (BEAM_DEPTH 0) to avoid ~15% runtime
+// for no measured gain; the machinery stays -- enable with -DBEAM_DEPTH=4 to
+// revisit (ideally with stronger opponents or a non-saturating metric).
+// Parameters are override-able (-D) for tuning.
+#ifndef BEAM_DEPTH
+#define BEAM_DEPTH 0
+#endif
+#ifndef BEAM_WIDTH
+#define BEAM_WIDTH 6
+#endif
+
+struct DeepResult
+{
+    bool safe = true; // some path stays alive and roomy for the whole horizon
+    int bestArea = 0; // best capped free area reached at the horizon
+};
+
+struct BeamNode
+{
+    SimState st;
+    int area = 0;
+};
+
+DeepResult deep_search(SimState const& s0, Controller& C, int length)
+{
+    if (BEAM_DEPTH <= 0)
+        return {true, 0};
+    int const cap = length * 2 + 8;
+
+    std::vector<BeamNode> beam;
+    beam.push_back({s0, 0});
+    for (int depth = 0; depth < BEAM_DEPTH; depth++)
+    {
+        std::vector<BeamNode> next;
+        for (BeamNode const& bn : beam)
+        {
+            install(bn.st);
+            for (int m = 0; m < 4; m++)
+                if (can_step(bn.st, m))
+                    next.push_back({simulate_step(bn.st, m, C), 0});
+        }
+        if (next.empty())
+            return {false, 0}; // every surviving path dead-ends within the horizon
+        for (BeamNode& n : next)
+        {
+            install(n.st);
+            n.area = flood_cap(n.st.head(), n.st.tail(), cap);
+        }
+        std::sort(next.begin(), next.end(),
+                  [](BeamNode const& a, BeamNode const& b) { return a.area > b.area; });
+        if (static_cast<int>(next.size()) > BEAM_WIDTH)
+            next.resize(BEAM_WIDTH);
+        beam = std::move(next);
+    }
+
+    DeepResult r{false, 0};
+    for (BeamNode const& bn : beam)
+    {
+        r.bestArea = std::max(r.bestArea, bn.area);
+        if (bn.area > length)
+            r.safe = true; // room for the whole body at the horizon
+    }
+    return r;
+}
+
 // Split to colonise more water when we are long, safe and roomy. The lead
 // dragon of the fleet (teamIndex 0) never splits so the team always keeps one
 // dragon growing toward the longest-dragon tiebreak.
@@ -662,6 +767,24 @@ Direction choose_move(Controller& C, int round)
         // can seal behind us. Cheap topology signal on top of area/reach.
         if (exits1 <= 1 && !reach2)
             score -= W_BOTTLE;
+
+        // Deep beam: penalise a first move that leads to a forced trap a few
+        // moves out (a spiral the depth-2 check cannot see). Only a penalty, so
+        // in the common case (all moves deep-safe) it changes nothing.
+#ifndef W_DEEP_TRAP
+#define W_DEEP_TRAP 40000
+#endif
+#ifndef W_DEEP_ROOM
+#define W_DEEP_ROOM 0
+#endif
+        if (BEAM_DEPTH > 0) // compile-time; the whole block folds away when disabled
+        {
+            install(s0);
+            DeepResult const dr = deep_search(s0, C, length);
+            if (!dr.safe)
+                score -= W_DEEP_TRAP;
+            score += static_cast<long>(dr.bestArea) * W_DEEP_ROOM;
+        }
 
         bool const mayGrow = length < growthCap;
         if (eat0)
