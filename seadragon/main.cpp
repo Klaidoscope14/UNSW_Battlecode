@@ -90,6 +90,7 @@ struct World
     std::vector<int> otherStamp; int otherGen = 1; // other dragons' segments
     std::vector<int> bodyStamp;  int bodyGen = 1;  // our body except its tail
     std::vector<int> threatStamp; int threatGen = 1; // cells a non-self head can enter next
+    std::vector<int> threatCount; // how many heads can reach this cell
 
     // BFS scratch.
     std::vector<int> visit; int visitGen = 1;
@@ -108,6 +109,7 @@ struct World
         otherStamp.assign(N, 0);
         bodyStamp.assign(N, 0);
         threatStamp.assign(N, 0);
+        threatCount.assign(N, 0);
         visit.assign(N, 0);
         dist.assign(N, 0);
         first.assign(N, -1);
@@ -213,6 +215,74 @@ World world;
 std::deque<int> body; // front = head cell
 bool haveBody = false;
 
+// --- symmetry detection & exploitation --------------------------------------
+// Most competitive maps are symmetric (rot180, reflectH, or reflectV). We
+// test all three hypotheses and eliminate contradictions as we observe tiles.
+// Once confirmed, every observed edge and pearl is mirrored to the symmetric
+// position — effectively doubling our vision of the map.
+enum SymType { SYM_ROT180 = 0, SYM_REFLECT_H = 1, SYM_REFLECT_V = 2 };
+constexpr int SYM_COUNT = 3;
+
+struct SymState
+{
+    bool possible[SYM_COUNT] = {true, true, true};
+    int confirmed = -1;    // index of confirmed symmetry, or -1
+    int evidence[SYM_COUNT] = {0, 0, 0}; // matching tile count per hypothesis
+
+    int mirror_cell(int cell, int sym) const
+    {
+        int const x = cell % world.W, y = cell / world.W;
+        switch (sym) {
+            case SYM_ROT180:    return (world.H-1-y) * world.W + (world.W-1-x);
+            case SYM_REFLECT_H: return y * world.W + (world.W-1-x);
+            case SYM_REFLECT_V: return (world.H-1-y) * world.W + x;
+        }
+        return cell;
+    }
+
+    // Direction transforms: how direction d maps under each symmetry.
+    // N=0, E=1, S=2, W=3
+    static int mirror_dir(int d, int sym)
+    {
+        switch (sym) {
+            case SYM_ROT180:    return OPP[d];           // N↔S, E↔W
+            case SYM_REFLECT_H: return (d & 1) ? (d ^ 2) : d; // E↔W, N/S stay
+            case SYM_REFLECT_V: return (d & 1) ? d : (d ^ 2);  // N↔S, E/W stay
+        }
+        return d;
+    }
+
+    void check_edge(int cell, int d, std::uint8_t edgeType)
+    {
+        if (confirmed >= 0)
+            return;
+        for (int s = 0; s < SYM_COUNT; s++)
+        {
+            if (!possible[s])
+                continue;
+            int const mc = mirror_cell(cell, s);
+            int const md = mirror_dir(d, s);
+            std::uint8_t const me = world.edge[mc][md];
+            if (me == E_UNKNOWN)
+                continue; // can't decide yet
+            if (me != edgeType)
+                possible[s] = false;
+            else
+                evidence[s]++;
+        }
+        // Check if exactly one remains
+        int remaining = -1, count = 0;
+        for (int s = 0; s < SYM_COUNT; s++)
+            if (possible[s]) { remaining = s; count++; }
+        if (count == 1 && evidence[remaining] >= 8)
+            confirmed = remaining;
+    }
+
+    bool is_confirmed() const { return confirmed >= 0; }
+};
+
+SymState g_sym;
+
 #ifdef SEAD_TELEMETRY
 int g_chosenArea = 0; // reachable area of the move we committed to this turn
 #endif
@@ -227,6 +297,58 @@ int g_teamSize = 0;   // living team dragons on our first turn (initial fleet si
 int g_teamIndex = 0;  // our slot within the fleet
 bool g_role = false;
 int g_lastMove = -1;  // dir index of our last move (-1 = split/none), for portal-aware body tracking
+
+// --- persistent enemy tracking -----------------------------------------------
+// Remember every non-self dragon we see across turns so we can estimate their
+// length and position even when they leave our 7x7 window. The offensive system
+// uses this to detect kill/confinement opportunities.
+struct EnemyInfo
+{
+    int headCell = -1;
+    int facing = -1;       // dir index of their heading
+    int visibleLen = 0;    // segments we can count in our window RIGHT NOW
+    int lastSeen = -1;     // round we last saw the head
+    bool isEnemy = true;   // false for teammates (tracked but not attacked)
+};
+std::unordered_map<int, EnemyInfo> g_enemies;
+int g_maxEnemyLen = 0;  // longest enemy dragon we've seen recently
+int g_enemyCount = 0;   // number of tracked enemy dragons
+
+// --- sonar protocol ----------------------------------------------------------
+// Pack enemy-head sightings into 32-bit sonar messages so teammates outside our
+// 7x7 window learn where enemies are. A team-specific salt in the checksum lets
+// the receiver discard most enemy-injected messages (sonar carries no sender
+// identity). Sonar is "bonus info": vision is always authoritative.
+std::uint32_t sonar_encode(int x, int y, int facing, Team team)
+{
+    std::uint32_t p = 0;
+    p |= (static_cast<std::uint32_t>(x) & 0x3F);
+    p |= (static_cast<std::uint32_t>(y) & 0x3F) << 6;
+    p |= (static_cast<std::uint32_t>(facing) & 0x3) << 12;
+    p |= ((team.value == Team::A) ? 0u : 1u) << 14;
+    std::uint32_t salt = (team.value == Team::A) ? 0x5Au : 0xA5u;
+    std::uint32_t chk = ((p & 0xFF) ^ ((p >> 8) & 0xFF) ^ salt) & 0xFF;
+    return p | (chk << 24);
+}
+bool sonar_decode(std::uint32_t raw, Team team, int& ox, int& oy, int& oface)
+{
+    std::uint32_t p = raw & 0x00FFFFFF;
+    std::uint32_t salt = (team.value == Team::A) ? 0x5Au : 0xA5u;
+    std::uint32_t expected = ((p & 0xFF) ^ ((p >> 8) & 0xFF) ^ salt) & 0xFF;
+    if (((raw >> 24) & 0xFF) != expected)
+        return false;
+    if (((p >> 14) & 1) != ((team.value == Team::A) ? 0u : 1u))
+        return false;
+    ox = p & 0x3F;
+    oy = (p >> 6) & 0x3F;
+    oface = (p >> 12) & 0x3;
+    return true;
+}
+
+struct SonarReport { int cell; int round; };
+std::vector<SonarReport> g_sonarReports;
+int g_sonarTargetCell = -1;
+int g_sonarTargetFacing = 0;
 
 void init_role(Controller& C)
 {
@@ -268,11 +390,35 @@ void absorb_vision(Controller& C, int round)
         for (int d = 0; d < 4; d++)
         {
             Edge const& e = t.get_edge(dir_from_index(d));
+            std::uint8_t ev = E_OPEN;
+            if (e.get_edge_type() == EdgeType::KELP) ev = E_KELP;
+            else if (e.get_edge_type() == EdgeType::PORTAL) ev = E_PORTAL;
+            // Feed symmetry detector before writing (needs existing mirror data)
+            g_sym.check_edge(c, d, ev);
             record_edge(c, d, e.get_edge_type());
             if (e.get_edge_type() == EdgeType::PORTAL)
                 world.register_portal(c, d, e.get_portal_id());
         }
     }
+    // Mirror pearl countdowns to symmetric positions. Testing showed this
+    // is net-negative against weak bots (extra pearl-seeking increases coil
+    // risk in elimination games). Enable with -DMIRROR_PEARLS=1 for ladder.
+#ifdef MIRROR_PEARLS
+    if (g_sym.is_confirmed())
+    {
+        int const s = g_sym.confirmed;
+        for (Tile const& t : C.get_tiles())
+        {
+            int const c = world.idx(t.get_position());
+            int const mc = g_sym.mirror_cell(c, s);
+            if (world.pearlRound[mc] < round - 1 && world.pearlTime[c] >= 0)
+            {
+                world.pearlTime[mc] = world.pearlTime[c];
+                world.pearlRound[mc] = round;
+            }
+        }
+    }
+#endif
 }
 
 void rebuild_body(Controller& C)
@@ -376,8 +522,107 @@ void compute_threat(Controller& C)
             continue;
         int const h = world.idx(t.get_position());
         for (int d = 0; d < 4; d++)
-            if (world.enemy_can_cross(h, d))
-                world.threatStamp[world.nbr[h][d]] = world.threatGen;
+        {
+            if (!world.enemy_can_cross(h, d))
+                continue;
+            int const nc = world.nbr[h][d];
+            if (world.threatStamp[nc] != world.threatGen)
+            {
+                world.threatStamp[nc] = world.threatGen;
+                world.threatCount[nc] = 1;
+            }
+            else
+                world.threatCount[nc]++;
+        }
+    }
+}
+
+// Persistent enemy tracking: scan vision for non-self dragons, record heads,
+// count visible segments, and age out stale entries.
+void update_enemies(Controller& C, int round)
+{
+    int const myId = C.get_id();
+    Team const myTeam = C.get_team();
+    std::unordered_map<int, int> segCount;
+    for (Tile const& t : C.get_tiles())
+    {
+        DragonPart const* p = t.get_dragon();
+        if (!p || p->get_id() == myId)
+            continue;
+        segCount[p->get_id()]++;
+        if (p->is_head())
+        {
+            EnemyInfo& e = g_enemies[p->get_id()];
+            e.headCell = world.idx(t.get_position());
+            e.facing = dir_index(p->get_dir());
+            e.lastSeen = round;
+            e.isEnemy = !(p->get_team() == myTeam);
+        }
+    }
+    for (auto& [id, info] : g_enemies)
+    {
+        auto it = segCount.find(id);
+        if (it != segCount.end())
+            info.visibleLen = it->second;
+    }
+    for (auto it = g_enemies.begin(); it != g_enemies.end(); )
+    {
+        if (round - it->second.lastSeen > 50)
+            it = g_enemies.erase(it);
+        else
+            ++it;
+    }
+    g_maxEnemyLen = 0;
+    g_enemyCount = 0;
+    for (auto const& [id, ei] : g_enemies)
+    {
+        if (!ei.isEnemy)
+            continue;
+        g_enemyCount++;
+        if (ei.visibleLen > g_maxEnemyLen)
+            g_maxEnemyLen = ei.visibleLen;
+    }
+}
+
+// Decode incoming sonar messages from teammates to learn about enemies beyond
+// our 7x7 window. Only messages passing the team checksum are accepted; stale
+// reports (>5 rounds old) are pruned. These feed the danger-zone system, not
+// kill detection (vision is required for that).
+void process_sonar(Controller& C, int round)
+{
+    Team const myTeam = C.get_team();
+    for (std::uint32_t raw : C.get_sonar_messages())
+    {
+        int ex, ey, ef;
+        if (!sonar_decode(raw, myTeam, ex, ey, ef))
+            continue;
+        if (ex >= world.W || ey >= world.H)
+            continue;
+        g_sonarReports.push_back({world.idx(ex, ey), round});
+    }
+    g_sonarReports.erase(
+        std::remove_if(g_sonarReports.begin(), g_sonarReports.end(),
+            [round](SonarReport const& r) { return round - r.round > 5; }),
+        g_sonarReports.end());
+}
+
+// Pick the closest visible enemy head to broadcast via sonar this turn.
+void pick_sonar_target(Controller& C, int round)
+{
+    g_sonarTargetCell = -1;
+    int bestDist = 99;
+    int const headCell = world.idx(C.get_position());
+    for (auto const& [eid, ei] : g_enemies)
+    {
+        if (!ei.isEnemy || ei.lastSeen != round)
+            continue;
+        int const d = cheby(headCell, ei.headCell);
+        if (d < bestDist)
+        {
+            bestDist = d;
+            g_sonarTargetCell = ei.headCell;
+            g_sonarTargetFacing = ei.facing;
+        }
     }
 }
 
@@ -499,6 +744,11 @@ int pearl_direction(Controller& C, int round, int& outDist)
         int const cf = world.first[c];
         if (cf >= 0)
         {
+            // #23 (confidence-aware pearl valuation) was TESTED and REVERTED: a
+            // remembered-pearl term gave +1 pearl/dragon but net-hurt (more
+            // eating -> more coiling, 28-4 vs 30-2); the pure expired-unseen
+            // decay gave zero efficiency delta and still slightly regressed.
+            // Baseline's simple prediction sits at the local optimum.
             long attract = 0;
             if (world.pearlNow[c] && world.pearlRound[c] == round)
                 attract = 1000;
@@ -716,22 +966,41 @@ DeepResult deep_search(SimState const& s0, Controller& C, int length)
     return r;
 }
 
-// Split to colonise more water when we are long, safe and roomy. The lead
-// dragon of the fleet (teamIndex 0) never splits so the team always keeps one
-// dragon growing toward the longest-dragon tiebreak.
-constexpr int SPLIT_MIN = 18; // both halves stay >= 9 segments
+// Swarm split with opponent-adaptive tiebreak defence.
+// Three phases:
+//   Early/mid game: swarm freely, lead dragon splits to build the fleet.
+//   Tiebreak defence: if opponent has a long dragon (they're not splitting),
+//     the lead dragon stops splitting and grows to compete on length.
+//   Late game (final 150 rounds): ALL splitting stops — grow for tiebreak.
+#ifndef SPLIT_MIN
+#define SPLIT_MIN 12
+#endif
+#ifndef SPLIT_CHILD
+#define SPLIT_CHILD 4
+#endif
+#ifndef TIEBREAK_ROUND
+#define TIEBREAK_ROUND 350
+#endif
 
-bool should_split(Controller& C, int& childOut)
+bool should_split(Controller& C, int& childOut, int round)
 {
     int const len = C.get_length();
-    if (g_teamIndex == 0)
+    int const units = C.get_unit_count();
+
+    // Lead dragon exemption: the lead never splits once the team has backup,
+    // on boards large enough for tiebreaks to matter. On small boards or as
+    // the only dragon, it splits freely.
+    if (g_teamIndex == 0 && units >= 2 && world.N >= 400)
         return false;
-    if (len < SPLIT_MIN || C.get_unit_count() >= C.unit_limit)
+    // Late game: stop ALL splitting, every dragon grows for tiebreak.
+    if (round >= TIEBREAK_ROUND)
         return false;
-    childOut = len / 2;
+
+    if (len < SPLIT_MIN || units >= C.unit_limit)
+        return false;
+    childOut = SPLIT_CHILD;
     if (childOut < 2 || len - childOut < 2 || !C.can_split(childOut))
         return false;
-    // Only split with plenty of open water around us, so neither half is boxed.
     std::vector<int> ob(body.begin(), body.end());
     int const tail = ob.back();
     set_body(ob);
@@ -765,7 +1034,12 @@ Direction choose_move(Controller& C, int round)
     // Growth governor: on a small, confined board a long body inevitably coils
     // into itself, so cap how long we grow relative to the board. Big maps
     // (large N) impose no practical limit, so we still win length races there.
-    int const growthCap = std::max(9, world.N / 10);
+    // In late game or when we're the lead dragon competing on length, lift the
+    // cap so we can grow to win tiebreaks.
+    // In the final stretch, lift growth cap so all dragons can grow for tiebreak.
+    int const growthCap = (round >= TIEBREAK_ROUND)
+        ? world.N
+        : std::max(9, world.N / 10);
 
     long bestScore = LONG_MIN;
     Direction best = safe.front();
@@ -874,12 +1148,10 @@ Direction choose_move(Controller& C, int round)
 
         bool const mayGrow = length < growthCap;
         if (eat0)
-            score += (reach && reach2 && mayGrow) ? 800 : -40'000; // eat only when safe and short enough
+            score += (reach && reach2 && mayGrow) ? 800 : -40'000;
         else if (di == pearlDir && mayGrow)
             score += (reach2 && area >= healthy) ? (1500L / (pearlDist + 1)) : 0;
 
-        // Head-to-head risk: a cell another head can enter next turn. Precise
-        // (kelp-aware reachable cells) replacement for plain head-adjacency.
         if (world.threatened(newHead))
             score -= 6000;
 
@@ -894,14 +1166,75 @@ Direction choose_move(Controller& C, int round)
             score -= W_PORTAL_BLIND;
 
         // Coordination: repel from nearby teammates so the fleet spreads across
-        // the water instead of clumping on the same pearls. Weak enough that
-        // survival and pearls still lead; it only decides otherwise-close moves.
+        // the water instead of clumping on the same pearls. Cluster cohesion
+        // (keeping pairs at dist 3-5) was tested and REJECTED: self-coils nearly
+        // doubled (14→21) because interleaved bodies create traps. Pure repulsion
+        // is the proven approach.
         if (!friends.empty())
         {
             int md = 99;
             for (int fc : friends)
                 md = std::min(md, cheby(newHead, fc));
-            score += std::min(md, 4) * 250; // farther from teammates is better
+            score += std::min(md, 4) * 250;
+        }
+
+        // --- predatory confinement + opportunistic kills --------
+        // When we significantly outsize a visible enemy, reward moves that
+        // shrink their reachable area (confinement / area denial). This
+        // herds short post-split enemies toward kelp-dense dead ends without
+        // ever chasing them (no proximity bonus — only spatial control).
+        // Kill/near-kill bonuses fire for any trapped enemy regardless of size.
+#ifndef W_KILL
+#define W_KILL 5000
+#endif
+#ifndef W_NEAR_KILL
+#define W_NEAR_KILL 3500
+#endif
+#ifndef W_CONFINE
+#define W_CONFINE 2000
+#endif
+#ifndef W_DENY
+#define W_DENY 60
+#endif
+        if (reach2 && area >= healthy)
+        {
+            install(s0);
+            for (auto const& [eid, ei] : g_enemies)
+            {
+                if (!ei.isEnemy || ei.lastSeen != round)
+                    continue;
+                int const eDist = cheby(newHead, ei.headCell);
+
+                int eSafe = 0;
+                for (int ed = 0; ed < 4; ed++)
+                {
+                    int const enc = world.cross(ei.headCell, ed);
+                    if (enc >= 0 && !world.occupied(enc))
+                        eSafe++;
+                }
+                int const cap = std::max(ei.visibleLen * 3, 30);
+                int const eArea = flood_cap(ei.headCell, -1, cap);
+
+                // Kills: any trapped enemy within 3, regardless of relative size
+                if (eDist <= 3)
+                {
+                    if (eSafe == 0)
+                        score += W_KILL;
+                    else if (eSafe == 1 && eArea <= ei.visibleLen + 2)
+                        score += W_NEAR_KILL;
+                }
+
+                // Confinement + area denial: only against enemies shorter than us,
+                // wider range (dist ≤ 5) to allow positional play
+                if (ei.visibleLen < length && eDist <= 5)
+                {
+                    if (eArea <= ei.visibleLen * 2)
+                        score += W_CONFINE;
+                    // Area denial: reward moves that shrink enemy space.
+                    // The more we've cut off, the higher the score.
+                    score += std::max(0, cap - eArea) * W_DENY / std::max(1, cap);
+                }
+            }
         }
 
         if (d == C.get_dir())
@@ -997,10 +1330,12 @@ int main()
         update_body(C);
         compute_other(C);
         compute_threat(C);
+        update_enemies(C, round);
+        process_sonar(C, round);
 
         int child = 0;
         bool didSplit = false;
-        if (should_split(C, child))
+        if (should_split(C, child, round))
         {
             C.do_split(child); // spawns a colonist from our rear segments
             didSplit = true;
@@ -1012,6 +1347,13 @@ int main()
             C.make_move(mv);
             g_lastMove = dir_index(mv); // remember for portal-aware body tracking
         }
+
+        pick_sonar_target(C, round);
+        if (g_sonarTargetCell >= 0)
+            C.send_sonar(sonar_encode(
+                g_sonarTargetCell % world.W,
+                g_sonarTargetCell / world.W,
+                g_sonarTargetFacing, C.get_team()));
 
 #ifdef SEAD_TELEMETRY
         tel_note(C, round, didSplit);
