@@ -195,7 +195,7 @@ struct World
         // to revisit -- ideally against stronger opponents where a shortcut or
         // escape route decides close games.
 #ifndef USE_PORTALS
-#define USE_PORTALS 0
+#define USE_PORTALS 1
 #endif
         if (USE_PORTALS && e == E_PORTAL)
         {
@@ -225,31 +225,22 @@ int g_chosenArea = 0; // reachable area of the move we committed to this turn
 // Phase 3 (ENDGAME):      Rounds 451-500. ALL dragons maximize length. Longer
 //                         dragons prioritize survival. Shorter ones yield.
 enum class Phase { SWARM, GROW_LEADERS, ENDGAME };
-enum class Role  { TRAPPER, GROWER };
+enum class Role  { TRAPPER, GROWER, ATTACKER, LEADER };
 
 Phase get_phase(int round)
 {
-    if (round <= 350) return Phase::SWARM;
-    if (round <= 450) return Phase::GROW_LEADERS;
+    if (round <= 400) return Phase::SWARM;
+    if (round <= 460) return Phase::GROW_LEADERS;
     return Phase::ENDGAME;
 }
 
-Role get_role(int teamIndex, Phase phase)
-{
-    // teamIndex 0 is ALWAYS a grower — guarantees at least one dragon grows
-    // long for the length tiebreaker at round 500.
-    if (teamIndex == 0) return Role::GROWER;
-    if (phase == Phase::ENDGAME) return Role::GROWER; // everyone grows
-    if (phase == Phase::SWARM)   return (teamIndex % 2 == 0) ? Role::TRAPPER : Role::GROWER;
-    // GROW_LEADERS: even indices grow, odd trap
-    return (teamIndex % 2 == 0) ? Role::GROWER : Role::TRAPPER;
-}
-
-// --- multi-dragon coordination state ---------------------------------------
+// --- multi-dragon coordination state (forward declarations needed by get_role) ---
 int g_teamSize = 0;
 int g_teamIndex = 0;
 bool g_role = false;
 int g_lastMove = -1;
+int g_maxEnemyLen = 0;
+int g_enemyCount = 0;
 
 void init_role(Controller& C)
 {
@@ -260,6 +251,89 @@ void init_role(Controller& C)
     g_role = true;
 }
 
+int leader_growth_round()
+{
+    int const N = world.N;
+    int kelpEdges = 0, seenEdges = 0;
+    for (int i = 0; i < N; i++)
+        for (int d = 0; d < 4; d++) {
+            if (world.edge[i][d] != E_UNKNOWN) { seenEdges++; }
+            if (world.edge[i][d] == E_KELP) { kelpEdges++; }
+        }
+    float const density = seenEdges > 0 ? static_cast<float>(kelpEdges) / seenEdges : 0.2f;
+
+    int base;
+    if (N > 800)      base = 200;
+    else if (N > 400) base = 270;
+    else              base = 330;
+
+    if (density > 0.35f)     base += 40;
+    else if (density < 0.15f) base -= 30;
+
+    return std::max(150, std::min(380, base));
+}
+
+int leader_count()
+{
+    if (world.N > 800) return 3;
+    return 2;
+}
+
+Role get_role(int teamIndex, Phase phase, int round, int unitCount, int ourLength)
+{
+    // ENDGAME: leaders keep leading, everyone else grows
+    if (phase == Phase::ENDGAME && round >= leader_growth_round()) {
+        int const lc = leader_count();
+        bool isLeader = false;
+        int const ts = std::max(1, g_teamSize);
+        for (int i = 0; i < lc; i++) {
+            int const li = ts - 1 - i * 2;
+            int const leaderIdx = (li >= 0) ? li : 0;
+            if (teamIndex == leaderIdx) isLeader = true;
+        }
+        if (isLeader) return Role::LEADER;
+        return Role::GROWER;
+    }
+    if (phase == Phase::ENDGAME) return Role::GROWER;
+
+    // Reactive attackers: only dispatch assassins when the opponent has a dragon
+    // that's ≥5 longer than ours. No point attacking if they're all small.
+    // Only ~10% of dragons become attackers (every 10th index), so we don't
+    // waste resources on chasing when we should be eating and spreading.
+    if (g_maxEnemyLen >= ourLength + 5 && (teamIndex % 10 == 1))
+        return Role::ATTACKER;
+
+    // LEADER: 2-3 designated dragons switch after grid-dependent growth round
+    if (round >= leader_growth_round()) {
+        int const lc = leader_count();
+        int const ts = std::max(1, g_teamSize);
+        for (int i = 0; i < lc; i++) {
+            int const li = ts - 1 - i * 2;
+            int const leaderIdx = (li >= 0) ? li : 0;
+            if (teamIndex == leaderIdx) return Role::LEADER;
+        }
+    }
+
+    // Round 300+: 75% split, 25% grow
+    if (round >= 300) {
+        int const bucket = (teamIndex / 2) % 4;
+        return (bucket == 0) ? Role::GROWER : Role::TRAPPER;
+    }
+
+    return Role::TRAPPER;
+}
+
+// --- persistent enemy tracking -----------------------------------------------
+struct EnemyInfo
+{
+    int headCell = -1;
+    int facing = -1;
+    int visibleLen = 0;
+    int lastSeen = -1;
+    bool isEnemy = true;
+};
+std::unordered_map<int, EnemyInfo> g_enemies;
+
 int wrap_dist(int a, int b, int size)
 {
     int const d = std::abs(a - b);
@@ -269,6 +343,122 @@ int cheby(int c1, int c2)
 {
     return std::max(wrap_dist(c1 % world.W, c2 % world.W, world.W),
                     wrap_dist(c1 / world.W, c2 / world.W, world.H));
+}
+
+// --- sonar protocol (enhanced: includes enemy length in bits 15-18) ----------
+std::uint32_t sonar_encode(int x, int y, int facing, Team team, int enemyLen)
+{
+    std::uint32_t p = 0;
+    p |= (static_cast<std::uint32_t>(x) & 0x3F);
+    p |= (static_cast<std::uint32_t>(y) & 0x3F) << 6;
+    p |= (static_cast<std::uint32_t>(facing) & 0x3) << 12;
+    p |= ((team.value == Team::A) ? 0u : 1u) << 14;
+    p |= (static_cast<std::uint32_t>(std::min(enemyLen, 15)) & 0xF) << 15;
+    std::uint32_t salt = (team.value == Team::A) ? 0x5Au : 0xA5u;
+    std::uint32_t chk = ((p & 0xFF) ^ ((p >> 8) & 0xFF) ^ ((p >> 16) & 0xFF) ^ salt) & 0xFF;
+    return p | (chk << 24);
+}
+bool sonar_decode(std::uint32_t raw, Team team, int& ox, int& oy, int& oface, int& oLen)
+{
+    std::uint32_t p = raw & 0x00FFFFFF;
+    std::uint32_t salt = (team.value == Team::A) ? 0x5Au : 0xA5u;
+    std::uint32_t expected = ((p & 0xFF) ^ ((p >> 8) & 0xFF) ^ ((p >> 16) & 0xFF) ^ salt) & 0xFF;
+    if (((raw >> 24) & 0xFF) != expected)
+        return false;
+    if (((p >> 14) & 1) != ((team.value == Team::A) ? 0u : 1u))
+        return false;
+    ox = p & 0x3F;
+    oy = (p >> 6) & 0x3F;
+    oface = (p >> 12) & 0x3;
+    oLen = (p >> 15) & 0xF;
+    return true;
+}
+
+struct SonarReport { int cell; int round; int enemyLen; };
+std::vector<SonarReport> g_sonarReports;
+int g_sonarTargetCell = -1;
+int g_sonarTargetFacing = 0;
+int g_sonarTargetLen = 0;
+
+void process_sonar(Controller& C, int round)
+{
+    Team const myTeam = C.get_team();
+    for (std::uint32_t raw : C.get_sonar_messages())
+    {
+        int ex, ey, ef, elen;
+        if (!sonar_decode(raw, myTeam, ex, ey, ef, elen))
+            continue;
+        if (ex >= world.W || ey >= world.H)
+            continue;
+        int const ec = ey * world.W + ex;
+        Position const ep(ex, ey);
+        if (C.get_tile(ep) == nullptr)
+            g_sonarReports.push_back({ec, round, elen});
+    }
+    g_sonarReports.erase(
+        std::remove_if(g_sonarReports.begin(), g_sonarReports.end(),
+                        [&](SonarReport const& r) { return round - r.round > 5; }),
+        g_sonarReports.end());
+}
+
+void pick_sonar_target(Controller& C, int round)
+{
+    g_sonarTargetCell = -1;
+    g_sonarTargetLen = 0;
+    Team const us = C.get_team();
+    int const headCell = world.idx(C.get_position());
+
+    // Priority 1: broadcast LONG enemies (length >= 8) — kamikaze dispatch
+    // Priority 2: broadcast any visible enemy
+    // Priority 3: broadcast pearl location — scouts help leaders find food
+    int bestPriority = -1;
+    for (Tile const& t : C.get_tiles())
+    {
+        DragonPart const* p = t.get_dragon();
+        if (!p || !p->is_head() || p->get_team() == us)
+            continue;
+        int const ec = world.idx(t.get_position());
+        int const d = cheby(headCell, ec);
+
+        int visLen = 0;
+        int eid = p->get_id();
+        auto it = g_enemies.find(eid);
+        if (it != g_enemies.end())
+            visLen = it->second.visibleLen;
+
+        int priority = 1000 - d;
+        if (visLen >= 8)
+            priority += 5000;    // long enemy: top priority
+
+        if (priority > bestPriority)
+        {
+            bestPriority = priority;
+            g_sonarTargetCell = ec;
+            g_sonarTargetFacing = dir_index(p->get_dir());
+            g_sonarTargetLen = visLen;
+        }
+    }
+
+    // If no enemy visible, broadcast nearest pearl position (len=0 signals pearl)
+    // so leaders can navigate toward food even outside their own vision
+    if (g_sonarTargetCell < 0)
+    {
+        int bestDist = 999;
+        for (Tile const& t : C.get_tiles())
+        {
+            if (!t.has_pearl())
+                continue;
+            int const pc = world.idx(t.get_position());
+            int const d = cheby(headCell, pc);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                g_sonarTargetCell = pc;
+                g_sonarTargetFacing = 0;
+                g_sonarTargetLen = 0; // len=0 means pearl report, not enemy
+            }
+        }
+    }
 }
 
 void record_edge(int cell, int d, EdgeType type)
@@ -406,6 +596,51 @@ void compute_threat(Controller& C)
         for (int d = 0; d < 4; d++)
             if (world.enemy_can_cross(h, d))
                 world.threatStamp[world.nbr[h][d]] = world.threatGen;
+    }
+}
+
+void update_enemies(Controller& C, int round)
+{
+    int const myId = C.get_id();
+    Team const myTeam = C.get_team();
+    std::unordered_map<int, int> segCount;
+    for (Tile const& t : C.get_tiles())
+    {
+        DragonPart const* p = t.get_dragon();
+        if (!p || p->get_id() == myId)
+            continue;
+        segCount[p->get_id()]++;
+        if (p->is_head())
+        {
+            EnemyInfo& e = g_enemies[p->get_id()];
+            e.headCell = world.idx(t.get_position());
+            e.facing = dir_index(p->get_dir());
+            e.lastSeen = round;
+            e.isEnemy = !(p->get_team() == myTeam);
+        }
+    }
+    for (auto& [id, info] : g_enemies)
+    {
+        auto it = segCount.find(id);
+        if (it != segCount.end())
+            info.visibleLen = it->second;
+    }
+    for (auto it = g_enemies.begin(); it != g_enemies.end(); )
+    {
+        if (round - it->second.lastSeen > 50)
+            it = g_enemies.erase(it);
+        else
+            ++it;
+    }
+    g_maxEnemyLen = 0;
+    g_enemyCount = 0;
+    for (auto const& [id, ei] : g_enemies)
+    {
+        if (!ei.isEnemy)
+            continue;
+        g_enemyCount++;
+        if (ei.visibleLen > g_maxEnemyLen)
+            g_maxEnemyLen = ei.visibleLen;
     }
 }
 
@@ -725,13 +960,12 @@ DeepResult deep_search(SimState const& s0, Controller& C, int length)
     return r;
 }
 
-// Phase-aware splitting. SWARM: split aggressively to maximize dragon count.
-// GROW_LEADERS: only trappers split. ENDGAME: nobody splits.
 bool should_split(Controller& C, int& childOut, Phase phase, Role role, int round)
 {
     int const len = C.get_length();
-    
-    // Emergency escape: if we are trapped (area < healthy), we MUST split to halve our length and survive.
+    int const unitCount = C.get_unit_count();
+
+    // Emergency escape: split to halve length when trapped
     std::vector<int> ob(body.begin(), body.end());
     bool emergency = false;
     if (!ob.empty()) {
@@ -742,65 +976,59 @@ bool should_split(Controller& C, int& childOut, Phase phase, Role role, int roun
             emergency = true;
     }
 
-    // Endgame: never split normally, all resources go to growth
-    if (phase == Phase::ENDGAME && !emergency)
-        return false;
-    
-    // Growers normally NEVER split — they must keep growing for the length tiebreaker.
-    // EXCEPT: on short grids (<=400) during first 250 rounds, we trap by dividing,
-    // or in a life-or-death emergency.
-    if (role == Role::GROWER && !emergency)
-    {
-        if (world.N <= 400 && round <= 250)
-            { /* allow splitting */ }
-        else
-            return false;
-    }
-
-    int const unitCount = C.get_unit_count();
     if (unitCount >= C.unit_limit)
         return false;
 
-    // Map-size-aware dragon cap: small maps → fewer dragons, focus on survival & length
-    // Arena (81 tiles) and small (≤200) → max 2, medium (≤800) → max 4
-    int maxDragons;
-    if (world.N <= 400)
-        maxDragons = 2;       // small/tiny maps: max 2 dragons (1 grower, 1 trapper)
-    else if (world.N <= 800)
-        maxDragons = 4;       // medium maps: max 4 dragons
-    else
-        maxDragons = C.unit_limit; // large maps: split freely
-
-    if (unitCount >= maxDragons)
+    // Area saturation gate: if remaining area <= 20% of grid, stop splitting.
+    // Too many dragons = no room to grow, we lose on length tiebreaker.
+    int const estimatedOccupied = 2 * unitCount;
+    if (estimatedOccupied * 10 >= world.N * 8 && !emergency) // remaining <= 20%
         return false;
 
-    // Higher split threshold on small maps (survival first), lower on large (swarm fast)
-    int splitMin;
-    if (world.N <= 400)
+    // ENDGAME: never split (except leaders do emergency split if about to die)
+    if (phase == Phase::ENDGAME && !emergency)
+        return false;
+
+    // Leaders NEVER split once they start growing — preserve length at all costs.
+    // Exception: emergency split when trapped (shed body to survive).
+    if (role == Role::LEADER && !emergency)
+        return false;
+
+    // GROW_LEADERS: growers stop splitting to grow for tiebreak
+    if (phase == Phase::GROW_LEADERS && role == Role::GROWER && !emergency)
+        return false;
+
+    // Round 300+: growers (25%) focus on length, don't split
+    if (round >= 300 && role == Role::GROWER && !emergency)
+        return false;
+
+    // Emergency dragon count: if we're badly outnumbered, force more splits
+    // to avoid being overrun
+    if (g_enemyCount > 0 && unitCount * 2 < g_enemyCount && len >= 4)
     {
-        if (round <= 250)
-            splitMin = 8;     // short grid early game: split to trap
-        else
-            splitMin = 12;    // short grid mid game: only split when very long (survival)
+        childOut = 2;
+        if (C.can_split(childOut))
+            return true; // force split to maintain numbers
     }
-    else if (phase == Phase::SWARM)
-        splitMin = 4;         // large maps, swarm phase: split aggressively
-    else
-        splitMin = 12;
+
+    // SWARM: split at length 4 immediately. Every dragon stays tiny.
+    int splitMin = 4;
+    if (phase != Phase::SWARM)
+        splitMin = 8; // post-swarm: a bit longer before splitting
 
     if (len < splitMin)
         return false;
 
-    childOut = len / 2;
-    if (childOut < 2 || len - childOut < 2 || !C.can_split(childOut))
+    // Always split into 2+2 during swarm for maximum dragon count
+    childOut = 2;
+    if (!C.can_split(childOut))
         return false;
 
-    // Only split with enough space around us. Relaxed from len * 2 to len + 4 
-    // to allow splitting inside roomy maze-like structures.
+    // Minimal space check — just need enough room to not die immediately
     if (!ob.empty()) {
         int const tail = ob.back();
         set_body(ob);
-        return flood(world.idx(C.get_position()), tail) >= len + 4;
+        return flood(world.idx(C.get_position()), tail) >= len + 2;
     }
     return false;
 }
@@ -854,6 +1082,116 @@ std::pair<int, int> find_nearest_friendly_head(Controller& C)
     return {bestCell, segments};
 }
 
+// Find the nearest visible friendly head that is LONG (length >= 6, likely a leader).
+// Returns {cell, visibleLen, dist} or {-1, 0, 999}.
+struct LeaderInfo { int cell; int visibleLen; int dist; };
+LeaderInfo find_nearest_leader(Controller& C)
+{
+    LeaderInfo best{-1, 0, 999};
+    Team const us = C.get_team();
+    int const myId = C.get_id();
+    int const headCell = world.idx(C.get_position());
+    for (Tile const& t : C.get_tiles())
+    {
+        DragonPart const* p = t.get_dragon();
+        if (!p || !p->is_head() || p->get_team() != us || p->get_id() == myId)
+            continue;
+        int const fc = world.idx(t.get_position());
+        int const d = cheby(headCell, fc);
+        // Count visible segments
+        int segs = 0;
+        int fid = p->get_id();
+        for (Tile const& t2 : C.get_tiles())
+        {
+            DragonPart const* p2 = t2.get_dragon();
+            if (p2 && p2->get_id() == fid) segs++;
+        }
+        // Only consider "long" friendlies as leaders (length >= 6)
+        if (segs >= 6 && (best.cell < 0 || segs > best.visibleLen))
+        {
+            best.cell = fc;
+            best.visibleLen = segs;
+            best.dist = d;
+        }
+    }
+    return best;
+}
+
+// Find if any enemy head is near a visible leader (within 5 cells).
+// Returns the enemy cell closest to the leader, or -1.
+int find_enemy_near_leader(Controller& C, int leaderCell)
+{
+    if (leaderCell < 0) return -1;
+    Team const us = C.get_team();
+    int bestCell = -1, bestDist = 999;
+    for (Tile const& t : C.get_tiles())
+    {
+        DragonPart const* p = t.get_dragon();
+        if (!p || !p->is_head() || p->get_team() == us)
+            continue;
+        int const ec = world.idx(t.get_position());
+        int const d = cheby(ec, leaderCell);
+        if (d <= 5 && d < bestDist)
+        {
+            bestDist = d;
+            bestCell = ec;
+        }
+    }
+    return bestCell;
+}
+
+// Sprint escape: when all single-step moves lead to death, try sprinting 2 steps
+// to jump over a trap. Costs 1 segment (length shrinks by 1). Returns true if
+// sprint was used, false if no safe sprint found.
+bool try_sprint_escape(Controller& C)
+{
+    int const length = C.get_length();
+    if (length <= 2)
+        return false; // need length > n to sprint n steps; min useful sprint is 2
+
+    Position const head = C.get_position();
+    auto const dirs = Direction::get_direction_list();
+
+    // Check if ALL single moves are unsafe
+    bool anySingleSafe = false;
+    for (auto const d : dirs)
+        if (step_is_safe(C, C.get_tile(head), head, d))
+            anySingleSafe = true;
+    if (anySingleSafe)
+        return false; // normal move exists, no need to sprint
+
+    // Try every 2-step sprint: first step can cross into occupied/wall if second step lands safe
+    std::vector<int> origBody(body.begin(), body.end());
+    SimState const base{origBody};
+
+    for (auto const d1 : dirs)
+    {
+        int const mid = world.cross(world.idx(head), dir_index(d1));
+        if (mid < 0)
+            continue; // wall/kelp
+        for (auto const d2 : dirs)
+        {
+            int const dest = world.cross(mid, dir_index(d2));
+            if (dest < 0)
+                continue;
+            // Check dest is not occupied by any dragon (including self)
+            Position const dp(dest % world.W, dest / world.W);
+            Tile const* dt = C.get_tile(dp);
+            if (dt && dt->get_dragon() != nullptr)
+                continue;
+            // Sprint costs 1 segment; simulate if we'd survive
+            install(base);
+            int const newArea = flood(dest, -1);
+            if (newArea >= length)
+            {
+                C.make_moves({d1, d2});
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 Direction choose_move(Controller& C, int round, Phase phase, Role role)
 {
     Position const head = C.get_position();
@@ -879,23 +1217,28 @@ Direction choose_move(Controller& C, int round, Phase phase, Role role)
 
     int const healthy = length * 2 + 4;
 
-    // Phase-aware growth cap
+    // Growth cap: role and round dependent
     int growthCap;
-    if (phase == Phase::ENDGAME)
-        growthCap = 9999; // everyone grows in endgame
-    else if (world.N > 800 && round >= 300)
-        growthCap = 9999; // large maps: start growing huge much earlier
-    else if (world.N <= 400 && round <= 250)
-        growthCap = 10;   // short grids early game: keep all dragons short and agile to trap
-    else if (role == Role::GROWER)
-        growthCap = std::max(15, world.N / 6); // growers: generous cap scaled to map size
+    if (role == Role::LEADER)
+        growthCap = 9999; // leaders grow unlimited — their whole purpose
+    else if (phase == Phase::ENDGAME)
+        growthCap = 9999;
+    else if (role == Role::ATTACKER)
+        growthCap = 4;    // attackers eat then split → 2x more attackers
+    else if (phase == Phase::GROW_LEADERS)
+        growthCap = (role == Role::GROWER) ? 9999 : 6;
+    else if (round >= 300 && role == Role::GROWER)
+        growthCap = 9999;
     else
-        growthCap = 12;   // trappers stay small and agile
+        growthCap = 4;    // SWARM: stay at max 4, split immediately
 
     // --- Enemy trapping (TRAPPER role) ---
     auto const [enemyHead, enemyDist] = find_nearest_enemy_head(C);
     // --- Friendly collision avoidance (sacrifice logic) ---
     auto const [friendlyHead, friendlySegs] = find_nearest_friendly_head(C);
+    // --- Leader scouting: find nearest visible long friendly (leader candidate) ---
+    LeaderInfo const leader = find_nearest_leader(C);
+    int const enemyNearLeader = find_enemy_near_leader(C, leader.cell);
 
     long bestScore = LONG_MIN;
     Direction best = safe.front();
@@ -980,14 +1323,15 @@ Direction choose_move(Controller& C, int round, Phase phase, Role role)
             score -= static_cast<long>(healthy - area) * 500;
 
         // Bottleneck guard: a single exit with no safe loop is a corridor that
-        // can seal behind us. Cheap topology signal on top of area/reach.
+        // can seal behind us.
         if (exits1 <= 1 && !reach2)
         {
-            // If the bottleneck leads to a pearl, and the area inside is survivable,
-            // we override the heavy penalty to allow entering safe mazes.
-            // We DO NOT do this in ENDGAME, because they will grow too large and trap themselves.
-            if (phase != Phase::ENDGAME && (eat0 || di == pearlDir) && area >= healthy)
-                score -= 1000; // tiny penalty instead of massive W_BOTTLE
+            bool const justPortaled = (g_lastMove >= 0 &&
+                world.edge[world.idx(head)][g_lastMove] == E_PORTAL);
+            if (phase == Phase::ENDGAME || justPortaled)
+                score -= W_BOTTLE; // full penalty in endgame or right after portal (unknown terrain)
+            else if (area >= healthy)
+                score -= 2000;     // survivable corridor: mild penalty, allow entering for pearls
             else
                 score -= W_BOTTLE;
         }
@@ -1012,29 +1356,86 @@ Direction choose_move(Controller& C, int round, Phase phase, Role role)
 
         bool const mayGrow = length < growthCap;
 
-        // Phase-aware pearl scoring — boosted to encourage entering mazes
-        int pearlBonus = 2000;
-        int pearlSeekBonus = 2500;
-        if (phase == Phase::ENDGAME) {
-            pearlBonus = 4000;     // maximum aggression on pearls
+        // Pearl priority: length 2-3 dragons MUST eat — the bonus must beat any
+        // area/mobility difference so they never circle past food.
+        int pearlBonus, pearlSeekBonus;
+        if (length <= 2) {
+            pearlBonus = 25000;     // huge: a length-2 ignoring food is fatal
+            pearlSeekBonus = 12000;
+        } else if (length == 3) {
+            pearlBonus = 30000;     // one pearl = split, highest priority
+            pearlSeekBonus = 15000;
+        } else if (phase == Phase::ENDGAME || phase == Phase::GROW_LEADERS) {
+            pearlBonus = 5000;
             pearlSeekBonus = 4000;
-        } else if (phase == Phase::GROW_LEADERS && role == Role::GROWER) {
-            pearlBonus = 3000;
-            pearlSeekBonus = 3500;
+        } else {
+            pearlBonus = 2000;      // length 4+: should split, not eat more
+            pearlSeekBonus = 1000;
         }
 
         if (eat0)
-            score += (reach && reach2 && mayGrow && area >= healthy) ? pearlBonus : -40'000;
+        {
+            if (length <= 3 && reach && area >= length + 2)
+                score += pearlBonus; // tiny dragons: eat with relaxed gate (depth-1 safe + minimal room)
+            else if (reach && reach2 && mayGrow && area >= healthy)
+                score += pearlBonus;
+            else
+                score -= 40'000;
+        }
         else if (di == pearlDir && mayGrow)
-            score += (reach2 && area >= healthy) ? (static_cast<long>(pearlSeekBonus) / (pearlDist + 1)) : 0;
+            score += (reach2 && area >= healthy) ? (static_cast<long>(pearlSeekBonus) / (pearlDist + 1)) :
+                     (length <= 3 && reach ? (static_cast<long>(pearlSeekBonus) / (pearlDist + 1)) : 0);
 
-        // Head-to-head risk: hard gate in endgame, strong penalty otherwise
+        // Head-to-head risk: role dependent
         if (world.threatened(newHead))
         {
-            if (phase == Phase::ENDGAME)
-                score -= 500'000; // absolutely forbidden in endgame
+            if (role == Role::ATTACKER)
+                score += 15000;   // attackers seek head-on collisions
+            else if (role == Role::LEADER)
+                score -= 500'000; // leaders MUST survive — maximum penalty
+            else if (phase == Phase::ENDGAME)
+                score -= 500'000;
             else
-                score -= 50'000;  // very dangerous in other phases too
+                score -= 50'000;
+        }
+
+        // Sonar-informed navigation:
+        // - Attackers: attracted to long enemy reports (kamikaze dispatch)
+        // - Leaders: attracted to pearl reports (len=0), warned by enemy reports
+        // - Everyone else: avoid enemy contacts to prevent friendly collisions
+        for (auto const& sr : g_sonarReports)
+        {
+            int const sdist = cheby(newHead, sr.cell);
+            if (sr.enemyLen == 0)
+            {
+                // Pearl report: leaders and growers are attracted
+                if (role == Role::LEADER && mayGrow)
+                    score += 5000 / (sdist + 1); // leaders seek sonar-reported pearls
+                else if (role == Role::GROWER && mayGrow)
+                    score += 2000 / (sdist + 1);
+            }
+            else if (role == Role::ATTACKER && sr.enemyLen >= 8)
+            {
+                // Attacker dispatch: sonar says a long enemy is here — go kill it
+                score += 8000 / (sdist + 1);
+                if (sdist <= 2)
+                    score += 5000;
+            }
+            else if (role == Role::LEADER)
+            {
+                // Leaders avoid enemy contacts — survival is paramount
+                if (sdist <= 3)
+                    score -= 10000;
+                else if (sdist <= 5)
+                    score -= 4000;
+            }
+            else
+            {
+                if (sdist <= 2)
+                    score -= 8000;
+                else if (sdist <= 4)
+                    score -= 3000;
+            }
         }
 
         // --- TRAPPER: chase and box in enemy heads ---
@@ -1043,9 +1444,95 @@ Direction choose_move(Controller& C, int round, Phase phase, Role role)
             int const distToEnemy = cheby(newHead, enemyHead);
             if (enemyDist <= 5)
                 score += 3000L / (distToEnemy + 1); // move toward enemy
-            // When adjacent (dist 1-2), prefer cutting off escape routes
             if (distToEnemy <= 2)
                 score += 5000; // strong bonus for boxing position
+        }
+
+        // --- ATTACKER: intercept-based head-on collision seekers ---
+        // When enemies are visible: predict and intercept.
+        // When no enemy visible: explore to find them (don't just drift).
+        if (role == Role::ATTACKER)
+        {
+            int bestInterceptBonus = 0;
+            bool anyEnemyVisible = false;
+            for (auto const& [eid, ei] : g_enemies)
+            {
+                if (!ei.isEnemy || ei.lastSeen != round)
+                    continue;
+                anyEnemyVisible = true;
+                int const eDist = cheby(newHead, ei.headCell);
+
+                int chase = 6000 / (eDist + 1);
+                chase += std::min(ei.visibleLen, 10) * 200;
+
+                for (int ed = 0; ed < 4; ed++)
+                {
+                    int const enemyNext = world.cross(ei.headCell, ed);
+                    if (enemyNext < 0)
+                        continue;
+                    if (newHead == enemyNext)
+                    {
+                        if (ed == ei.facing)
+                            chase += 30000;
+                        else
+                            chase += 12000;
+                    }
+                }
+
+                if (eDist <= 2)
+                    chase += 10000;
+                if (eDist <= 1)
+                    chase += 15000;
+
+                bestInterceptBonus = std::max(bestInterceptBonus, chase);
+            }
+            score += bestInterceptBonus;
+
+            // No enemy visible: explore toward unseen territory to find them
+            if (!anyEnemyVisible)
+            {
+                int unk = 0;
+                for (int ed = 0; ed < 4; ed++)
+                    if (world.edge[newHead][ed] == E_UNKNOWN) unk++;
+                score += unk * 800; // moderate exploration pull for idle attackers
+            }
+        }
+
+        // --- predatory confinement + opportunistic kills ---
+        if (reach2 && area >= healthy)
+        {
+            install(s0);
+            for (auto const& [eid, ei] : g_enemies)
+            {
+                if (!ei.isEnemy || ei.lastSeen != round)
+                    continue;
+                int const eDist = cheby(newHead, ei.headCell);
+
+                int eSafe = 0;
+                for (int ed = 0; ed < 4; ed++)
+                {
+                    int const enc = world.cross(ei.headCell, ed);
+                    if (enc >= 0 && !world.occupied(enc))
+                        eSafe++;
+                }
+                int const cap = std::max(ei.visibleLen * 3, 30);
+                int const eArea = flood_cap(ei.headCell, -1, cap);
+
+                if (eDist <= 3)
+                {
+                    if (eSafe == 0)
+                        score += 5000;
+                    else if (eSafe == 1 && eArea <= ei.visibleLen + 2)
+                        score += 3500;
+                }
+
+                if (ei.visibleLen < length && eDist <= 5)
+                {
+                    if (eArea <= ei.visibleLen * 2)
+                        score += 2000;
+                    score += std::max(0, cap - eArea) * 60 / std::max(1, cap);
+                }
+            }
         }
 
         // --- Friendly collision sacrifice logic ---
@@ -1057,26 +1544,81 @@ Direction choose_move(Controller& C, int round, Phase phase, Role role)
                 score -= 200'000; // shorter dragon yields
         }
 
-        // A portal whose far side we cannot see is a blind step -- there may be a
-        // dragon waiting. Penalise it so portals are taken only when they clearly
-        // win (an escape or a real shortcut), not as a reflex flee.
-#ifndef W_PORTAL_BLIND
-#define W_PORTAL_BLIND 0 // a blind-crossing penalty was tried and hurt (27-5); off
-#endif
+        // Portal blind crossing: penalize entering a portal when we can't see
+        // the far side. Only cross when it's clearly better than staying.
         if (world.edge[world.idx(head)][di] == E_PORTAL &&
             C.get_tile(Position(newHead % world.W, newHead / world.W)) == nullptr)
-            score -= W_PORTAL_BLIND;
+        {
+            if (exits1 <= 1)
+                score -= 3000;  // portal is our only option: mild penalty
+            else
+                score -= 15000; // other safe moves exist: strong preference to stay
+        }
 
-        // Coordination: repel from nearby teammates so the fleet spreads across
-        // the water. On small maps this is STRONGER to prevent friendly fire.
+        // Coordination: spread dragons across the map.
+        // Stronger than before but not so strong it overrides survival.
         if (!friends.empty())
         {
             int md = 99;
             for (int fc : friends)
                 md = std::min(md, cheby(newHead, fc));
-            
-            int const repulsionWeight = (world.N <= 400) ? 2000 : 250;
-            score += std::min(md, 4) * repulsionWeight; // farther from teammates is better
+
+            int const repulsionWeight = (world.N <= 400) ? 2500 : 700;
+            score += std::min(md, 6) * repulsionWeight; // range 6, max 4200 large / 15000 small
+        }
+
+        // Exploration: prefer unseen territory, but only when not chasing a pearl.
+        // Prevents exploration from pulling dragons away from food.
+        if (pearlDir < 0 || pearlDist > 5)
+        {
+            int unknownEdges = 0;
+            for (int ed = 0; ed < 4; ed++)
+                if (world.edge[newHead][ed] == E_UNKNOWN) unknownEdges++;
+            score += unknownEdges * 600; // up to +2400 for a frontier cell
+        }
+
+        // Border patrol: ~30% of non-attacker, non-leader dragons prefer the grid perimeter.
+        if (role != Role::ATTACKER && role != Role::LEADER && (g_teamIndex % 3 == 2))
+        {
+            int const nx = newHead % world.W;
+            int const ny = newHead / world.W;
+            int const edgeDistX = std::min(nx, world.W - 1 - nx);
+            int const edgeDistY = std::min(ny, world.H - 1 - ny);
+            int const edgeDist = std::min(edgeDistX, edgeDistY);
+            if (edgeDist <= 3)
+                score += (4 - edgeDist) * 400;
+        }
+
+        // --- LEADER-specific: strong mutual repulsion from other leaders ---
+        // Leaders must stay far apart for maximum territory coverage.
+        if (role == Role::LEADER && !friends.empty())
+        {
+            int md = 99;
+            for (int fc : friends)
+                md = std::min(md, cheby(newHead, fc));
+            score += std::min(md, 8) * 1500; // 5x stronger repulsion than normal
+        }
+
+        // --- Scout orbit: only AFTER leaders start growing (grid-dependent round) ---
+        // Before that, all dragons should spread and explore freely.
+        if (role != Role::LEADER && leader.cell >= 0 && length <= 4
+            && round >= leader_growth_round())
+        {
+            int const distToLeader = cheby(newHead, leader.cell);
+            if (distToLeader >= 4 && distToLeader <= 7)
+                score += 2000;   // ideal orbit distance
+            else if (distToLeader >= 2 && distToLeader <= 3)
+                score -= 1500;   // too close: crowding the leader, push away
+        }
+
+        // --- Bodyguard: only active after leaders start growing ---
+        if (role != Role::LEADER && enemyNearLeader >= 0 && length <= 4
+            && round >= leader_growth_round())
+        {
+            int const distToThreat = cheby(newHead, enemyNearLeader);
+            score += 4000 / (distToThreat + 1);
+            if (distToThreat <= 2)
+                score += 6000;
         }
 
         if (d == C.get_dir())
@@ -1169,12 +1711,22 @@ int main()
         int const round = G.get_round_num();
         Phase const phase = get_phase(round);
         init_role(C);
-        Role const role = get_role(g_teamIndex, phase);
 
         absorb_vision(C, round);
         update_body(C);
         compute_other(C);
         compute_threat(C);
+        update_enemies(C, round);
+        process_sonar(C, round);
+
+        // Fold sonar-reported enemy lengths into g_maxEnemyLen
+        // so attackers react to threats spotted by teammates
+        for (auto const& sr : g_sonarReports)
+            if (sr.enemyLen > g_maxEnemyLen)
+                g_maxEnemyLen = sr.enemyLen;
+
+        Role const role = get_role(g_teamIndex, phase, round,
+                                   C.get_unit_count(), C.get_length());
 
         int child = 0;
         bool didSplit = false;
@@ -1184,12 +1736,23 @@ int main()
             didSplit = true;
             g_lastMove = -1;
         }
+        else if (try_sprint_escape(C))
+        {
+            g_lastMove = -1; // sprinted: body tracking will rebuild next turn
+        }
         else
         {
             Direction const mv = choose_move(C, round, phase, role);
             C.make_move(mv);
             g_lastMove = dir_index(mv);
         }
+
+        pick_sonar_target(C, round);
+        if (g_sonarTargetCell >= 0)
+            C.send_sonar(sonar_encode(
+                g_sonarTargetCell % world.W,
+                g_sonarTargetCell / world.W,
+                g_sonarTargetFacing, C.get_team(), g_sonarTargetLen));
 
 #ifdef SEAD_TELEMETRY
         tel_note(C, round, didSplit);
