@@ -289,6 +289,14 @@ class Vision {
     }
 };
 
+struct SonarEchoes {
+    int kelp = 0;
+    int ally = 0;
+    int ally_head = 0;
+    int enemy = 0;
+    int enemy_head = 0;
+};
+
 // What the dragon knows about itself and what it can see this turn.
 class Controller {
   public:
@@ -297,10 +305,12 @@ class Controller {
     int unit_limit;
     DragonPart head;
     Vision vision;
-    std::vector<std::uint32_t> sonar_messages;
+    std::vector<std::uint64_t> sonar_messages;
+    SonarEchoes echoes;
+    bool has_echoes = false;
 
     Controller(int dragon_id, Team team, Direction direction, Vision vision, int unit_limit,
-               std::vector<std::uint32_t> sonar_messages = {})
+               std::vector<std::uint64_t> sonar_messages = {})
         : unit_limit(unit_limit), head(Position(0, 0), dragon_id, team, direction, true),
           vision(std::move(vision)), sonar_messages(std::move(sonar_messages)) {}
 
@@ -368,15 +378,18 @@ class Controller {
         std::cout << "INDICATOR " << message << "\n";
     }
     // This turn's messages, in the order they were sent.
-    std::vector<std::uint32_t> get_sonar_messages() const { return sonar_messages; }
-    // Pings along the dragon's facing once the turn's action is applied.
-    // Refuses a value that is not an unsigned 32-bit integer.
+    std::vector<std::uint64_t> get_sonar_messages() const { return sonar_messages; }
+    // Protocol 2: pings along facing. Kept for compatibility.
     bool send_sonar(std::uint64_t message) {
-        if (message > UINT32_MAX)
-            return false;
         std::cout << "SONAR " << message << "\n";
         return true;
     }
+    // Protocol 3: directional sonar.
+    bool send_sonar(Direction direction, std::uint64_t message) {
+        std::cout << "SONAR " << direction.value << " " << message << "\n";
+        return true;
+    }
+    SonarEchoes get_sonar_echoes() const { return echoes; }
 };
 
 inline bool Position::is_in_vision() const {
@@ -395,8 +408,14 @@ namespace parse_util {
 
 inline std::unique_ptr<Controller> controller_storage;
 inline std::unique_ptr<Game> game_storage;
+inline std::optional<std::vector<std::string>> pushed_back_data_line;
 
 inline std::vector<std::string> read_data_line() {
+    if (pushed_back_data_line) {
+        auto line = std::move(*pushed_back_data_line);
+        pushed_back_data_line.reset();
+        return line;
+    }
     for (std::string line; std::getline(std::cin, line);) {
         if (auto const comment = line.find('#'); comment != std::string::npos)
             line.erase(comment);
@@ -409,6 +428,10 @@ inline std::vector<std::string> read_data_line() {
             return parts;
     }
     throw std::runtime_error("unexpected end of controller input");
+}
+
+inline void push_back_line(std::vector<std::string> line) {
+    pushed_back_data_line = std::move(line);
 }
 
 inline std::vector<std::string> read_labelled(std::string_view label, std::size_t value_count = 1) {
@@ -502,7 +525,22 @@ inline bool update(Controller& controller, Game& game_state) {
         auto const line = parse_util::read_data_line();
         if (line.size() != 1)
             throw std::runtime_error("missing sonar message value");
-        controller.sonar_messages.push_back(parse_util::parse_integer<std::uint32_t>(line.front()));
+        controller.sonar_messages.push_back(parse_util::parse_integer<std::uint64_t>(line.front()));
+    }
+
+    // Protocol 3: try to read ECHOES line
+    auto maybe_echoes = parse_util::read_data_line();
+    if (maybe_echoes.front() == "ECHOES" && maybe_echoes.size() == 6) {
+        controller.echoes.kelp = parse_util::parse_integer<int>(maybe_echoes[1]);
+        controller.echoes.ally = parse_util::parse_integer<int>(maybe_echoes[2]);
+        controller.echoes.ally_head = parse_util::parse_integer<int>(maybe_echoes[3]);
+        controller.echoes.enemy = parse_util::parse_integer<int>(maybe_echoes[4]);
+        controller.echoes.enemy_head = parse_util::parse_integer<int>(maybe_echoes[5]);
+        controller.has_echoes = true;
+    } else {
+        controller.has_echoes = false;
+        controller.echoes = SonarEchoes{};
+        parse_util::push_back_line(std::move(maybe_echoes));
     }
 
     std::vector<Tile> tiles;
@@ -607,7 +645,7 @@ inline bool update(Controller& controller, Game& game_state) {
 
 // Ends the turn and flushes, which is the one write a turn costs.
 inline void end_turn() {
-    std::cout << "ENDTURN" << std::endl;
+    std::cout << "PROTOCOL 3\nENDTURN" << std::endl;
 }
 
 } // end namespace unswbc

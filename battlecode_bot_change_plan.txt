@@ -1,0 +1,1050 @@
+BATTLECODE BOT — COMPLETE CHANGE PLAN
+====================================
+
+Source:
+- Current bot: main(2).cpp
+- Current reported rank: 345
+- Current reported Elo: 1435
+
+PURPOSE
+-------
+Upgrade the existing heuristic bot without rewriting it from scratch.
+
+Core recommendation:
+    Online World Model
+        -> Strategic State
+        -> Candidate Generation
+        -> Risk-Aware Beam Search
+        -> Tuned Evaluation Function
+        -> Move / Sprint / Split
+
+Do NOT replace the whole bot with a generic deep-RL policy.
+Use learning primarily OFFLINE to tune/evaluate candidate states.
+
+============================================================
+1. PRIORITY ORDER
+============================================================
+
+P0 — MUST DO
+------------
+1. Fix simulator correctness around tail collisions.
+2. Improve strategic distances: replace important Chebyshev uses with
+   actual known-map path distance.
+3. Replace depth-2 move lookahead with beam search.
+4. Make strategy depend on actual game state, not fixed round/map assumptions.
+5. Remove or reduce map-dimension-specific hard coding.
+
+P1 — HIGH VALUE
+---------------
+6. Add uncertainty-aware pathfinding for UNKNOWN edges.
+7. Improve pearl target selection using ETA + competition + survival.
+8. Improve leader election/team coordination through sonar.
+9. Make death-drop detection confidence-based.
+10. Make sacrifice decisions based on expected leader collection, not only distance.
+
+P2 — NICE TO HAVE
+-----------------
+11. Treat portals as strategic edges with portal value.
+12. Expand sonar into a compact team-state communication protocol.
+13. Add state-based phases: EXPAND / CONTEST / CONSOLIDATE /
+    RECOVER / ENDGAME.
+14. Offline tune scoring weights using self-play / evolutionary search.
+15. Optional offline value model for candidate-state evaluation.
+16. MCTS can be tested later, but is not the first implementation.
+
+============================================================
+2. P0 — FIX SIMULATOR CORRECTNESS
+============================================================
+
+Problem:
+--------
+The simulator uses can_step() and currently permits moving into the
+current tail cell under its own simulation assumptions.
+
+This can disagree with the actual engine's collision behavior.
+
+Impact:
+-------
+The simulator is used by:
+- reaches_tail()
+- depth-2 lookahead
+- mobility
+- pearl scoring
+- survival evaluation
+- area estimation
+
+A simulator error therefore propagates into many decisions.
+
+Change:
+-------
+Make the simulator match the real engine exactly.
+
+Do not assume:
+    "tail moves away, therefore entering the tail is safe."
+
+The simulation should model collision timing exactly as the engine does.
+
+Recommended work:
+------------------
+- Audit can_step()
+- Audit simulate_step()
+- Audit try_sprint_escape()
+- Audit all uses of body/back/tail occupancy
+- Add small deterministic unit tests for:
+    * moving into own tail
+    * moving into another body segment
+    * eating a pearl and growing
+    * sprinting through a sequence of cells
+    * portal movement during simulation
+
+Goal:
+-----
+Every simulated state should represent a state that could actually happen.
+
+============================================================
+3. P0 — REPLACE IMPORTANT CHEBYSHEV DISTANCES
+============================================================
+
+Current problem:
+----------------
+cheby(a,b) is used for strategically important relationships.
+
+But the world contains:
+- wrapping
+- kelp barriers
+- portals
+- unknown edges
+
+Therefore:
+    geometric distance != actual travel distance
+
+Examples:
+- A pearl can be geometrically close but unreachable/very far.
+- A portal can make a geometrically distant target very close.
+- An enemy can appear near you but be separated by kelp.
+
+Change:
+-------
+Keep Chebyshev as a cheap lower-bound heuristic.
+
+Add:
+    known_path_distance(start, target, maxDist)
+
+Implementation:
+----------------
+Use BFS on the currently known traversable graph.
+
+Suggested optimization:
+- Stop BFS once target is found.
+- Stop BFS once distance exceeds a cap.
+- Use a reusable queue and visit stamps.
+- Do not run a full-map BFS for every target every turn.
+
+Example conceptual API:
+
+    int path_distance(int start, int target, int maxDist);
+
+Use it selectively for:
+- important pearls
+- enemy heads
+- leader
+- high-value death drops
+- contested resources
+- portal evaluation
+
+Keep Chebyshev for:
+- cheap preliminary filtering
+- broad proximity checks
+- low-value fodder decisions
+
+============================================================
+4. P0 — REPLACE DEPTH-2 LOOKAHEAD WITH BEAM SEARCH
+============================================================
+
+Current design:
+---------------
+For each immediate move:
+- simulate one step
+- evaluate reachable area
+- evaluate reachability
+- simulate possible second moves
+- count mobility
+
+This is a good foundation but horizon 2 is short.
+
+Change:
+-------
+Implement receding-horizon beam search.
+
+Suggested starting parameters:
+    horizon = 5
+    beam_width = 24
+
+Then test:
+    horizon = 6
+    beam_width = 24 or 32
+
+Search structure:
+
+    depth 0: current state
+    depth 1: up to 4 states
+    depth 2: expand and keep best N
+    depth 3: expand and keep best N
+    ...
+    depth H: evaluate terminal states
+
+Do NOT keep every branch.
+
+At each depth:
+1. Expand legal actions.
+2. Simulate them.
+3. Reject impossible/dead states.
+4. Compute cheap incremental features.
+5. Keep only best beam_width states.
+
+Candidate actions:
+------------------
+- N
+- E
+- S
+- W
+- multi-step sprint candidates when legal
+
+Do not initially explode the action space with every possible sprint
+sequence. Add a small set of high-value sprint patterns.
+
+Recommended search targets:
+---------------------------
+Use deeper search for:
+- leader
+- length >= 6
+- pearl contests
+- dangerous locations
+- endgame
+- portal decisions
+- enemy proximity
+
+Use the current cheap heuristic for:
+- tiny fodder dragons
+- low-risk exploration
+- situations where all actions are nearly equivalent
+
+This gives most of the benefit at manageable CPU cost.
+
+============================================================
+5. P0 — CHANGE THE EVALUATION FUNCTION
+============================================================
+
+Current evaluation is heavily hand-tuned with many large constants.
+
+Examples include:
+- area bonuses
+- reach2 bonuses
+- pearl bonuses
+- threat penalties
+- death-drop bonuses
+- sonar bonuses
+
+Problem:
+--------
+The rules interact nonlinearly and manual constants are hard to tune.
+
+Change:
+-------
+Create an explicit feature-based evaluator.
+
+Recommended feature vector:
+
+    length
+    length_gap_to_enemy_leader
+    reachable_area
+    reachable_area / length
+    tail_reachable
+    number_of_safe_exits
+    second-step mobility
+    pearl_value
+    pearl_eta
+    enemy_eta_to_pearl
+    own_eta_to_pearl
+    enemy_distance
+    leader_distance
+    friendly_count_nearby
+    unknown_frontier_size
+    portal_value
+    threat_level
+    death_drop_value
+    round
+    phase
+    is_longest
+    role
+
+Start with a weighted linear evaluator.
+
+Concept:
+
+    score =
+        w_area      * area
+      + w_mobility  * mobility
+      + w_pearl     * pearl_value
+      + w_survival  * survival
+      + w_escape    * escape_options
+      + w_enemy     * enemy_control
+      + w_explore   * information_value
+      - w_threat    * threat
+      - w_deadend   * dead_end_risk
+      ...
+
+Keep the existing hand-coded logic as the source of features,
+but separate FEATURE COMPUTATION from SCORE WEIGHTS.
+
+============================================================
+6. P0 — STATE-BASED PHASES
+============================================================
+
+Current phase design:
+---------------------
+FLOOD
+CONSOLIDATE
+ENDGAME
+
+with mostly fixed round thresholds.
+
+Problem:
+--------
+Two games at the same round can have completely different strategic
+states.
+
+Example:
+- Game A: our leader = 22, enemy leader = 21
+- Game B: our leader = 11, enemy leader = 20
+
+Both being in the same phase is undesirable.
+
+Change:
+-------
+Keep:
+    round >= endgame threshold -> ENDGAME
+
+But introduce dynamic strategic state.
+
+Suggested states:
+-----------------
+EXPAND
+    We are still building size / territory.
+
+CONTEST
+    Our leader and enemy leader are close.
+
+CONSOLIDATE
+    We have a meaningful lead and should protect it.
+
+RECOVER
+    We are behind and need aggressive resource acquisition.
+
+ENDGAME
+    Late game; concentrate resources and execute feeding/sacrifice.
+
+State inputs:
+-------------
+- our leader length
+- estimated enemy leader length
+- number of units
+- round
+- known map area
+- pearl availability
+- enemy proximity
+- survival pressure
+
+============================================================
+7. P0 — REMOVE HARD DEPENDENCE ON MAP DIMENSIONS
+============================================================
+
+Current code has map-dimension-specific logic, including
+sacrifice_start_round() and special handling for certain maps.
+
+Problem:
+--------
+Unseen/random maps mean dimensions alone should not identify a map.
+
+Change:
+-------
+Prefer observed structural/game-state properties over dimension-based
+map identity.
+
+Replace:
+    if W == ... && H == ...
+
+with:
+    observed topology / density / structure
+    +
+    actual game state
+
+The existing isTrauma check is better than pure dimension matching
+because it inspects observed kelp structure. Keep the idea, but make
+the detector more general and robust.
+
+Do NOT rely on memorized map schedules.
+
+============================================================
+8. P1 — UNCERTAINTY-AWARE PATHFINDING
+============================================================
+
+The world model already distinguishes:
+
+    UNKNOWN
+    OPEN
+    KELP
+    PORTAL
+
+Use that information explicitly.
+
+Current optimistic flood-fill is useful.
+
+Add a route cost model:
+
+    known open edge    = 1.0
+    unknown edge       = 1.1 to 1.5
+    dangerous edge     = additional risk
+    portal             = special calculated cost
+    kelp               = blocked
+
+The exact unknown penalty should be tuned.
+
+Important:
+----------
+UNKNOWN should not simply mean "open".
+
+It should mean:
+    "possibly useful but uncertain."
+
+============================================================
+9. P1 — EXPLORATION / INFORMATION VALUE
+============================================================
+
+Because maps are not known in advance, exploration itself has value.
+
+Add:
+
+    information_value
+
+to candidate evaluation.
+
+Possible signals:
+-----------------
+- number of unknown edges revealed
+- number of new cells expected to become visible
+- whether exploration opens a connection between components
+- whether exploration reveals a route to pearls
+- whether exploration discovers portal structure
+- whether exploration improves escape options
+
+Example:
+
+    total_score =
+        movement_value
+      + information_value
+      - risk
+
+Do NOT let exploration dominate pearl collection or survival.
+
+============================================================
+10. P1 — IMPROVE PEARL TARGETING
+============================================================
+
+Current pearl_direction() uses attraction and distance.
+
+Improve it to use:
+
+    expected_value / expected_time
+
+Candidate pearl utility:
+
+    pearl_value
+    - travel_cost
+    - risk
+    - enemy_competition
+    + post-collection_escape
+    + future_pearl_opportunity
+
+Calculate:
+
+    own_eta_to_pearl
+    enemy_eta_to_pearl
+
+Then estimate contest probability.
+
+Example:
+--------
+Pearl A:
+    ETA = 4
+    enemy ETA = 2
+    poor escape area
+
+Pearl B:
+    ETA = 7
+    enemy ETA = 12
+    huge escape area
+
+Pearl B can be strategically better.
+
+Do not optimize only for nearest pearl.
+
+============================================================
+11. P1 — GLOBAL LEADER ELECTION
+============================================================
+
+Current role system:
+--------------------
+LEADER / FODDER
+
+Role is partly inferred locally from known lengths.
+
+Problem:
+--------
+Multiple dragons can have inconsistent estimates of who the leader is.
+
+Change:
+-------
+Create an explicit team leader state.
+
+Broadcast periodically through sonar:
+
+    leader_id
+    leader_length
+    leader_position
+    round
+    confidence
+
+Each dragon stores:
+
+    global_leader_id
+    global_leader_length
+    global_leader_cell
+    last_leader_update
+
+Use timeouts so stale messages expire.
+
+Then roles become:
+
+    LEADER
+    SUPPORT
+    EXPLORER / FODDER
+
+Even if you keep only two roles in code, internally maintain a global
+leader estimate.
+
+============================================================
+12. P1 — IMPROVE SONAR PROTOCOL
+============================================================
+
+Current sonar protocol is primarily used for enemy/target reports.
+
+Extend it to encode message type.
+
+Example 64-bit structure:
+
+    bits 0-5      x
+    bits 6-11     y
+    bits 12-13    facing
+    bits 14-15    message type
+    bits 16-19    length
+    bits 20-27    round modulo 256
+    remaining     confidence / auxiliary data / checksum
+
+Possible message types:
+
+    0 = enemy report
+    1 = leader update
+    2 = pearl target
+    3 = danger alert
+    4 = sacrifice opportunity
+    5 = portal discovery
+    6 = exploration frontier
+
+Do not make the protocol unnecessarily complicated.
+Reliability is more important than maximum packing efficiency.
+
+============================================================
+13. P1 — IMPROVE DEATH-DROP DETECTION
+============================================================
+
+Current g_deathDrops logic infers a drop from enemy observations and
+pearl presence.
+
+Problem:
+--------
+A previously seen enemy head disappearing does not prove that the
+dragon died exactly at that cell.
+
+This can create phantom death drops.
+
+Change:
+-------
+Store confidence with each death-drop hypothesis.
+
+Example:
+
+    confidence = 0.2
+        enemy disappeared / weak evidence
+
+    confidence = 0.6
+        disappearance + local evidence
+
+    confidence = 0.9
+        multiple observations strongly consistent with death
+
+Then:
+
+    death_drop_value *= confidence
+
+Only make aggressive decisions around high-confidence drops.
+
+Expire low-confidence hypotheses faster.
+
+============================================================
+14. P1 — SACRIFICE AS RESOURCE DELIVERY
+============================================================
+
+Current sacrifice idea:
+-----------------------
+A smaller dragon near the leader intentionally dies by colliding with
+its own body.
+
+Good concept, but improve its objective.
+
+Current objective:
+    die near leader
+
+Better objective:
+    die where the resulting pearl drop has a high probability of being
+    collected by the leader.
+
+For a candidate death location:
+
+    simulate approximate pearl-drop cells
+    estimate leader ETA to the drop
+    estimate enemy ETA to the drop
+    estimate safety of leader collecting it
+
+Then calculate:
+
+    sacrifice_value =
+        expected pearls collected by leader
+        - risk to leader
+        - opportunity cost
+
+A sacrifice should be executed only if:
+    sacrifice_value > normal movement value
+
+============================================================
+15. P1 — PORTAL VALUE
+============================================================
+
+Portals should be treated as strategic graph edges.
+
+For each known portal, estimate:
+
+    distance_saved
+    reachable_area_change
+    pearl_access_gain
+    enemy_interception_gain
+    risk / uncertainty
+
+Then:
+
+    portal_value =
+        movement_advantage
+      + resource_advantage
+      + tactical_advantage
+      - risk
+
+Do not hard-code portal desirability.
+
+Let the map structure determine it.
+
+============================================================
+16. P1 — SPRINT INSIDE THE SEARCH SPACE
+============================================================
+
+Current implementation has special-case sprint functions:
+- try_sprint_escape()
+- try_sprint_to_pearl()
+
+Keep them as emergency fallbacks.
+
+But also let the planner consider sprint candidates directly.
+
+Example action candidates:
+
+    N
+    E
+    S
+    W
+
+and selected 2-step combinations:
+
+    NN
+    NE
+    NW
+    EE
+    ES
+    ...
+
+A sprint candidate must simulate:
+- first-step collision
+- body movement after first step
+- second-step collision
+- pearl growth
+- portal traversal
+- updated escape area
+
+This allows beam search to discover multi-step tactics rather than
+relying only on special-case functions.
+
+============================================================
+17. P1 — ENEMY MODEL
+============================================================
+
+Current enemy tracking stores:
+- head cell
+- facing
+- visible length
+- last seen
+
+Expand this into a lightweight prediction model.
+
+For each enemy:
+
+    estimated_position
+    estimated_facing
+    length_estimate
+    last_seen
+    velocity hypothesis
+    reachable_cells / local move options
+    ETA to important targets
+
+Do not build a full enemy neural model.
+
+Use simple:
+    movement feasibility
+    shortest path
+    local branching
+
+For strategic decisions, estimate:
+
+    enemy_eta_to_target
+
+rather than just:
+    geometric distance
+
+============================================================
+18. P2 — OFFLINE WEIGHT OPTIMIZATION
+============================================================
+
+Do this BEFORE trying deep RL.
+
+Current bot contains many manually selected constants.
+
+Convert them into named weights.
+
+Then play large numbers of local games.
+
+Optimize weights using:
+- random search
+- evolutionary strategies
+- CMA-ES
+- Bayesian optimization
+
+Objective:
+-----------
+Maximize:
+- win rate
+- survival rate
+- longest-dragon length
+- final total length
+
+Do not optimize only one metric.
+
+Recommended evaluation:
+
+    primary = win / ranking
+    secondary = longest surviving length
+    tertiary = total team length
+
+Because the game first prioritizes the longest surviving dragon.
+
+============================================================
+19. P2 — OPTIONAL OFFLINE VALUE MODEL
+============================================================
+
+After the feature-based evaluator works, optionally train a lightweight
+value model.
+
+Do NOT train:
+
+    state -> direction
+
+Instead train:
+
+    state/candidate features -> expected outcome/value
+
+Input:
+------
+The same feature vector used by beam search.
+
+Target:
+-------
+Could be:
+- eventual final score
+- game outcome
+- future leader length
+- survival probability
+
+The trained model can replace or augment the hand-tuned weighted score.
+
+Keep inference extremely lightweight.
+
+Possible models:
+- linear regression
+- small decision tree
+- tiny gradient-boosted model
+- very small neural network
+
+For competition use, prefer a model that is easy to embed in C++.
+
+============================================================
+20. MCTS — OPTIONAL, NOT FIRST PRIORITY
+============================================================
+
+MCTS is interesting because the environment is dynamic and partially
+known.
+
+However, MCTS is more computationally expensive and harder to engineer
+correctly than beam search.
+
+Do NOT start here.
+
+Recommended order:
+
+    heuristic planner
+        ->
+    beam search
+        ->
+    tuned evaluator
+        ->
+    optional MCTS experiment
+
+If MCTS is tested, use it selectively:
+- leader
+- contested pearl
+- dangerous positions
+- endgame
+- portal choices
+
+============================================================
+21. RECOMMENDED CODE ORGANIZATION
+============================================================
+
+Refactor toward these conceptual modules:
+
+    WorldModel
+        map
+        unknown edges
+        portals
+        pearls
+        enemies
+        symmetry
+        exploration frontier
+
+    TeamState
+        leader
+        role
+        global enemy leader
+        strategic phase
+        sonar state
+
+    TargetPlanner
+        pearl targets
+        death drops
+        enemies
+        exploration
+        portals
+
+    MoveSimulator
+        exact engine-consistent transition model
+
+    PathPlanner
+        BFS
+        optional incremental replanning
+        risk-aware route cost
+
+    BeamSearch
+        candidate generation
+        rollout
+        pruning
+        terminal evaluation
+
+    Evaluator
+        feature extraction
+        weighted score / trained value
+
+    ActionManager
+        split
+        sprint
+        move
+        emergency handling
+
+Do not rewrite everything at once.
+Extract functionality gradually from the current code.
+
+============================================================
+22. RECOMMENDED PARAMETERS TO START WITH
+============================================================
+
+Beam search:
+    horizon = 5
+    beam_width = 24
+
+Escalate to:
+    horizon = 6
+    beam_width = 32
+
+Path BFS:
+    max_distance = 20 to 30 for expensive strategic queries
+
+Unknown-edge penalty:
+    start around 1.2
+    tune empirically
+
+State-specific search:
+    LEADER             -> deep search
+    length >= 6        -> deep search
+    danger             -> deep search
+    pearl contest      -> deep search
+    ENDGAME            -> deep search
+    tiny fodder        -> cheap heuristic
+
+These are STARTING values, not guaranteed optimal values.
+
+============================================================
+23. WHAT NOT TO DO
+============================================================
+
+Do NOT:
+-------
+1. Replace the entire bot with deep RL.
+2. Train a huge neural network.
+3. Replace all BFS with A* just because A* sounds more advanced.
+4. Use Chebyshev distance for every strategic decision.
+5. Hard-code individual maps.
+6. Memorize pearl schedules.
+7. Run expensive full-map searches for every dragon every turn.
+8. Make exploration more valuable than survival.
+9. Let multiple dragons blindly behave as independent leaders.
+10. Optimize only for number of pearls collected.
+
+============================================================
+24. IDEAL DECISION PIPELINE
+============================================================
+
+Every important dragon should conceptually execute:
+
+    STEP 1
+        Update visible world.
+
+    STEP 2
+        Merge sonar information.
+
+    STEP 3
+        Update enemy / leader estimates.
+
+    STEP 4
+        Update strategic phase.
+
+    STEP 5
+        Generate candidate targets:
+            pearl
+            enemy
+            death drop
+            leader
+            exploration
+            portal
+
+    STEP 6
+        Compute approximate ETA / risk.
+
+    STEP 7
+        Generate movement and sprint candidates.
+
+    STEP 8
+        Beam-search the next 5-6 moves.
+
+    STEP 9
+        Evaluate terminal states.
+
+    STEP 10
+        Execute highest-value action.
+
+This is a receding-horizon planner:
+    plan -> execute one action -> observe -> replan.
+
+============================================================
+25. EXPECTED IMPROVEMENT AREAS
+============================================================
+
+The most likely gains should come from:
+
+1. Fewer deaths caused by simulator/pathing mistakes.
+2. Better decisions around kelp barriers.
+3. Better portal usage.
+4. Better contested-pearl decisions.
+5. Better leader protection.
+6. Better resource concentration.
+7. Better sacrifice timing.
+8. Better exploration of unseen topology.
+9. Better endgame behavior.
+10. Fewer cases where the bot chooses a locally attractive but
+    strategically bad move.
+
+============================================================
+26. MINIMUM VIABLE UPGRADE
+============================================================
+
+If implementation time is extremely limited, do ONLY these:
+
+    A. Fix simulator correctness.
+    B. Add path-distance BFS.
+    C. Replace depth-2 lookahead with beam search H=5, width=24.
+    D. Add pearl ETA vs enemy ETA.
+    E. Add state-based ahead/tied/behind logic.
+    F. Reduce hard-coded map-specific behavior.
+
+This gives the highest-value architectural upgrade without requiring
+a complete rewrite.
+
+============================================================
+27. FINAL TARGET
+============================================================
+
+The bot should evolve from:
+
+    "score the next move"
+
+to:
+
+    "estimate which short sequence of actions leaves the team in the
+     strongest future state under an incompletely known map."
+
+The key principle is:
+
+    LOCAL REACTION
+        +
+    ONLINE WORLD MODEL
+        +
+    SHORT-HORIZON SEARCH
+        +
+    TEAM COORDINATION
+        +
+    OFFLINE LEARNING
+
+That is the direction to prioritize.
