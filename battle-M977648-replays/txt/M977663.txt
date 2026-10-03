@@ -1,0 +1,4530 @@
+replay: M977663.replay
+map: Trophy (25x25)   seed: 13729876207283536001   rounds: 94
+team A: Team A  botId=16043   <- probably us (our bot id is shown)
+team B: Team B  botId=(hidden)
+result: winner B by teamEliminated
+  teamA: dragons 0, longest 0, total length 0, queen length 0
+  teamB: dragons 43, longest 3, total length 108, queen length 0
+
+=== round 0 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+0 (0,22) pearl appears
+0 (24,22) pearl appears
+0 [B] dragon 0 asks to move S
+0 [B] dragon 0 moves S to (4,10)
+0 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+0 [A] dragon 1 asks to move W  (cpu 6781877)
+0 [A] dragon 1 moves W to (19,9)
+0 [B] dragon 2 asks to move E
+0 [B] dragon 2 moves E to (5,22)
+0 [A] dragon 3 indicator: exp nrm pearl L3
+0 [A] dragon 3 asks to move S  (cpu 6789004)
+0 [A] dragon 3 moves S to (20,23)
+=== round 1 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+1 (9,18) pearl appears
+1 (15,18) pearl appears
+1 [B] dragon 0 asks to move S
+1 [B] dragon 0 moves S to (4,11)
+1 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+1 [A] dragon 1 asks to move S  (cpu 6100100)
+1 [A] dragon 1 moves S to (19,10)
+1 [B] dragon 2 asks to move E
+1 [B] dragon 2 moves E to (6,22)
+1 [A] dragon 3 indicator: exp nrm pearl L3
+1 [A] dragon 3 asks to move S  (cpu 6478277)
+1 [A] dragon 3 moves S to (20,24)
+=== round 2 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+2 [B] dragon 0 asks to move S
+2 [B] dragon 0 moves S to (4,12)
+2 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+2 [A] dragon 1 asks to move S  (cpu 6103567)
+2 [A] dragon 1 moves S to (19,11)
+2 [B] dragon 2 asks to move E
+2 [B] dragon 2 moves E to (7,22)
+2 [A] dragon 3 indicator: exp nrm pearl L3
+2 [A] dragon 3 asks to move E  (cpu 6569855)
+2 [A] dragon 3 moves E to (21,24)
+=== round 3 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+3 [B] dragon 0 asks to move S
+3 [B] dragon 0 moves S to (4,13)
+3 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+3 [A] dragon 1 asks to move S  (cpu 6682365)
+3 [A] dragon 1 moves S to (19,12)
+3 [B] dragon 2 asks to move E
+3 [B] dragon 2 moves E to (8,22)
+3 [A] dragon 3 indicator: exp nrm pearl L3
+3 [A] dragon 3 asks to move E  (cpu 6545755)
+3 [A] dragon 3 moves E to (22,24)
+=== round 4 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+4 [B] dragon 0 asks to move S
+4 [B] dragon 0 moves S to (4,14)
+4 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+4 [A] dragon 1 asks to move S  (cpu 6672110)
+4 [A] dragon 1 moves S to (19,13)
+4 [B] dragon 2 asks to move E
+4 [B] dragon 2 moves E to (9,22)
+4 [A] dragon 3 indicator: exp nrm pearl L3 s0
+4 [A] dragon 3 asks to move E  (cpu 6730968)
+4 [A] dragon 3 moves E to (23,24)
+=== round 5 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+5 (8,6) pearl appears
+5 (16,6) pearl appears
+5 (12,18) pearl appears
+5 (10,24) pearl appears
+5 (14,24) pearl appears
+5 [B] dragon 0 asks to move E
+5 [B] dragon 0 moves E to (5,14)
+5 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+5 [A] dragon 1 asks to move S  (cpu 6676165)
+5 [A] dragon 1 moves S to (19,14)
+5 [B] dragon 2 asks to move S
+5 [B] dragon 2 moves S to (9,23)
+5 [A] dragon 3 indicator: exp nrm pearl L3 s0
+5 [A] dragon 3 asks to move E  (cpu 6706372)
+5 [A] dragon 3 moves E to (24,24)
+=== round 6 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+6 (15,23) pearl appears
+6 [B] dragon 0 asks to move S
+6 [B] dragon 0 moves S to (5,15)
+6 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+6 [A] dragon 1 asks to move S  (cpu 6686527)
+6 [A] dragon 1 moves S to (19,15)
+6 [B] dragon 2 asks to move E
+6 [B] dragon 2 moves E to (10,23)
+6 [A] dragon 3 indicator: exp nrm pearl L3 s0
+6 [A] dragon 3 asks to move N  (cpu 6712079)
+6 [A] dragon 3 moves N to (24,23)
+=== round 7 === A: 2 dragons, total length 6, queen 3 | B: 2 dragons, total length 6, queen 3
+7 (11,8) pearl appears
+7 (13,8) pearl appears
+7 (11,9) pearl appears
+7 (13,9) pearl appears
+7 [B] dragon 0 asks to move S
+7 [B] dragon 0 moves S to (5,16)
+7 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+7 [A] dragon 1 asks to move S  (cpu 6682939)
+7 [A] dragon 1 moves S to (19,16)
+7 [B] dragon 2 asks to move S
+7 (10,24) pearl taken
+7 [B] dragon 2 moves S to (10,24), eats a pearl
+7 [A] dragon 3 indicator: exp nrm pearl L3 s0
+7 [A] dragon 3 asks to move N  (cpu 6727072)
+7 (24,22) pearl taken
+7 [A] dragon 3 moves N to (24,22), eats a pearl
+=== round 8 === A: 2 dragons, total length 7, queen 3 | B: 2 dragons, total length 7, queen 3
+8 [B] dragon 0 asks to move S
+8 [B] dragon 0 moves S to (5,17)
+8 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+8 [A] dragon 1 asks to move W  (cpu 6685429)
+8 [A] dragon 1 moves W to (18,16)
+8 [B] dragon 2 asks to split off 2
+8 [B] dragon 2 splits off dragon 4, 2 cells (parent keeps 2)
+8 [A] dragon 3 indicator: exp nrm grow-fleet L4 s0
+8 [A] dragon 3 asks to split off 2  (cpu 5213498)
+8 [A] dragon 3 splits off dragon 5, 2 cells (parent keeps 2)
+8 [B] dragon 4 asks to move N
+8 [B] dragon 4 moves N to (9,21)
+8 [A] dragon 5 indicator: col nrm pearl L2 s0
+8 [A] dragon 5 asks to move S  (cpu 6869258)
+8 [A] dragon 5 moves S to (23,0)
+=== round 9 === A: 3 dragons, total length 7, queen 3 | B: 3 dragons, total length 7, queen 3
+9 (11,19) pearl appears
+9 (13,19) pearl appears
+9 [B] dragon 0 asks to move S
+9 [B] dragon 0 moves S to (5,18)
+9 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+9 [A] dragon 1 asks to move W  (cpu 6688886)
+9 [A] dragon 1 moves W to (17,16)
+9 [B] dragon 2 asks to move S
+9 [B] dragon 2 moves S to (10,0)
+9 [A] dragon 3 indicator: exp nrm pearl L2 s0
+9 [A] dragon 3 asks to move E  (cpu 6692504)
+9 (0,22) pearl taken
+9 [A] dragon 3 moves E to (0,22), eats a pearl
+9 [B] dragon 4 asks to move N
+9 [B] dragon 4 moves N to (9,20)
+9 [A] dragon 5 indicator: col nrm pearl L2 s0
+9 [A] dragon 5 asks to move W  (cpu 6747205)
+9 [A] dragon 5 moves W to (22,0)
+=== round 10 === A: 3 dragons, total length 8, queen 3 | B: 3 dragons, total length 7, queen 3
+10 [B] dragon 0 asks to move S
+10 [B] dragon 0 moves S to (5,19)
+10 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+10 [A] dragon 1 asks to move W  (cpu 6130991)
+10 [A] dragon 1 moves W to (16,16)
+10 [B] dragon 2 asks to move E
+10 [B] dragon 2 moves E to (11,0)
+10 [A] dragon 3 indicator: exp nrm pearl L3 s0
+10 [A] dragon 3 asks to move E  (cpu 6734293)
+10 [A] dragon 3 moves E to (1,22)
+10 [B] dragon 4 asks to move N
+10 [B] dragon 4 moves N to (9,19)
+10 [A] dragon 5 indicator: col nrm pearl L2 s0
+10 [A] dragon 5 asks to move N  (cpu 6575812)
+10 [A] dragon 5 moves N to (22,24)
+=== round 11 === A: 3 dragons, total length 8, queen 3 | B: 3 dragons, total length 7, queen 3
+11 (11,20) pearl appears
+11 (13,20) pearl appears
+11 [B] dragon 0 asks to move S
+11 [B] dragon 0 moves S to (5,20)
+11 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+11 [A] dragon 1 asks to move W  (cpu 6723595)
+11 [A] dragon 1 moves W to (15,16)
+11 [B] dragon 2 asks to move N
+11 [B] dragon 2 moves N to (11,24)
+11 [A] dragon 3 indicator: exp nrm pearl L3 s0
+11 [A] dragon 3 asks to move E  (cpu 6691798)
+11 [A] dragon 3 moves E to (2,22)
+11 [B] dragon 4 asks to move N
+11 (9,18) pearl taken
+11 [B] dragon 4 moves N to (9,18), eats a pearl
+11 [A] dragon 5 indicator: col nrm pearl L2 s0
+11 [A] dragon 5 asks to move E  (cpu 6708868)
+11 [A] dragon 5 moves E to (23,24)
+=== round 12 === A: 3 dragons, total length 8, queen 3 | B: 3 dragons, total length 8, queen 3
+12 [B] dragon 0 asks to move W
+12 [B] dragon 0 moves W to (4,20)
+12 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+12 [A] dragon 1 asks to move S  (cpu 6718094)
+12 [A] dragon 1 moves S to (15,17)
+12 [B] dragon 2 asks to move E
+12 [B] dragon 2 moves E to (12,24)
+12 [A] dragon 3 indicator: exp nrm hunt-queen L3 s0
+12 [A] dragon 3 asks to move E  (cpu 6799396)
+12 [A] dragon 3 moves E to (3,22)
+12 [B] dragon 4 asks to move N
+12 [B] dragon 4 moves N to (9,17)
+12 [A] dragon 5 indicator: col nrm pearl L2 s0
+12 [A] dragon 5 asks to move E  (cpu 6566434)
+12 [A] dragon 5 moves E to (24,24)
+=== round 13 === A: 3 dragons, total length 8, queen 3 | B: 3 dragons, total length 8, queen 3
+13 (10,8) pearl appears
+13 (14,8) pearl appears
+13 [B] dragon 0 asks to move S
+13 [B] dragon 0 moves S to (4,21)
+13 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+13 [A] dragon 1 asks to move S  (cpu 6766999)
+13 (15,18) pearl taken
+13 [A] dragon 1 moves S to (15,18), eats a pearl
+13 [B] dragon 2 asks to move E
+13 [B] dragon 2 moves E to (13,24)
+13 [A] dragon 3 indicator: exp nrm regicide L3 s0
+13 [A] dragon 3 asks to move NE  (cpu 5127440)
+13 [A] dragon 3 moves N to (3,21)
+13 [B] dragon 0 (QUEEN) dies: lost a head-to-head
+13 (4,21) pearl appears
+13 (5,20) pearl appears
+13 [A] dragon 3 dies: lost a head-to-head
+13 (3,21) pearl appears
+13 (2,22) pearl appears
+13 [B] dragon 4 asks to move E
+13 [B] dragon 4 moves E to (10,17)
+13 [A] dragon 5 indicator: col nrm pearl L2 s0
+13 [A] dragon 5 asks to move E  (cpu 6675076)
+13 [A] dragon 5 moves E to (0,24)
+=== round 14 === A: 2 dragons, total length 6, queen 4 | B: 2 dragons, total length 5, queen dead
+14 [A] dragon 1 indicator: QUEEN prt nrm queen-split L4
+14 [A] dragon 1 asks to split off 2  (cpu 5178105)
+14 [A] dragon 1 splits off dragon 6, 2 cells (parent keeps 2)
+14 [B] dragon 2 asks to move E
+14 (14,24) pearl taken
+14 [B] dragon 2 moves E to (14,24), eats a pearl
+14 [B] dragon 4 asks to move S
+14 [B] dragon 4 moves S to (10,18)
+14 [A] dragon 5 indicator: col nrm pearl L2 s0
+14 [A] dragon 5 asks to move E  (cpu 6573793)
+14 [A] dragon 5 moves E to (1,24)
+14 [A] dragon 6 indicator: cmb nrm pearl L2
+14 [A] dragon 6 asks to move E  (cpu 6819492)
+14 [A] dragon 6 moves E to (17,16)
+=== round 15 === A: 3 dragons, total length 6, queen 2 | B: 2 dragons, total length 6, queen dead
+15 (14,18) pearl appears
+15 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+15 [A] dragon 1 asks to move S  (cpu 6164957)
+15 [A] dragon 1 moves S to (15,19)
+15 [B] dragon 2 asks to move N
+15 [B] dragon 2 moves N to (14,23)
+15 [B] dragon 4 asks to move E
+15 [B] dragon 4 moves E to (11,18)
+15 [A] dragon 5 indicator: col nrm pearl L2 s0
+15 [A] dragon 5 asks to move E  (cpu 6528253)
+15 [A] dragon 5 moves E to (2,24)
+15 [A] dragon 6 indicator: cmb nrm pearl L2
+15 [A] dragon 6 asks to move S  (cpu 6145651)
+15 [A] dragon 6 moves S to (17,17)
+=== round 16 === A: 3 dragons, total length 6, queen 2 | B: 2 dragons, total length 6, queen dead
+16 (12,9) pearl appears
+16 (22,24) pearl appears
+16 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+16 [A] dragon 1 asks to move S  (cpu 6715350)
+16 [A] dragon 1 moves S to (15,20)
+16 [B] dragon 2 asks to move E
+16 (15,23) pearl taken
+16 [B] dragon 2 moves E to (15,23), eats a pearl
+16 [B] dragon 4 asks to move E
+16 (12,18) pearl taken
+16 [B] dragon 4 moves E to (12,18), eats a pearl
+16 [A] dragon 5 indicator: col nrm pearl L2 s0
+16 [A] dragon 5 asks to move N  (cpu 6391256)
+16 [A] dragon 5 moves N to (2,23)
+16 [A] dragon 6 indicator: cmb war pearl L2
+16 [A] dragon 6 asks to move W  (cpu 6687223)
+16 [A] dragon 6 moves W to (16,17)
+=== round 17 === A: 3 dragons, total length 6, queen 2 | B: 2 dragons, total length 8, queen dead
+17 (12,8) pearl appears
+17 (6,23) pearl appears
+17 (18,23) pearl appears
+17 [A] dragon 1 indicator: QUEEN prt war pearl L2
+17 [A] dragon 1 asks to move E  (cpu 6820905)
+17 [A] dragon 1 moves E to (16,20)
+17 [B] dragon 2 asks to split off 2
+17 [B] dragon 2 splits off dragon 7, 2 cells (parent keeps 2)
+17 [B] dragon 4 asks to split off 2
+17 [B] dragon 4 splits off dragon 8, 2 cells (parent keeps 2)
+17 [A] dragon 5 indicator: col nrm pearl L2 s0
+17 [A] dragon 5 asks to move N  (cpu 6530541)
+17 (2,22) pearl taken
+17 [A] dragon 5 moves N to (2,22), eats a pearl
+17 [A] dragon 6 indicator: cmb war pearl L2
+17 [A] dragon 6 asks to move W  (cpu 6676440)
+17 [A] dragon 6 moves W to (15,17)
+17 [B] dragon 7 asks to move W
+17 [B] dragon 7 moves W to (12,24)
+17 [B] dragon 8 asks to move W
+17 [B] dragon 8 moves W to (9,17)
+=== round 18 === A: 3 dragons, total length 7, queen 2 | B: 4 dragons, total length 8, queen dead
+18 [A] dragon 1 indicator: QUEEN prt war pearl L2
+18 [A] dragon 1 asks to move E  (cpu 6794791)
+18 [A] dragon 1 moves E to (17,20)
+18 [B] dragon 2 asks to move E
+18 [B] dragon 2 moves E to (16,23)
+18 [B] dragon 4 asks to move E
+18 [B] dragon 4 moves E to (13,18)
+18 [A] dragon 5 indicator: col nrm pearl L3 s0
+18 [A] dragon 5 asks to move N  (cpu 6722624)
+18 [A] dragon 5 moves N to (2,21)
+18 [A] dragon 6 indicator: cmb war pearl L2
+18 [A] dragon 6 asks to move W  (cpu 6746799)
+18 [A] dragon 6 moves W to (14,17)
+18 [B] dragon 7 asks to move W
+18 [B] dragon 7 moves W to (11,24)
+18 [B] dragon 8 asks to move W
+18 [B] dragon 8 moves W to (8,17)
+=== round 19 === A: 3 dragons, total length 7, queen 2 | B: 4 dragons, total length 8, queen dead
+19 (12,7) pearl appears
+19 (7,13) pearl appears
+19 (17,13) pearl appears
+19 [A] dragon 1 indicator: QUEEN prt war pearl L2
+19 [A] dragon 1 asks to move E  (cpu 6794700)
+19 [A] dragon 1 moves E to (18,20)
+19 [B] dragon 2 asks to move E
+19 [B] dragon 2 moves E to (17,23)
+19 [B] dragon 4 asks to move N
+19 [B] dragon 4 moves N to (13,17)
+19 [A] dragon 5 indicator: col nrm pearl L3 s0
+19 [A] dragon 5 asks to move E  (cpu 6713645)
+19 (3,21) pearl taken
+19 [A] dragon 5 moves E to (3,21), eats a pearl
+19 [A] dragon 6 indicator: cmb war attack L2
+19 [A] dragon 6 asks to move W  (cpu 5025352)
+19 [B] dragon 4 dies: lost a head-to-head
+19 (13,17) pearl appears
+19 [A] dragon 6 dies: lost a head-to-head
+19 (14,17) pearl appears
+19 [B] dragon 7 asks to move W
+19 [B] dragon 7 moves W to (10,24)
+19 [B] dragon 8 asks to move S
+19 [B] dragon 8 moves S to (8,18)
+=== round 20 === A: 2 dragons, total length 6, queen 2 | B: 3 dragons, total length 6, queen dead
+20 [A] dragon 1 indicator: QUEEN prt war pearl L2
+20 [A] dragon 1 asks to move E  (cpu 6736427)
+20 [A] dragon 1 moves E to (19,20)
+20 [B] dragon 2 asks to move E
+20 (18,23) pearl taken
+20 [B] dragon 2 moves E to (18,23), eats a pearl
+20 [A] dragon 5 indicator: col nrm grow-fleet L4 s0
+20 [A] dragon 5 asks to split off 2  (cpu 5174125)
+20 [A] dragon 5 splits off dragon 9, 2 cells (parent keeps 2)
+20 [B] dragon 7 asks to move W
+20 [B] dragon 7 moves W to (9,24)
+20 [B] dragon 8 asks to move S
+20 [B] dragon 8 moves S to (8,19)
+20 [A] dragon 9 indicator: cmb nrm pearl L2 s0
+20 [A] dragon 9 asks to move E  (cpu 6814442)
+20 [A] dragon 9 moves E to (3,23)
+=== round 21 === A: 3 dragons, total length 6, queen 2 | B: 3 dragons, total length 7, queen dead
+21 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+21 [A] dragon 1 asks to move N  (cpu 6752405)
+21 [A] dragon 1 moves N to (19,19)
+21 [B] dragon 2 asks to move E
+21 [B] dragon 2 moves E to (19,23)
+21 [A] dragon 5 indicator: col nrm pearl L2 s0
+21 [A] dragon 5 asks to move E  (cpu 6708817)
+21 (4,21) pearl taken
+21 [A] dragon 5 moves E to (4,21), eats a pearl
+21 [B] dragon 7 asks to move W
+21 [B] dragon 7 moves W to (8,24)
+21 [B] dragon 8 asks to move S
+21 [B] dragon 8 moves S to (8,20)
+21 [A] dragon 9 indicator: cmb war pearl L2 s0
+21 [A] dragon 9 asks to move E  (cpu 6700873)
+21 [A] dragon 9 moves E to (4,23)
+=== round 22 === A: 3 dragons, total length 7, queen 2 | B: 3 dragons, total length 7, queen dead
+22 [A] dragon 1 indicator: QUEEN prt war pearl L2
+22 [A] dragon 1 asks to move E  (cpu 6717077)
+22 [A] dragon 1 moves E to (20,19)
+22 [B] dragon 2 asks to move E
+22 [B] dragon 2 moves E to (20,23)
+22 [A] dragon 5 indicator: col nrm pearl L3 s0
+22 [A] dragon 5 asks to move E  (cpu 6730032)
+22 [A] dragon 5 moves E to (5,21)
+22 [B] dragon 7 asks to move W
+22 [B] dragon 7 moves W to (7,24)
+22 [B] dragon 8 asks to move E
+22 [B] dragon 8 moves E to (9,20)
+22 [A] dragon 9 indicator: cmb war pearl L2 s0
+22 [A] dragon 9 asks to move E  (cpu 6731893)
+22 [A] dragon 9 moves E to (5,23)
+=== round 23 === A: 3 dragons, total length 7, queen 2 | B: 3 dragons, total length 7, queen dead
+23 (6,12) pearl appears
+23 (18,12) pearl appears
+23 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+23 [A] dragon 1 asks to move N  (cpu 6719740)
+23 [A] dragon 1 moves N to (20,18)
+23 [B] dragon 2 asks to move E
+23 [B] dragon 2 moves E to (21,23)
+23 [A] dragon 5 indicator: col nrm pearl L3 s0
+23 [A] dragon 5 asks to move N  (cpu 6797941)
+23 (5,20) pearl taken
+23 [A] dragon 5 moves N to (5,20), eats a pearl
+23 [B] dragon 7 asks to move W
+23 [B] dragon 7 moves W to (6,24)
+23 [B] dragon 8 asks to move E
+23 [B] dragon 8 moves E to (10,20)
+23 [A] dragon 9 indicator: cmb war pearl L2 s0
+23 [A] dragon 9 asks to move E  (cpu 6772611)
+23 (6,23) pearl taken
+23 [A] dragon 9 moves E to (6,23), eats a pearl
+=== round 24 === A: 3 dragons, total length 9, queen 2 | B: 3 dragons, total length 7, queen dead
+24 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+24 [A] dragon 1 asks to move N  (cpu 6671580)
+24 [A] dragon 1 moves N to (20,17)
+24 [B] dragon 2 asks to move S
+24 [B] dragon 2 moves S to (21,24)
+24 [A] dragon 5 indicator: col nrm grow-fleet L4 s0
+24 [A] dragon 5 asks to split off 2  (cpu 5218175)
+24 [A] dragon 5 splits off dragon 10, 2 cells (parent keeps 2)
+24 [B] dragon 7 asks to move N
+24 [A] dragon 9 dies: lost a head-to-head
+24 (6,23) pearl appears
+24 (4,23) pearl appears
+24 [B] dragon 7 dies: lost a head-to-head
+24 (6,24) pearl appears
+24 [B] dragon 8 asks to move E
+24 (11,20) pearl taken
+24 [B] dragon 8 moves E to (11,20), eats a pearl
+24 [A] dragon 10 indicator: col nrm pearl L2
+24 [A] dragon 10 asks to move S  (cpu 6768807)
+24 [A] dragon 10 moves S to (3,22)
+=== round 25 === A: 3 dragons, total length 6, queen 2 | B: 2 dragons, total length 6, queen dead
+25 (11,10) pearl appears
+25 (13,10) pearl appears
+25 (11,18) pearl appears
+25 (13,18) pearl appears
+25 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+25 [A] dragon 1 asks to move N  (cpu 6704937)
+25 [A] dragon 1 moves N to (20,16)
+25 [B] dragon 2 asks to move E
+25 (22,24) pearl taken
+25 [B] dragon 2 moves E to (22,24), eats a pearl
+25 [A] dragon 5 indicator: col nrm pearl L2 s0
+25 [A] dragon 5 asks to move N  (cpu 6674450)
+25 [A] dragon 5 moves N to (5,19)
+25 [B] dragon 8 asks to move S
+25 [B] dragon 8 moves S to (11,21)
+25 [A] dragon 10 indicator: col nrm pearl L2
+25 [A] dragon 10 asks to move S  (cpu 6680658)
+25 [A] dragon 10 moves S to (3,23)
+=== round 26 === A: 3 dragons, total length 6, queen 2 | B: 2 dragons, total length 7, queen dead
+26 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+26 [A] dragon 1 asks to move W  (cpu 6689221)
+26 [A] dragon 1 moves W to (19,16)
+26 [B] dragon 2 asks to split off 2
+26 [B] dragon 2 splits off dragon 11, 2 cells (parent keeps 2)
+26 [A] dragon 5 indicator: col nrm pearl L2 s0
+26 [A] dragon 5 asks to move W  (cpu 6656304)
+26 [A] dragon 5 moves W to (4,19)
+26 [B] dragon 8 asks to move E
+26 [B] dragon 8 moves E to (12,21)
+26 [A] dragon 10 indicator: col nrm pearl L2
+26 [A] dragon 10 asks to move E  (cpu 6581383)
+26 (4,23) pearl taken
+26 [A] dragon 10 moves E to (4,23), eats a pearl
+26 [B] dragon 11 asks to move N
+26 [B] dragon 11 moves N to (20,22)
+=== round 27 === A: 3 dragons, total length 7, queen 2 | B: 3 dragons, total length 7, queen dead
+27 (6,9) pearl appears
+27 (18,9) pearl appears
+27 (12,18) pearl appears
+27 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+27 [A] dragon 1 asks to move N  (cpu 6709311)
+27 [A] dragon 1 moves N to (19,15)
+27 [B] dragon 2 asks to move E
+27 [B] dragon 2 moves E to (23,24)
+27 [A] dragon 5 indicator: col nrm pearl L2 s0
+27 [A] dragon 5 asks to move W  (cpu 6653955)
+27 [A] dragon 5 moves W to (3,19)
+27 [B] dragon 8 asks to move S
+27 [B] dragon 8 moves S to (12,6)
+27 [A] dragon 10 indicator: col nrm pearl L3
+27 [A] dragon 10 asks to move E  (cpu 6655693)
+27 [A] dragon 10 moves E to (5,23)
+27 [B] dragon 11 asks to move N
+27 [B] dragon 11 moves N to (20,21)
+=== round 28 === A: 3 dragons, total length 7, queen 2 | B: 3 dragons, total length 7, queen dead
+28 (8,7) pearl appears
+28 (16,7) pearl appears
+28 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+28 [A] dragon 1 asks to move N  (cpu 6667845)
+28 [A] dragon 1 moves N to (19,14)
+28 [B] dragon 2 asks to move E
+28 [B] dragon 2 moves E to (24,24)
+28 [A] dragon 5 indicator: col nrm pearl L2 s0
+28 [A] dragon 5 asks to move S  (cpu 6621329)
+28 [A] dragon 5 moves S to (3,20)
+28 [B] dragon 8 asks to move S
+28 (12,7) pearl taken
+28 [B] dragon 8 moves S to (12,7), eats a pearl
+28 [A] dragon 10 indicator: col nrm pearl L3
+28 [A] dragon 10 asks to move E  (cpu 6641484)
+28 (6,23) pearl taken
+28 [A] dragon 10 moves E to (6,23), eats a pearl
+28 [B] dragon 11 asks to move E
+28 [B] dragon 11 moves E to (21,21)
+=== round 29 === A: 3 dragons, total length 8, queen 2 | B: 3 dragons, total length 8, queen dead
+29 (3,21) pearl appears
+29 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+29 [A] dragon 1 asks to move N  (cpu 6666369)
+29 [A] dragon 1 moves N to (19,13)
+29 [B] dragon 2 asks to move S
+29 [B] dragon 2 moves S to (24,0)
+29 [A] dragon 5 indicator: col nrm pearl L2 s0
+29 [A] dragon 5 asks to move S  (cpu 6691047)
+29 (3,21) pearl taken
+29 [A] dragon 5 moves S to (3,21), eats a pearl
+29 [B] dragon 8 asks to split off 2
+29 [B] dragon 8 splits off dragon 12, 2 cells (parent keeps 2)
+29 [A] dragon 10 indicator: col nrm grow-fleet L4
+29 [A] dragon 10 asks to split off 2  (cpu 5174320)
+29 [A] dragon 10 splits off dragon 13, 2 cells (parent keeps 2)
+29 [B] dragon 11 asks to move S
+29 [B] dragon 11 moves S to (21,22)
+29 [B] dragon 12 asks to move S
+29 [B] dragon 12 moves S to (11,22)
+29 [A] dragon 13 indicator: col nrm pearl L2
+29 [A] dragon 13 asks to move S  (cpu 6810879)
+29 [A] dragon 13 moves S to (3,24)
+=== round 30 === A: 4 dragons, total length 9, queen 2 | B: 4 dragons, total length 8, queen dead
+30 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+30 [A] dragon 1 asks to move N  (cpu 6656372)
+30 [A] dragon 1 moves N to (19,12)
+30 [B] dragon 2 asks to move S
+30 [B] dragon 2 moves S to (24,1)
+30 [A] dragon 5 indicator: col nrm pearl L3 s0
+30 [A] dragon 5 asks to move W  (cpu 6741040)
+30 [A] dragon 5 moves W to (2,21)
+30 [B] dragon 8 asks to move S
+30 (12,8) pearl taken
+30 [B] dragon 8 moves S to (12,8), eats a pearl
+30 [A] dragon 10 indicator: col nrm pearl L2
+30 [A] dragon 10 asks to move S  (cpu 6403234)
+30 (6,24) pearl taken
+30 [A] dragon 10 moves S to (6,24), eats a pearl
+30 [B] dragon 11 asks to move E
+30 [B] dragon 11 moves E to (22,22)
+30 [B] dragon 12 asks to move S
+30 [B] dragon 12 moves S to (11,23)
+30 [A] dragon 13 indicator: col nrm explore L2
+30 [A] dragon 13 asks to move S  (cpu 6743409)
+30 [A] dragon 13 moves S to (3,0)
+=== round 31 === A: 4 dragons, total length 10, queen 2 | B: 4 dragons, total length 9, queen dead
+31 (9,0) pearl appears
+31 (15,0) pearl appears
+31 (7,9) pearl appears
+31 (17,9) pearl appears
+31 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+31 [A] dragon 1 asks to move W  (cpu 6631912)
+31 (18,12) pearl taken
+31 [A] dragon 1 moves W to (18,12), eats a pearl
+31 [B] dragon 2 asks to move S
+31 [B] dragon 2 moves S to (24,2)
+31 [A] dragon 5 indicator: col nrm pearl L3 s0
+31 [A] dragon 5 asks to move N  (cpu 6689178)
+31 [A] dragon 5 moves N to (2,20)
+31 [B] dragon 8 asks to move S
+31 (12,9) pearl taken
+31 [B] dragon 8 moves S to (12,9), eats a pearl
+31 [A] dragon 10 indicator: col nrm pearl L3
+31 [A] dragon 10 asks to move E  (cpu 6556361)
+31 [A] dragon 10 moves E to (7,24)
+31 [B] dragon 11 asks to move N
+31 [B] dragon 11 moves N to (22,21)
+31 [B] dragon 12 asks to move S
+31 [B] dragon 12 moves S to (11,24)
+31 [A] dragon 13 indicator: col nrm pearl L2
+31 [A] dragon 13 asks to move W  (cpu 6392665)
+31 [A] dragon 13 moves W to (2,0)
+=== round 32 === A: 4 dragons, total length 11, queen 3 | B: 4 dragons, total length 10, queen dead
+32 (4,6) pearl appears
+32 (20,6) pearl appears
+32 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+32 [A] dragon 1 asks to move S  (cpu 6118109)
+32 [A] dragon 1 moves S to (18,13)
+32 [B] dragon 2 asks to move S
+32 [B] dragon 2 moves S to (24,3)
+32 [A] dragon 5 indicator: col nrm pearl L3 s0
+32 [A] dragon 5 asks to move N  (cpu 6708544)
+32 [A] dragon 5 moves N to (2,19)
+32 [B] dragon 8 asks to split off 2
+32 [B] dragon 8 splits off dragon 14, 2 cells (parent keeps 2)
+32 [A] dragon 10 indicator: col nrm pearl L3
+32 [A] dragon 10 asks to move E  (cpu 6517715)
+32 [A] dragon 10 moves E to (8,24)
+32 [B] dragon 11 asks to move N
+32 [B] dragon 11 moves N to (22,20)
+32 [B] dragon 12 asks to move S
+32 [B] dragon 12 moves S to (11,0)
+32 [A] dragon 13 indicator: col nrm pearl L2 s0
+32 [A] dragon 13 asks to move N  (cpu 6732772)
+32 [A] dragon 13 moves N to (2,24)
+32 [B] dragon 14 asks to move N
+32 [B] dragon 14 moves N to (12,21)
+=== round 33 === A: 4 dragons, total length 11, queen 3 | B: 5 dragons, total length 10, queen dead
+33 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+33 [A] dragon 1 asks to move S  (cpu 6115394)
+33 [A] dragon 1 moves S to (18,14)
+33 [B] dragon 2 asks to move S
+33 [B] dragon 2 moves S to (24,4)
+33 [A] dragon 5 indicator: col nrm pearl L3 s0
+33 [A] dragon 5 asks to move N  (cpu 6699186)
+33 [A] dragon 5 moves N to (2,18)
+33 [B] dragon 8 asks to move E
+33 (13,9) pearl taken
+33 [B] dragon 8 moves E to (13,9), eats a pearl
+33 [A] dragon 10 indicator: col nrm pearl L3
+33 [A] dragon 10 asks to move E  (cpu 6689966)
+33 [A] dragon 10 moves E to (9,24)
+33 [B] dragon 11 asks to move N
+33 [B] dragon 11 moves N to (22,19)
+33 [B] dragon 12 asks to move W
+33 [B] dragon 12 moves W to (10,0)
+33 [A] dragon 13 indicator: col nrm pearl L2 s0
+33 [A] dragon 13 asks to move W  (cpu 6682680)
+33 [A] dragon 13 moves W to (1,24)
+33 [B] dragon 14 asks to move E
+33 [B] dragon 14 moves E to (13,21)
+=== round 34 === A: 4 dragons, total length 11, queen 3 | B: 5 dragons, total length 11, queen dead
+34 (22,18) pearl appears
+34 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+34 [A] dragon 1 asks to move S  (cpu 6127935)
+34 [A] dragon 1 moves S to (18,15)
+34 [B] dragon 2 asks to move S
+34 [B] dragon 2 moves S to (24,5)
+34 [A] dragon 5 indicator: col nrm pearl L3 s0
+34 [A] dragon 5 asks to move E  (cpu 6671358)
+34 [A] dragon 5 moves E to (3,18)
+34 [B] dragon 8 asks to move S
+34 (13,10) pearl taken
+34 [B] dragon 8 moves S to (13,10), eats a pearl
+34 [A] dragon 10 indicator: col nrm pearl L3 s0
+34 [A] dragon 10 asks to move N  (cpu 6824116)
+34 [A] dragon 10 moves N to (9,23)
+34 [B] dragon 11 asks to move N
+34 (22,18) pearl taken
+34 [B] dragon 11 moves N to (22,18), eats a pearl
+34 [B] dragon 12 asks to move W
+34 (9,0) pearl taken
+34 [B] dragon 12 moves W to (9,0), eats a pearl
+34 [A] dragon 13 indicator: col nrm pearl L2 s0
+34 [A] dragon 13 asks to move W  (cpu 6646447)
+34 [A] dragon 13 moves W to (0,24)
+34 [B] dragon 14 asks to move N
+34 (13,20) pearl taken
+34 [B] dragon 14 moves N to (13,20), eats a pearl
+=== round 35 === A: 4 dragons, total length 11, queen 3 | B: 5 dragons, total length 15, queen dead
+35 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+35 [A] dragon 1 asks to move S  (cpu 6143339)
+35 [A] dragon 1 moves S to (18,16)
+35 [B] dragon 2 asks to move S
+35 [B] dragon 2 moves S to (24,6)
+35 [A] dragon 5 indicator: col nrm pearl L3 s0
+35 [A] dragon 5 asks to move E  (cpu 6665607)
+35 [A] dragon 5 moves E to (4,18)
+35 [B] dragon 8 asks to split off 2
+35 [B] dragon 8 splits off dragon 15, 2 cells (parent keeps 2)
+35 [A] dragon 10 indicator: col nrm pearl L3 s0
+35 [A] dragon 10 asks to move N  (cpu 6832467)
+35 [A] dragon 10 moves N to (9,22)
+35 [B] dragon 11 asks to move W
+35 [B] dragon 11 moves W to (21,18)
+35 [B] dragon 12 asks to move W
+35 [B] dragon 12 moves W to (8,0)
+35 [A] dragon 13 indicator: col nrm pearl L2 s0
+35 [A] dragon 13 asks to move W  (cpu 6651202)
+35 [A] dragon 13 moves W to (24,24)
+35 [B] dragon 14 asks to move E
+35 [B] dragon 14 moves E to (14,20)
+35 [B] dragon 15 asks to move W
+35 (11,8) pearl taken
+35 [B] dragon 15 moves W to (11,8), eats a pearl
+=== round 36 === A: 4 dragons, total length 11, queen 3 | B: 6 dragons, total length 16, queen dead
+36 (6,19) pearl appears
+36 (18,19) pearl appears
+36 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+36 [A] dragon 1 asks to move W  (cpu 6751741)
+36 [A] dragon 1 moves W to (17,16)
+36 [B] dragon 2 asks to move S
+36 [B] dragon 2 moves S to (24,7)
+36 [A] dragon 5 indicator: col nrm pearl L3 s0
+36 [A] dragon 5 asks to move E  (cpu 6643709)
+36 [A] dragon 5 moves E to (5,18)
+36 [B] dragon 8 asks to move E
+36 [B] dragon 8 moves E to (14,10)
+36 [A] dragon 10 indicator: col nrm pearl L3 s0
+36 [A] dragon 10 asks to move N  (cpu 6773739)
+36 [A] dragon 10 moves N to (9,21)
+36 [B] dragon 11 asks to move W
+36 [B] dragon 11 moves W to (20,18)
+36 [B] dragon 12 asks to move S
+36 [B] dragon 12 moves S to (8,1)
+36 [A] dragon 13 indicator: col war pearl L2 s0
+36 [A] dragon 13 asks to move W  (cpu 6430132)
+36 [A] dragon 13 moves W to (23,24)
+36 [B] dragon 14 asks to move E
+36 [B] dragon 14 moves E to (15,20)
+36 [B] dragon 15 asks to move S
+36 (11,9) pearl taken
+36 [B] dragon 15 moves S to (11,9), eats a pearl
+=== round 37 === A: 4 dragons, total length 11, queen 3 | B: 6 dragons, total length 17, queen dead
+37 (0,8) pearl appears
+37 (24,8) pearl appears
+37 [A] dragon 1 indicator: QUEEN prt nrm pearl L3
+37 [A] dragon 1 asks to move W  (cpu 6181458)
+37 [A] dragon 1 moves W to (16,16)
+37 [B] dragon 2 asks to move S
+37 (24,8) pearl taken
+37 [B] dragon 2 moves S to (24,8), eats a pearl
+37 [A] dragon 5 indicator: col nrm pearl L3 s0
+37 [A] dragon 5 asks to move E  (cpu 6656134)
+37 [A] dragon 5 moves E to (6,18)
+37 [B] dragon 8 asks to move N
+37 [B] dragon 8 moves N to (14,9)
+37 [A] dragon 10 indicator: col war pearl L3 s0
+37 [A] dragon 10 asks to move N  (cpu 6702812)
+37 [A] dragon 10 moves N to (9,20)
+37 [B] dragon 11 asks to move W
+37 [B] dragon 11 moves W to (19,18)
+37 [B] dragon 12 asks to move S
+37 [B] dragon 12 moves S to (8,2)
+37 [A] dragon 13 indicator: col nrm pearl L2 s0
+37 [A] dragon 13 asks to move W  (cpu 6450280)
+37 [A] dragon 13 moves W to (22,24)
+37 [B] dragon 14 asks to move N
+37 [B] dragon 14 moves N to (15,19)
+37 [B] dragon 15 asks to split off 2
+37 [B] dragon 15 splits off dragon 16, 2 cells (parent keeps 2)
+37 [B] dragon 16 asks to move S
+37 [B] dragon 16 moves S to (12,10)
+=== round 38 === A: 4 dragons, total length 11, queen 3 | B: 7 dragons, total length 18, queen dead
+38 (6,13) pearl appears
+38 (18,13) pearl appears
+38 [A] dragon 1 indicator: QUEEN prt war pearl L3
+38 [A] dragon 1 asks to move N  (cpu 6786990)
+38 [A] dragon 1 moves N to (16,15)
+38 [B] dragon 2 asks to move E
+38 (0,8) pearl taken
+38 [B] dragon 2 moves E to (0,8), eats a pearl
+38 [A] dragon 5 indicator: col nrm pearl L3 s0
+38 [A] dragon 5 asks to move S  (cpu 6698404)
+38 (6,19) pearl taken
+38 [A] dragon 5 moves S to (6,19), eats a pearl
+38 [B] dragon 8 asks to move N
+38 (14,8) pearl taken
+38 [B] dragon 8 moves N to (14,8), eats a pearl
+38 [A] dragon 10 indicator: col war pearl L3 s0
+38 [A] dragon 10 asks to move E  (cpu 6722985)
+38 [A] dragon 10 moves E to (10,20)
+38 [B] dragon 11 asks to move W
+38 [B] dragon 11 moves W to (18,18)
+38 [B] dragon 12 asks to move S
+38 [B] dragon 12 moves S to (8,3)
+38 [A] dragon 13 indicator: col nrm pearl L2 s0
+38 [A] dragon 13 asks to move S  (cpu 6424323)
+38 [A] dragon 13 moves S to (22,0)
+38 [B] dragon 14 asks to move N
+38 [B] dragon 14 moves N to (15,18)
+38 [B] dragon 15 asks to move W
+38 [B] dragon 15 moves W to (10,9)
+38 [B] dragon 16 asks to move W
+38 (11,10) pearl taken
+38 [B] dragon 16 moves W to (11,10), eats a pearl
+=== round 39 === A: 4 dragons, total length 12, queen 3 | B: 7 dragons, total length 21, queen dead
+39 (16,3) pearl appears
+39 [A] dragon 1 indicator: QUEEN prt war pearl L3
+39 [A] dragon 1 asks to move N  (cpu 6228400)
+39 [A] dragon 1 moves N to (16,14)
+39 [B] dragon 2 asks to split off 2
+39 [B] dragon 2 splits off dragon 17, 2 cells (parent keeps 2)
+39 [A] dragon 5 indicator: col nrm grow-fleet L4 s0
+39 [A] dragon 5 asks to split off 2  (cpu 5183857)
+39 [A] dragon 5 splits off dragon 18, 2 cells (parent keeps 2)
+39 [B] dragon 8 asks to move N
+39 [B] dragon 8 moves N to (14,7)
+39 [A] dragon 10 indicator: col nrm pearl L3 s0
+39 [A] dragon 10 asks to move N  (cpu 6664294)
+39 [A] dragon 10 moves N to (10,19)
+39 [B] dragon 11 asks to move S
+39 (18,19) pearl taken
+39 [B] dragon 11 moves S to (18,19), eats a pearl
+39 [B] dragon 12 asks to move W
+39 [B] dragon 12 moves W to (7,3)
+39 [A] dragon 13 indicator: col nrm pearl L2 s0
+39 [A] dragon 13 asks to move E  (cpu 6428978)
+39 [A] dragon 13 moves E to (23,0)
+39 [B] dragon 14 asks to move N
+39 [B] dragon 14 moves N to (15,17)
+39 [B] dragon 15 asks to move N
+39 (10,8) pearl taken
+39 [B] dragon 15 moves N to (10,8), eats a pearl
+39 [B] dragon 16 asks to move S
+39 [B] dragon 16 moves S to (11,11)
+39 [B] dragon 17 asks to move N
+39 [B] dragon 17 moves N to (24,5)
+39 [A] dragon 18 indicator: col nrm explore L2
+39 [A] dragon 18 asks to move W  (cpu 6785343)
+39 [A] dragon 18 moves W to (3,18)
+=== round 40 === A: 5 dragons, total length 12, queen 3 | B: 8 dragons, total length 23, queen dead
+40 (11,8) pearl appears
+40 (7,14) pearl appears
+40 (17,14) pearl appears
+40 [A] dragon 1 indicator: QUEEN prt war pearl L3
+40 [A] dragon 1 asks to move N  (cpu 6734140)
+40 [A] dragon 1 moves N to (16,13)
+40 [B] dragon 2 asks to move S
+40 [B] dragon 2 moves S to (0,9)
+40 [A] dragon 5 indicator: col nrm pearl L2 s0
+40 [A] dragon 5 asks to move S  (cpu 6710285)
+40 [A] dragon 5 moves S to (6,20)
+40 [B] dragon 8 asks to move E
+40 [B] dragon 8 moves E to (15,7)
+40 [A] dragon 10 indicator: col nrm pearl L3 s0
+40 [A] dragon 10 asks to move W  (cpu 5575013)
+40 [A] dragon 10 moves W to (9,19)
+40 [B] dragon 11 asks to split off 2
+40 [B] dragon 11 splits off dragon 19, 2 cells (parent keeps 2)
+40 [B] dragon 12 asks to move N
+40 [B] dragon 12 moves N to (7,2)
+40 [A] dragon 13 indicator: col nrm pearl L2 s0
+40 [A] dragon 13 asks to move N  (cpu 6416278)
+40 [A] dragon 13 moves N to (23,24)
+40 [B] dragon 14 asks to move W
+40 (14,17) pearl taken
+40 [B] dragon 14 moves W to (14,17), eats a pearl
+40 [B] dragon 15 asks to move N
+40 [B] dragon 15 moves N to (10,7)
+40 [B] dragon 16 asks to move E
+40 [B] dragon 16 moves E to (12,11)
+40 [B] dragon 17 asks to move N
+40 [B] dragon 17 moves N to (24,4)
+40 [A] dragon 18 indicator: col nrm explore L2
+40 [A] dragon 18 asks to move W  (cpu 6616085)
+40 [A] dragon 18 moves W to (2,18)
+40 [B] dragon 19 asks to move E
+40 [B] dragon 19 moves E to (21,18)
+=== round 41 === A: 5 dragons, total length 12, queen 3 | B: 9 dragons, total length 24, queen dead
+41 (7,1) pearl appears
+41 (17,1) pearl appears
+41 (14,19) pearl appears
+41 [A] dragon 1 indicator: QUEEN prt war pearl L3
+41 [A] dragon 1 asks to move N  (cpu 6709946)
+41 [A] dragon 1 moves N to (16,12)
+41 [B] dragon 2 asks to move S
+41 [B] dragon 2 moves S to (0,10)
+41 [A] dragon 5 indicator: col nrm pearl L2 s0
+41 [A] dragon 5 asks to move S  (cpu 6697673)
+41 [A] dragon 5 moves S to (6,21)
+41 [B] dragon 8 asks to move E
+41 (16,7) pearl taken
+41 [B] dragon 8 moves E to (16,7), eats a pearl
+41 [A] dragon 10 indicator: col nrm pearl L3 s0
+41 [A] dragon 10 asks to move N  (cpu 6707041)
+41 [A] dragon 10 moves N to (9,18)
+41 [B] dragon 11 asks to move S
+41 [B] dragon 11 moves S to (18,20)
+41 [B] dragon 12 asks to move N
+41 (7,1) pearl taken
+41 [B] dragon 12 moves N to (7,1), eats a pearl
+41 [A] dragon 13 indicator: col nrm pearl L2 s0
+41 [A] dragon 13 asks to move W  (cpu 6420163)
+41 [A] dragon 13 moves W to (22,24)
+41 [B] dragon 14 asks to split off 2
+41 [B] dragon 14 splits off dragon 20, 2 cells (parent keeps 2)
+41 [B] dragon 15 asks to move W
+41 [B] dragon 15 moves W to (9,7)
+41 [B] dragon 16 asks to move N
+41 [B] dragon 16 moves N to (12,10)
+41 [B] dragon 17 asks to move N
+41 [B] dragon 17 moves N to (24,3)
+41 [A] dragon 18 indicator: col nrm pearl L2
+41 [A] dragon 18 asks to move S  (cpu 6623768)
+41 [A] dragon 18 moves S to (2,19)
+41 [B] dragon 19 asks to move E
+41 [B] dragon 19 moves E to (22,18)
+41 [B] dragon 20 asks to move W
+41 (14,19) pearl taken
+41 [B] dragon 20 moves W to (14,19), eats a pearl
+=== round 42 === A: 5 dragons, total length 12, queen 3 | B: 10 dragons, total length 27, queen dead
+42 (1,13) pearl appears
+42 (23,13) pearl appears
+42 (2,24) pearl appears
+42 [A] dragon 1 indicator: QUEEN prt war pearl L3
+42 [A] dragon 1 asks to move N  (cpu 6711678)
+42 [A] dragon 1 moves N to (16,11)
+42 [B] dragon 2 asks to move S
+42 [B] dragon 2 moves S to (0,11)
+42 [A] dragon 5 indicator: col nrm pearl L2 s0
+42 [A] dragon 5 asks to move S  (cpu 6702974)
+42 [A] dragon 5 moves S to (6,22)
+42 [B] dragon 8 asks to split off 2
+42 [B] dragon 8 splits off dragon 21, 2 cells (parent keeps 2)
+42 [A] dragon 10 indicator: col nrm pearl L3 s0
+42 [A] dragon 10 asks to move N  (cpu 6158764)
+42 [A] dragon 10 moves N to (9,17)
+42 [B] dragon 11 asks to move S
+42 [B] dragon 11 moves S to (18,21)
+42 [B] dragon 12 asks to split off 2
+42 [B] dragon 12 splits off dragon 22, 2 cells (parent keeps 2)
+42 [A] dragon 13 indicator: col nrm pearl L2 s0
+42 [A] dragon 13 asks to move S  (cpu 6440580)
+42 [A] dragon 13 moves S to (22,0)
+42 [B] dragon 14 asks to move W
+42 (13,17) pearl taken
+42 [B] dragon 14 moves W to (13,17), eats a pearl
+42 [B] dragon 15 asks to move W
+42 (8,7) pearl taken
+42 [B] dragon 15 moves W to (8,7), eats a pearl
+42 [B] dragon 16 asks to move W
+42 [B] dragon 16 moves W to (11,10)
+42 [B] dragon 17 asks to move N
+42 [B] dragon 17 moves N to (24,2)
+42 [A] dragon 18 indicator: col nrm pearl L2
+42 [A] dragon 18 asks to move E  (cpu 6504404)
+42 [A] dragon 18 moves E to (3,19)
+42 [B] dragon 19 asks to move E
+42 [B] dragon 19 moves E to (23,18)
+42 [B] dragon 20 asks to move S
+42 [B] dragon 20 moves S to (14,20)
+42 [B] dragon 21 asks to move S
+42 [B] dragon 21 moves S to (14,9)
+42 [B] dragon 22 asks to move E
+42 [B] dragon 22 moves E to (9,3)
+=== round 43 === A: 5 dragons, total length 12, queen 3 | B: 12 dragons, total length 29, queen dead
+43 (12,3) pearl appears
+43 [A] dragon 1 indicator: QUEEN prt war pearl L3
+43 [A] dragon 1 asks to move E  (cpu 6747859)
+43 [A] dragon 1 moves E to (17,11)
+43 [B] dragon 2 asks to move S
+43 [B] dragon 2 moves S to (0,12)
+43 [A] dragon 5 indicator: col nrm pearl L2 s0
+43 [A] dragon 5 asks to move S  (cpu 6710543)
+43 [A] dragon 5 moves S to (6,23)
+43 [B] dragon 8 asks to move E
+43 [B] dragon 8 moves E to (17,7)
+43 [A] dragon 10 indicator: col nrm pearl L3 s0
+43 [A] dragon 10 asks to move E  (cpu 6743273)
+43 [A] dragon 10 moves E to (10,17)
+43 [B] dragon 11 asks to move S
+43 [B] dragon 11 moves S to (18,22)
+43 [B] dragon 12 asks to move W
+43 [B] dragon 12 moves W to (6,1)
+43 [A] dragon 13 indicator: col nrm pearl L2 s0
+43 [A] dragon 13 asks to move E  (cpu 6585278)
+43 [A] dragon 13 moves E to (23,0)
+43 [B] dragon 14 asks to move W
+43 [B] dragon 14 moves W to (12,17)
+43 [B] dragon 15 asks to split off 2
+43 [B] dragon 15 splits off dragon 23, 2 cells (parent keeps 2)
+43 [B] dragon 16 asks to move S
+43 [B] dragon 16 moves S to (11,11)
+43 [B] dragon 17 asks to move N
+43 [B] dragon 17 moves N to (24,1)
+43 [A] dragon 18 indicator: col nrm explore L2
+43 [A] dragon 18 asks to move S  (cpu 6612905)
+43 [A] dragon 18 moves S to (3,20)
+43 [B] dragon 19 asks to move E
+43 [B] dragon 19 moves E to (24,18)
+43 [B] dragon 20 asks to move E
+43 [B] dragon 20 moves E to (15,20)
+43 [B] dragon 21 asks to move E
+43 [B] dragon 21 moves E to (15,9)
+43 [B] dragon 22 asks to move E
+43 [B] dragon 22 moves E to (10,3)
+43 [B] dragon 23 asks to move E
+43 (11,8) pearl taken
+43 [B] dragon 23 moves E to (11,8), eats a pearl
+=== round 44 === A: 5 dragons, total length 12, queen 3 | B: 13 dragons, total length 30, queen dead
+44 (10,19) pearl appears
+44 [A] dragon 1 indicator: QUEEN prt war pearl L3
+44 [A] dragon 1 asks to move S  (cpu 6207676)
+44 [A] dragon 1 moves S to (17,12)
+44 [B] dragon 2 asks to move S
+44 [B] dragon 2 moves S to (0,13)
+44 [A] dragon 5 indicator: col nrm pearl L2 s0
+44 [A] dragon 5 asks to move S  (cpu 6753297)
+44 [A] dragon 5 moves S to (6,24)
+44 [B] dragon 8 asks to move S
+44 [B] dragon 8 moves S to (17,8)
+44 [A] dragon 10 indicator: col war pearl L3 s0
+44 [A] dragon 10 asks to move S  (cpu 6775051)
+44 [A] dragon 10 moves S to (10,18)
+44 [B] dragon 11 asks to move S
+44 [B] dragon 11 moves S to (18,23)
+44 [B] dragon 12 asks to move N
+44 [B] dragon 12 moves N to (6,0)
+44 [A] dragon 13 indicator: col nrm pearl L2 s0
+44 [A] dragon 13 asks to move N  (cpu 6619767)
+44 [A] dragon 13 moves N to (23,24)
+44 [B] dragon 14 asks to move W
+44 [B] dragon 14 moves W to (11,17)
+44 [B] dragon 15 asks to move N
+44 (8,6) pearl taken
+44 [B] dragon 15 moves N to (8,6), eats a pearl
+44 [B] dragon 16 asks to move S
+44 [B] dragon 16 moves S to (11,12)
+44 [B] dragon 17 asks to move N
+44 [B] dragon 17 moves N to (24,0)
+44 [A] dragon 18 indicator: col nrm explore L2
+44 [A] dragon 18 asks to move W  (cpu 6381478)
+44 [A] dragon 18 moves W to (2,20)
+44 [B] dragon 19 asks to move E
+44 [B] dragon 19 moves E to (0,18)
+44 [B] dragon 20 asks to move N
+44 [B] dragon 20 moves N to (15,19)
+44 [B] dragon 21 asks to move S
+44 [B] dragon 21 moves S to (15,10)
+44 [B] dragon 22 asks to move E
+44 [B] dragon 22 moves E to (11,3)
+44 [B] dragon 23 asks to move S
+44 [B] dragon 23 moves S to (11,9)
+=== round 45 === A: 5 dragons, total length 12, queen 3 | B: 13 dragons, total length 31, queen dead
+45 [A] dragon 1 indicator: QUEEN prt war pearl L3
+45 [A] dragon 1 asks to move S  (cpu 6206655)
+45 (17,13) pearl taken
+45 [A] dragon 1 moves S to (17,13), eats a pearl
+45 [B] dragon 2 asks to move E
+45 (1,13) pearl taken
+45 [B] dragon 2 moves E to (1,13), eats a pearl
+45 [A] dragon 5 indicator: col nrm pearl L2 s0
+45 [A] dragon 5 asks to move W  (cpu 6207683)
+45 [A] dragon 5 moves W to (5,24)
+45 [B] dragon 8 asks to move W
+45 [B] dragon 8 moves W to (16,8)
+45 [A] dragon 10 indicator: col nrm pearl L3 s0
+45 [A] dragon 10 asks to move E  (cpu 5649427)
+45 (11,18) pearl taken
+45 [A] dragon 10 moves E to (11,18), eats a pearl
+45 [B] dragon 11 asks to move S
+45 [B] dragon 11 moves S to (18,24)
+45 [B] dragon 12 asks to move W
+45 [B] dragon 12 moves W to (5,0)
+45 [A] dragon 13 indicator: col nrm pearl L2 s0
+45 [A] dragon 13 asks to move N  (cpu 6770453)
+45 [A] dragon 13 moves N to (23,23)
+45 [B] dragon 14 asks to move S
+45 [A] dragon 10 dies: lost a head-to-head
+45 (11,18) pearl appears
+45 (10,17) pearl appears
+45 [B] dragon 14 dies: lost a head-to-head
+45 (11,17) pearl appears
+45 (13,17) pearl appears
+45 [B] dragon 15 asks to move W
+45 [B] dragon 15 moves W to (7,6)
+45 [B] dragon 16 asks to move E
+45 [B] dragon 16 moves E to (12,12)
+45 [B] dragon 17 asks to move N
+45 [B] dragon 17 moves N to (24,24)
+45 [A] dragon 18 indicator: col nrm pearl L2
+45 [A] dragon 18 asks to move N  (cpu 6623671)
+45 [A] dragon 18 moves N to (2,19)
+45 [B] dragon 19 asks to move S
+45 [B] dragon 19 moves S to (0,19)
+45 [B] dragon 20 asks to move N
+45 [B] dragon 20 moves N to (15,18)
+45 [B] dragon 21 asks to move S
+45 [B] dragon 21 moves S to (15,11)
+45 [B] dragon 22 asks to move E
+45 (12,3) pearl taken
+45 [B] dragon 22 moves E to (12,3), eats a pearl
+45 [B] dragon 23 asks to move E
+45 [B] dragon 23 moves E to (12,9)
+=== round 46 === A: 4 dragons, total length 10, queen 4 | B: 12 dragons, total length 30, queen dead
+46 [A] dragon 1 indicator: QUEEN prt war queen-split L4
+46 [A] dragon 1 asks to split off 2  (cpu 5262097)
+46 [A] dragon 1 splits off dragon 24, 2 cells (parent keeps 2)
+46 [B] dragon 2 asks to move S
+46 [B] dragon 2 moves S to (1,14)
+46 [A] dragon 5 indicator: col war pearl L2 s0
+46 [A] dragon 5 asks to move W  (cpu 6149300)
+46 [A] dragon 5 moves W to (4,24)
+46 [B] dragon 8 asks to move W
+46 [B] dragon 8 moves W to (15,8)
+46 [B] dragon 11 asks to move S
+46 [B] dragon 11 moves S to (18,0)
+46 [B] dragon 12 asks to move W
+46 [B] dragon 12 moves W to (4,0)
+46 [A] dragon 13 indicator: col war pearl L2 s0
+46 [A] dragon 13 asks to move N  (cpu 6715441)
+46 [A] dragon 13 moves N to (23,22)
+46 [B] dragon 15 asks to move S
+46 [B] dragon 15 moves S to (7,7)
+46 [B] dragon 16 asks to move E
+46 [B] dragon 16 moves E to (13,12)
+46 [B] dragon 17 asks to move E
+46 [B] dragon 17 moves E to (0,24)
+46 [A] dragon 18 indicator: col nrm pearl L2
+46 [A] dragon 18 asks to move E  (cpu 6651695)
+46 [A] dragon 18 moves E to (3,19)
+46 [B] dragon 19 asks to move S
+46 [B] dragon 19 moves S to (0,20)
+46 [B] dragon 20 asks to move N
+46 [B] dragon 20 moves N to (15,17)
+46 [B] dragon 21 asks to move E
+46 [A] dragon 24 dies: lost a head-to-head
+46 (16,11) pearl appears
+46 [B] dragon 21 dies: lost a head-to-head
+46 (15,11) pearl appears
+46 [B] dragon 22 asks to move E
+46 [B] dragon 22 moves E to (13,3)
+46 [B] dragon 23 asks to move N
+46 [B] dragon 23 moves N to (12,8)
+=== round 47 === A: 4 dragons, total length 8, queen 2 | B: 11 dragons, total length 28, queen dead
+47 [A] dragon 1 indicator: QUEEN prt nrm pearl L2
+47 [A] dragon 1 asks to move S  (cpu 6135728)
+47 (17,14) pearl taken
+47 [A] dragon 1 moves S to (17,14), eats a pearl
+47 [B] dragon 2 asks to move S
+47 [B] dragon 2 moves S to (1,15)
+47 [A] dragon 5 indicator: col war pearl L2 s0
+47 [A] dragon 5 asks to move W  (cpu 6137395)
+47 [A] dragon 5 moves W to (3,24)
+47 [B] dragon 8 asks to move S
+47 [B] dragon 8 moves S to (15,9)
+47 [B] dragon 11 asks to move W
+47 [B] dragon 11 moves W to (17,0)
+47 [B] dragon 12 asks to move W
+47 [B] dragon 12 moves W to (3,0)
+47 [A] dragon 13 indicator: col war pearl L2 s0
+47 [A] dragon 13 asks to move N  (cpu 6768840)
+47 [A] dragon 13 moves N to (23,21)
+47 [B] dragon 15 asks to move S
+47 [B] dragon 15 moves S to (7,8)
+47 [B] dragon 16 asks to move N
+47 [B] dragon 16 moves N to (13,11)
+47 [B] dragon 17 asks to move N
+47 [B] dragon 17 moves N to (0,23)
+47 [A] dragon 18 indicator: col nrm pearl L2
+47 [A] dragon 18 asks to move E  (cpu 6631924)
+47 [A] dragon 18 moves E to (4,19)
+47 [B] dragon 19 asks to move W
+47 [B] dragon 19 moves W to (24,20)
+47 [B] dragon 20 asks to move N
+47 [B] dragon 20 moves N to (15,16)
+47 [B] dragon 22 asks to move E
+47 [B] dragon 22 moves E to (14,3)
+47 [B] dragon 23 asks to move N
+47 [B] dragon 23 moves N to (12,7)
+=== round 48 === A: 4 dragons, total length 9, queen 3 | B: 11 dragons, total length 28, queen dead
+48 [A] dragon 1 indicator: QUEEN prt war pearl L3
+48 [A] dragon 1 asks to move W  (cpu 5659048)
+48 [A] dragon 1 moves W to (16,14)
+48 [B] dragon 2 asks to move S
+48 [B] dragon 2 moves S to (1,16)
+48 [A] dragon 5 indicator: col war pearl L2 s0
+48 [A] dragon 5 asks to move W  (cpu 6179501)
+48 (2,24) pearl taken
+48 [A] dragon 5 moves W to (2,24), eats a pearl
+48 [B] dragon 8 asks to move E
+48 [B] dragon 8 moves E to (16,9)
+48 [B] dragon 11 asks to move S
+48 (17,1) pearl taken
+48 [B] dragon 11 moves S to (17,1), eats a pearl
+48 [B] dragon 12 asks to move W
+48 [B] dragon 12 moves W to (2,0)
+48 [A] dragon 13 indicator: col war pearl L2 s0
+48 [A] dragon 13 asks to move W  (cpu 6780068)
+48 [A] dragon 13 moves W to (22,21)
+48 [B] dragon 15 asks to move S
+48 (7,9) pearl taken
+48 [B] dragon 15 moves S to (7,9), eats a pearl
+48 [B] dragon 16 asks to move E
+48 [B] dragon 16 moves E to (14,11)
+48 [B] dragon 17 asks to move W
+48 [B] dragon 17 moves W to (24,23)
+48 [A] dragon 18 indicator: col war pearl L2
+48 [A] dragon 18 asks to move E  (cpu 6591255)
+48 [A] dragon 18 moves E to (5,19)
+48 [B] dragon 19 asks to move W
+48 [B] dragon 19 moves W to (23,20)
+48 [B] dragon 20 asks to move E
+48 [B] dragon 20 moves E to (16,16)
+48 [B] dragon 22 asks to move E
+48 [B] dragon 22 moves E to (15,3)
+48 [B] dragon 23 asks to move E
+48 [B] dragon 23 moves E to (13,7)
+=== round 49 === A: 4 dragons, total length 10, queen 3 | B: 11 dragons, total length 30, queen dead
+49 (11,8) pearl appears
+49 (12,9) pearl appears
+49 (11,10) pearl appears
+49 (13,10) pearl appears
+49 [A] dragon 1 indicator: QUEEN prt war pearl L3
+49 [A] dragon 1 asks to move N  (cpu 6898296)
+49 [A] dragon 1 moves N to (16,13)
+49 [B] dragon 2 asks to move S
+49 [B] dragon 2 moves S to (1,17)
+49 [A] dragon 5 indicator: col war pearl L3 s0
+49 [A] dragon 5 asks to move N  (cpu 6187276)
+49 [A] dragon 5 moves N to (2,23)
+49 [B] dragon 8 asks to move E
+49 (17,9) pearl taken
+49 [B] dragon 8 moves E to (17,9), eats a pearl
+49 [B] dragon 11 asks to move W
+49 [B] dragon 11 moves W to (16,1)
+49 [B] dragon 12 asks to move W
+49 [B] dragon 12 moves W to (1,0)
+49 [A] dragon 13 indicator: col war pearl L2 s0
+49 [A] dragon 13 asks to move W  (cpu 6806875)
+49 [A] dragon 13 moves W to (21,21)
+49 [B] dragon 15 asks to split off 2
+49 [B] dragon 15 splits off dragon 25, 2 cells (parent keeps 2)
+49 [B] dragon 16 asks to move E
+49 (15,11) pearl taken
+49 [B] dragon 16 moves E to (15,11), eats a pearl
+49 [B] dragon 17 asks to move W
+49 [B] dragon 17 moves W to (23,23)
+49 [A] dragon 18 indicator: col war pearl L2
+49 [A] dragon 18 asks to move E  (cpu 6600005)
+49 [A] dragon 18 moves E to (6,19)
+49 [B] dragon 19 asks to move W
+49 [B] dragon 19 moves W to (22,20)
+49 [B] dragon 20 asks to move N
+49 [B] dragon 20 moves N to (16,15)
+49 [B] dragon 22 asks to move E
+49 (16,3) pearl taken
+49 [B] dragon 22 moves E to (16,3), eats a pearl
+49 [B] dragon 23 asks to move S
+49 (13,8) pearl taken
+49 [B] dragon 23 moves S to (13,8), eats a pearl
+49 [B] dragon 25 asks to move E
+49 [B] dragon 25 moves E to (8,6)
+=== round 50 === A: 4 dragons, total length 10, queen 3 | B: 12 dragons, total length 34, queen dead
+50 [A] dragon 1 indicator: QUEEN prt war pearl L3
+50 [A] dragon 1 asks to move E  (cpu 6929204)
+50 [A] dragon 1 moves E to (17,13)
+50 [B] dragon 2 asks to move S
+50 [B] dragon 2 moves S to (1,18)
+50 [A] dragon 5 indicator: col war pearl L3 s0
+50 [A] dragon 5 asks to move W  (cpu 6746929)
+50 [A] dragon 5 moves W to (1,23)
+50 [B] dragon 8 asks to move N
+50 [B] dragon 8 moves N to (17,8)
+50 [B] dragon 11 asks to move W
+50 [B] dragon 11 moves W to (15,1)
+50 [B] dragon 12 asks to move W
+50 [B] dragon 12 moves W to (0,0)
+50 [A] dragon 13 indicator: col war pearl L2 s0
+50 [A] dragon 13 asks to move W  (cpu 6822803)
+50 [A] dragon 13 moves W to (20,21)
+50 [B] dragon 15 asks to move E
+50 [B] dragon 15 moves E to (8,9)
+50 [B] dragon 16 asks to split off 2
+50 [B] dragon 16 splits off dragon 26, 2 cells (parent keeps 2)
+50 [B] dragon 17 asks to move W
+50 [B] dragon 17 moves W to (22,23)
+50 [A] dragon 18 indicator: col war explore L2
+50 [A] dragon 18 asks to move S  (cpu 6595760)
+50 [A] dragon 18 moves S to (6,20)
+50 [B] dragon 19 asks to move W
+50 [B] dragon 19 moves W to (21,20)
+50 [B] dragon 20 asks to move W
+50 [B] dragon 20 moves W to (15,15)
+50 [B] dragon 22 asks to split off 2
+50 [B] dragon 22 splits off dragon 27, 2 cells (parent keeps 2)
+50 [B] dragon 23 asks to split off 2
+50 [B] dragon 23 splits off dragon 28, 2 cells (parent keeps 2)
+50 [B] dragon 25 asks to move E
+50 [B] dragon 25 moves E to (9,6)
+50 [B] dragon 26 asks to move W
+50 [B] dragon 26 moves W to (12,12)
+50 [B] dragon 27 asks to move W
+50 [B] dragon 27 moves W to (12,3)
+50 [B] dragon 28 asks to move S
+50 (12,9) pearl taken
+50 [B] dragon 28 moves S to (12,9), eats a pearl
+=== round 51 === A: 4 dragons, total length 10, queen 3 | B: 15 dragons, total length 35, queen dead
+51 [A] dragon 1 indicator: QUEEN prt war pearl L3
+51 [A] dragon 1 asks to move N  (cpu 6220054)
+51 [A] dragon 1 moves N to (17,12)
+51 [B] dragon 2 asks to move S
+51 [B] dragon 2 moves S to (1,19)
+51 [A] dragon 5 indicator: col war pearl L3 s0
+51 [A] dragon 5 asks to move W  (cpu 6735912)
+51 [A] dragon 5 moves W to (0,23)
+51 [B] dragon 8 asks to move W
+51 [B] dragon 8 moves W to (16,8)
+51 [B] dragon 11 asks to move N
+51 (15,0) pearl taken
+51 [B] dragon 11 moves N to (15,0), eats a pearl
+51 [B] dragon 12 asks to move N
+51 [B] dragon 12 moves N to (0,24)
+51 [A] dragon 13 indicator: col war pearl L2 s0
+51 [A] dragon 13 asks to move W  (cpu 6827144)
+51 [A] dragon 13 moves W to (19,21)
+51 [B] dragon 15 asks to move E
+51 [B] dragon 15 moves E to (9,9)
+51 [B] dragon 16 asks to move E
+51 (16,11) pearl taken
+51 [B] dragon 16 moves E to (16,11), eats a pearl
+51 [B] dragon 17 asks to move W
+51 [B] dragon 17 moves W to (21,23)
+51 [A] dragon 18 indicator: col nrm explore L2
+51 [A] dragon 18 asks to move W  (cpu 6615297)
+51 [A] dragon 18 moves W to (5,20)
+51 [B] dragon 19 asks to move W
+51 [B] dragon 19 moves W to (20,20)
+51 [B] dragon 20 asks to move N
+51 [B] dragon 20 moves N to (15,14)
+51 [B] dragon 22 asks to move E
+51 [B] dragon 22 moves E to (17,3)
+51 [B] dragon 23 asks to move S
+51 [B] dragon 23 moves S to (13,9)
+51 [B] dragon 25 asks to move E
+51 [B] dragon 25 moves E to (10,6)
+51 [B] dragon 26 asks to move S
+51 [B] dragon 26 moves S to (12,13)
+51 [B] dragon 27 asks to move W
+51 [B] dragon 27 moves W to (11,3)
+51 [B] dragon 28 asks to move W
+51 [B] dragon 28 moves W to (11,9)
+=== round 52 === A: 4 dragons, total length 10, queen 3 | B: 15 dragons, total length 37, queen dead
+52 [A] dragon 1 indicator: QUEEN prt war pearl L3
+52 [A] dragon 1 asks to move N  (cpu 6354084)
+52 [A] dragon 1 moves N to (17,11)
+52 [B] dragon 2 asks to move E
+52 [B] dragon 2 moves E to (2,19)
+52 [A] dragon 5 indicator: col war pearl L3 s0
+52 [A] dragon 5 asks to move N  (cpu 6241416)
+52 [A] dragon 5 moves N to (0,22)
+52 [B] dragon 8 asks to move S
+52 [B] dragon 8 moves S to (16,9)
+52 [B] dragon 11 asks to split off 2
+52 [B] dragon 11 splits off dragon 29, 2 cells (parent keeps 2)
+52 [B] dragon 12 asks to move W
+52 [B] dragon 12 moves W to (24,24)
+52 [A] dragon 13 indicator: col war pearl L2 s0
+52 [A] dragon 13 asks to move W  (cpu 6828029)
+52 [A] dragon 13 moves W to (18,21)
+52 [B] dragon 15 asks to move S
+52 [B] dragon 15 moves S to (9,10)
+52 [B] dragon 16 asks to move E
+52 [A] dragon 1 (QUEEN) dies: lost a head-to-head
+52 (17,11) pearl appears
+52 (17,13) pearl appears
+52 [B] dragon 16 dies: lost a head-to-head
+52 (16,11) pearl appears
+52 (14,11) pearl appears
+52 [B] dragon 17 asks to move W
+52 [B] dragon 17 moves W to (20,23)
+52 [A] dragon 18 indicator: col war pearl L2
+52 [A] dragon 18 asks to move N  (cpu 6610688)
+52 [A] dragon 18 moves N to (5,19)
+52 [B] dragon 19 asks to move W
+52 [B] dragon 19 moves W to (19,20)
+52 [B] dragon 20 asks to move N
+52 [B] dragon 20 moves N to (15,13)
+52 [B] dragon 22 asks to move E
+52 [B] dragon 22 moves E to (18,3)
+52 [B] dragon 23 asks to move S
+52 (13,10) pearl taken
+52 [B] dragon 23 moves S to (13,10), eats a pearl
+52 [B] dragon 25 asks to move S
+52 [B] dragon 25 moves S to (10,7)
+52 [B] dragon 26 asks to move S
+52 [B] dragon 26 moves S to (12,14)
+52 [B] dragon 27 asks to move N
+52 [B] dragon 27 moves N to (11,2)
+52 [B] dragon 28 asks to move N
+52 (11,8) pearl taken
+52 [B] dragon 28 moves N to (11,8), eats a pearl
+52 [B] dragon 29 asks to move E
+52 [B] dragon 29 moves E to (18,1)
+=== round 53 === A: 3 dragons, total length 7, queen dead | B: 15 dragons, total length 36, queen dead
+53 (6,19) pearl appears
+53 (18,19) pearl appears
+53 [B] dragon 2 asks to move S
+53 [B] dragon 2 moves S to (2,20)
+53 [A] dragon 5 indicator: col war pearl L3 s0
+53 [A] dragon 5 asks to move N  (cpu 6832449)
+53 [A] dragon 5 moves N to (0,21)
+53 [B] dragon 8 asks to move S
+53 [B] dragon 8 moves S to (16,10)
+53 [B] dragon 11 asks to move N
+53 [B] dragon 11 moves N to (15,24)
+53 [B] dragon 12 asks to move W
+53 [B] dragon 12 moves W to (23,24)
+53 [A] dragon 13 indicator: col war pearl L2 s0
+53 [A] dragon 13 asks to move W  (cpu 6911439)
+53 [A] dragon 13 moves W to (17,21)
+53 [B] dragon 15 asks to move W
+53 [B] dragon 15 moves W to (8,10)
+53 [B] dragon 17 asks to move W
+53 [B] dragon 17 moves W to (19,23)
+53 [A] dragon 18 indicator: col war pearl L2
+53 [A] dragon 18 asks to move E  (cpu 6635886)
+53 (6,19) pearl taken
+53 [A] dragon 18 moves E to (6,19), eats a pearl
+53 [B] dragon 19 asks to move W
+53 [B] dragon 19 moves W to (18,20)
+53 [B] dragon 20 asks to move E
+53 [B] dragon 20 moves E to (16,13)
+53 [B] dragon 22 asks to move E
+53 [B] dragon 22 moves E to (19,3)
+53 [B] dragon 23 asks to move S
+53 [B] dragon 23 moves S to (13,11)
+53 [B] dragon 25 asks to move W
+53 [B] dragon 25 moves W to (9,7)
+53 [B] dragon 26 asks to move S
+53 [B] dragon 26 moves S to (12,15)
+53 [B] dragon 27 asks to move N
+53 [B] dragon 27 moves N to (11,1)
+53 [B] dragon 28 asks to split off 2
+53 [B] dragon 28 splits off dragon 30, 2 cells (parent keeps 2)
+53 [B] dragon 29 asks to move N
+53 [B] dragon 29 moves N to (18,0)
+53 [B] dragon 30 asks to move E
+53 [B] dragon 30 moves E to (13,8)
+=== round 54 === A: 3 dragons, total length 8, queen dead | B: 16 dragons, total length 36, queen dead
+54 (10,18) pearl appears
+54 [B] dragon 2 asks to move S
+54 [B] dragon 2 moves S to (2,21)
+54 [A] dragon 5 indicator: col war pearl L3 s0
+54 [A] dragon 5 asks to move N  (cpu 6845272)
+54 [A] dragon 5 moves N to (0,20)
+54 [B] dragon 8 asks to move S
+54 (16,11) pearl taken
+54 [B] dragon 8 moves S to (16,11), eats a pearl
+54 [B] dragon 11 asks to move N
+54 [B] dragon 11 moves N to (15,23)
+54 [B] dragon 12 asks to move W
+54 [B] dragon 12 moves W to (22,24)
+54 [A] dragon 13 indicator: col war pearl L2 s0
+54 [A] dragon 13 asks to move W  (cpu 6883085)
+54 [A] dragon 13 moves W to (16,21)
+54 [B] dragon 15 asks to move W
+54 [B] dragon 15 moves W to (7,10)
+54 [B] dragon 17 asks to move N
+54 [B] dragon 17 moves N to (19,22)
+54 [A] dragon 18 indicator: col nrm pearl L3
+54 [A] dragon 18 asks to move N  (cpu 6601796)
+54 [A] dragon 18 moves N to (6,18)
+54 [B] dragon 19 asks to move N
+54 (18,19) pearl taken
+54 [B] dragon 19 moves N to (18,19), eats a pearl
+54 [B] dragon 20 asks to move E
+54 (17,13) pearl taken
+54 [B] dragon 20 moves E to (17,13), eats a pearl
+54 [B] dragon 22 asks to move E
+54 [B] dragon 22 moves E to (20,3)
+54 [B] dragon 23 asks to move E
+54 (14,11) pearl taken
+54 [B] dragon 23 moves E to (14,11), eats a pearl
+54 [B] dragon 25 asks to move W
+54 [B] dragon 25 moves W to (8,7)
+54 [B] dragon 26 asks to move S
+54 [B] dragon 26 moves S to (12,16)
+54 [B] dragon 27 asks to move N
+54 [B] dragon 27 moves N to (11,0)
+54 [B] dragon 28 asks to move W
+54 [B] dragon 28 moves W to (10,8)
+54 [B] dragon 29 asks to move W
+54 [B] dragon 29 moves W to (17,0)
+54 [B] dragon 30 asks to move N
+54 [B] dragon 30 moves N to (13,7)
+=== round 55 === A: 3 dragons, total length 8, queen dead | B: 16 dragons, total length 40, queen dead
+55 (7,9) pearl appears
+55 (17,9) pearl appears
+55 [B] dragon 2 asks to move W
+55 [B] dragon 2 moves W to (1,21)
+55 [A] dragon 5 indicator: col war pearl L3 s0
+55 [A] dragon 5 asks to move N  (cpu 6840831)
+55 [A] dragon 5 moves N to (0,19)
+55 [B] dragon 8 asks to split off 2
+55 [B] dragon 8 splits off dragon 31, 2 cells (parent keeps 2)
+55 [B] dragon 11 asks to move N
+55 [B] dragon 11 moves N to (15,22)
+55 [B] dragon 12 asks to move N
+55 [B] dragon 12 moves N to (22,23)
+55 [A] dragon 13 indicator: col war pearl L2 s0
+55 [A] dragon 13 asks to move N  (cpu 6868707)
+55 [A] dragon 13 moves N to (16,20)
+55 [B] dragon 15 asks to move N
+55 (7,9) pearl taken
+55 [B] dragon 15 moves N to (7,9), eats a pearl
+55 [B] dragon 17 asks to move N
+55 [B] dragon 17 moves N to (19,21)
+55 [A] dragon 18 indicator: col nrm pearl L3
+55 [A] dragon 18 asks to move W  (cpu 6619185)
+55 [A] dragon 18 moves W to (5,18)
+55 [B] dragon 19 asks to move N
+55 [B] dragon 19 moves N to (18,18)
+55 [B] dragon 20 asks to split off 2
+55 [B] dragon 20 splits off dragon 32, 2 cells (parent keeps 2)
+55 [B] dragon 22 asks to move S
+55 [B] dragon 22 moves S to (20,4)
+55 [B] dragon 23 asks to split off 2
+55 [B] dragon 23 splits off dragon 33, 2 cells (parent keeps 2)
+55 [B] dragon 25 asks to move N
+55 [B] dragon 25 moves N to (8,6)
+55 [B] dragon 26 asks to move S
+55 [B] dragon 26 moves S to (12,17)
+55 [B] dragon 27 asks to move N
+55 [B] dragon 27 moves N to (11,24)
+55 [B] dragon 28 asks to move S
+55 [B] dragon 28 moves S to (10,9)
+55 [B] dragon 29 asks to move W
+55 [B] dragon 29 moves W to (16,0)
+55 [B] dragon 30 asks to move N
+55 [B] dragon 30 moves N to (13,6)
+55 [B] dragon 31 asks to move E
+55 [B] dragon 31 moves E to (17,8)
+55 [B] dragon 32 asks to move S
+55 [B] dragon 32 moves S to (15,15)
+55 [B] dragon 33 asks to move W
+55 [B] dragon 33 moves W to (12,9)
+=== round 56 === A: 3 dragons, total length 8, queen dead | B: 19 dragons, total length 41, queen dead
+56 [B] dragon 2 asks to move N
+56 [B] dragon 2 moves N to (1,20)
+56 [A] dragon 5 indicator: col war pearl L3 s0
+56 [A] dragon 5 asks to move N  (cpu 6806445)
+56 [A] dragon 5 moves N to (0,18)
+56 [B] dragon 8 asks to move E
+56 (17,11) pearl taken
+56 [B] dragon 8 moves E to (17,11), eats a pearl
+56 [B] dragon 11 asks to move W
+56 [B] dragon 11 moves W to (14,22)
+56 [B] dragon 12 asks to move N
+56 [B] dragon 12 moves N to (22,22)
+56 [A] dragon 13 indicator: col war pearl L2 s0
+56 [A] dragon 13 asks to move N  (cpu 6890403)
+56 [A] dragon 13 moves N to (16,19)
+56 [B] dragon 15 asks to move W
+56 (6,9) pearl taken
+56 [B] dragon 15 moves W to (6,9), eats a pearl
+56 [B] dragon 17 asks to move W
+56 [B] dragon 17 moves W to (18,21)
+56 [A] dragon 18 indicator: col nrm explore L3
+56 [A] dragon 18 asks to move W  (cpu 6662774)
+56 [A] dragon 18 moves W to (4,18)
+56 [B] dragon 19 asks to move N
+56 [B] dragon 19 moves N to (18,17)
+56 [B] dragon 20 asks to move S
+56 [B] dragon 20 moves S to (17,14)
+56 [B] dragon 22 asks to move S
+56 [B] dragon 22 moves S to (20,5)
+56 [B] dragon 23 asks to move S
+56 [B] dragon 23 moves S to (14,12)
+56 [B] dragon 25 asks to move E
+56 [B] dragon 25 moves E to (9,6)
+56 [B] dragon 26 asks to move S
+56 (12,18) pearl taken
+56 [B] dragon 26 moves S to (12,18), eats a pearl
+56 [B] dragon 27 asks to move N
+56 [B] dragon 27 moves N to (11,23)
+56 [B] dragon 28 asks to move S
+56 [B] dragon 28 moves S to (10,10)
+56 [B] dragon 29 asks to move W
+56 [B] dragon 29 moves W to (15,0)
+56 [B] dragon 30 asks to move E
+56 [B] dragon 30 moves E to (14,6)
+56 [B] dragon 31 asks to move S
+56 (17,9) pearl taken
+56 [B] dragon 31 moves S to (17,9), eats a pearl
+56 [B] dragon 32 asks to move S
+56 [B] dragon 32 moves S to (15,16)
+56 [B] dragon 33 asks to move N
+56 [B] dragon 33 moves N to (12,8)
+=== round 57 === A: 3 dragons, total length 8, queen dead | B: 19 dragons, total length 45, queen dead
+57 (11,22) pearl appears
+57 (13,22) pearl appears
+57 [B] dragon 2 asks to move N
+57 [B] dragon 2 moves N to (1,19)
+57 [A] dragon 5 indicator: col war pearl L3 s0
+57 [A] dragon 5 asks to move W  (cpu 6790273)
+57 [A] dragon 5 moves W to (24,18)
+57 [B] dragon 8 asks to move N
+57 [B] dragon 8 moves N to (17,10)
+57 [B] dragon 11 asks to move W
+57 (13,22) pearl taken
+57 [B] dragon 11 moves W to (13,22), eats a pearl
+57 [B] dragon 12 asks to move N
+57 [B] dragon 12 moves N to (22,21)
+57 [A] dragon 13 indicator: col war pearl L2 s0
+57 [A] dragon 13 asks to move N  (cpu 6882258)
+57 [A] dragon 13 moves N to (16,18)
+57 [B] dragon 15 asks to split off 2
+57 [B] dragon 15 splits off dragon 34, 2 cells (parent keeps 2)
+57 [B] dragon 17 asks to move W
+57 [B] dragon 17 moves W to (17,21)
+57 [A] dragon 18 indicator: col nrm explore L3
+57 [A] dragon 18 asks to move W  (cpu 6666146)
+57 [A] dragon 18 moves W to (3,18)
+57 [B] dragon 19 asks to move E
+57 [B] dragon 19 moves E to (19,17)
+57 [B] dragon 20 asks to move W
+57 [B] dragon 20 moves W to (16,14)
+57 [B] dragon 22 asks to move S
+57 (20,6) pearl taken
+57 [B] dragon 22 moves S to (20,6), eats a pearl
+57 [B] dragon 23 asks to move W
+57 [B] dragon 23 moves W to (13,12)
+57 [B] dragon 25 asks to move S
+57 [B] dragon 25 moves S to (9,7)
+57 [B] dragon 26 asks to move W
+57 (11,18) pearl taken
+57 [B] dragon 26 moves W to (11,18), eats a pearl
+57 [B] dragon 27 asks to move N
+57 (11,22) pearl taken
+57 [B] dragon 27 moves N to (11,22), eats a pearl
+57 [B] dragon 28 asks to move E
+57 (11,10) pearl taken
+57 [B] dragon 28 moves E to (11,10), eats a pearl
+57 [B] dragon 29 asks to move W
+57 [B] dragon 29 moves W to (14,0)
+57 [B] dragon 30 asks to move E
+57 [B] dragon 30 moves E to (15,6)
+57 [B] dragon 31 asks to move E
+57 (18,9) pearl taken
+57 [B] dragon 31 moves E to (18,9), eats a pearl
+57 [B] dragon 32 asks to move S
+57 [B] dragon 32 moves S to (15,17)
+57 [B] dragon 33 asks to move E
+57 [B] dragon 33 moves E to (13,8)
+57 [B] dragon 34 asks to move S
+57 [B] dragon 34 moves S to (8,11)
+=== round 58 === A: 3 dragons, total length 8, queen dead | B: 20 dragons, total length 51, queen dead
+58 [B] dragon 2 asks to move E
+58 [B] dragon 2 moves E to (2,19)
+58 [A] dragon 5 indicator: col war pearl L3 s0
+58 [A] dragon 5 asks to move W  (cpu 6820774)
+58 [A] dragon 5 moves W to (23,18)
+58 [B] dragon 8 asks to move W
+58 [B] dragon 8 moves W to (16,10)
+58 [B] dragon 11 asks to move N
+58 [B] dragon 11 moves N to (13,21)
+58 [B] dragon 12 asks to move N
+58 [B] dragon 12 moves N to (22,20)
+58 [A] dragon 13 indicator: col war pearl L2 s0
+58 [A] dragon 13 asks to move E  (cpu 6888300)
+58 [A] dragon 13 moves E to (17,18)
+58 [B] dragon 15 asks to move N
+58 [B] dragon 15 moves N to (6,8)
+58 [B] dragon 17 asks to move N
+58 [B] dragon 17 moves N to (17,20)
+58 [A] dragon 18 indicator: col nrm explore L3
+58 [A] dragon 18 asks to move N  (cpu 6720190)
+58 [A] dragon 18 moves N to (3,17)
+58 [B] dragon 19 asks to move N
+58 [B] dragon 19 moves N to (19,16)
+58 [B] dragon 20 asks to move N
+58 [B] dragon 20 moves N to (16,13)
+58 [B] dragon 22 asks to move W
+58 [B] dragon 22 moves W to (19,6)
+58 [B] dragon 23 asks to move W
+58 [B] dragon 23 moves W to (12,12)
+58 [B] dragon 25 asks to move E
+58 [B] dragon 25 moves E to (10,7)
+58 [B] dragon 26 asks to split off 2
+58 [B] dragon 26 splits off dragon 35, 2 cells (parent keeps 2)
+58 [B] dragon 27 asks to move W
+58 [B] dragon 27 moves W to (10,22)
+58 [B] dragon 28 asks to move N
+58 [B] dragon 28 moves N to (11,9)
+58 [B] dragon 29 asks to move W
+58 [B] dragon 29 moves W to (13,0)
+58 [B] dragon 30 asks to move E
+58 (16,6) pearl taken
+58 [B] dragon 30 moves E to (16,6), eats a pearl
+58 [B] dragon 31 asks to split off 2
+58 [B] dragon 31 splits off dragon 36, 2 cells (parent keeps 2)
+58 [B] dragon 32 asks to move W
+58 [B] dragon 32 moves W to (14,17)
+58 [B] dragon 33 asks to move N
+58 [B] dragon 33 moves N to (13,7)
+58 [B] dragon 34 asks to move S
+58 [B] dragon 34 moves S to (8,12)
+58 [B] dragon 35 asks to move W
+58 [B] dragon 35 moves W to (11,16)
+58 [B] dragon 36 asks to move W
+58 [B] dragon 36 moves W to (15,8)
+=== round 59 === A: 3 dragons, total length 8, queen dead | B: 22 dragons, total length 52, queen dead
+59 (8,14) pearl appears
+59 [B] dragon 2 asks to move E
+59 [B] dragon 2 moves E to (3,19)
+59 [A] dragon 5 indicator: col war pearl L3 s0
+59 [A] dragon 5 asks to move W  (cpu 6771411)
+59 [A] dragon 5 moves W to (22,18)
+59 [B] dragon 8 asks to move W
+59 [B] dragon 8 moves W to (15,10)
+59 [B] dragon 11 asks to move N
+59 [B] dragon 11 moves N to (13,20)
+59 [B] dragon 12 asks to move N
+59 [B] dragon 12 moves N to (22,19)
+59 [A] dragon 13 indicator: col war pearl L2 s0
+59 [A] dragon 13 asks to move N  (cpu 6893549)
+59 [A] dragon 13 moves N to (17,17)
+59 [B] dragon 15 asks to move E
+59 [B] dragon 15 moves E to (7,8)
+59 [B] dragon 17 asks to move W
+59 [B] dragon 17 moves W to (16,20)
+59 [A] dragon 18 indicator: col war explore L3
+59 [A] dragon 18 asks to move W  (cpu 6713914)
+59 [A] dragon 18 moves W to (2,17)
+59 [B] dragon 19 asks to move N
+59 [B] dragon 19 moves N to (19,15)
+59 [B] dragon 20 asks to move W
+59 [B] dragon 20 moves W to (15,13)
+59 [B] dragon 22 asks to move N
+59 [B] dragon 22 moves N to (19,5)
+59 [B] dragon 23 asks to move W
+59 [B] dragon 23 moves W to (11,12)
+59 [B] dragon 25 asks to move N
+59 [B] dragon 25 moves N to (10,6)
+59 [B] dragon 26 asks to move N
+59 (11,17) pearl taken
+59 [B] dragon 26 moves N to (11,17), eats a pearl
+59 [B] dragon 27 asks to move N
+59 [B] dragon 27 moves N to (10,21)
+59 [B] dragon 28 asks to move E
+59 [B] dragon 28 moves E to (12,9)
+59 [B] dragon 29 asks to move W
+59 [B] dragon 29 moves W to (12,0)
+59 [B] dragon 30 asks to move E
+59 [B] dragon 30 moves E to (17,6)
+59 [B] dragon 31 asks to move N
+59 [B] dragon 31 moves N to (18,8)
+59 [B] dragon 32 asks to move W
+59 (13,17) pearl taken
+59 [B] dragon 32 moves W to (13,17), eats a pearl
+59 [B] dragon 33 asks to move N
+59 [B] dragon 33 moves N to (13,6)
+59 [B] dragon 34 asks to move S
+59 [B] dragon 34 moves S to (8,13)
+59 [B] dragon 35 asks to move W
+59 [B] dragon 35 moves W to (10,16)
+59 [B] dragon 36 asks to move W
+59 [B] dragon 36 moves W to (14,8)
+=== round 60 === A: 3 dragons, total length 8, queen dead | B: 22 dragons, total length 54, queen dead
+60 (12,20) pearl appears
+60 [B] dragon 2 asks to move E
+60 [B] dragon 2 moves E to (4,19)
+60 [A] dragon 5 indicator: col war pearl L3 s0
+60 [A] dragon 5 asks to move W  (cpu 6269184)
+60 [A] dragon 5 moves W to (21,18)
+60 [B] dragon 8 asks to move S
+60 [B] dragon 8 moves S to (15,11)
+60 [B] dragon 11 asks to move E
+60 [B] dragon 11 moves E to (14,20)
+60 [B] dragon 12 asks to move W
+60 [B] dragon 12 moves W to (21,19)
+60 [A] dragon 13 indicator: col war pearl L2 s0
+60 [A] dragon 13 asks to move E  (cpu 6874124)
+60 [A] dragon 13 moves E to (18,17)
+60 [B] dragon 15 asks to move N
+60 [B] dragon 15 moves N to (7,7)
+60 [B] dragon 17 asks to move N
+60 [B] dragon 17 moves N to (16,19)
+60 [A] dragon 18 indicator: col war pearl L3
+60 [A] dragon 18 asks to move W  (cpu 6696171)
+60 [A] dragon 18 moves W to (1,17)
+60 [B] dragon 19 asks to move N
+60 [B] dragon 19 moves N to (19,14)
+60 [B] dragon 20 asks to move S
+60 [B] dragon 20 moves S to (15,14)
+60 [B] dragon 22 asks to move N
+60 [B] dragon 22 moves N to (19,4)
+60 [B] dragon 23 asks to move S
+60 [B] dragon 23 moves S to (11,13)
+60 [B] dragon 25 asks to move N
+60 [B] dragon 25 moves N to (10,5)
+60 [B] dragon 26 asks to move W
+60 (10,17) pearl taken
+60 [B] dragon 26 moves W to (10,17), eats a pearl
+60 [B] dragon 27 asks to move N
+60 [B] dragon 27 moves N to (10,20)
+60 [B] dragon 28 asks to move S
+60 [B] dragon 28 moves S to (12,10)
+60 [B] dragon 29 asks to move W
+60 [B] dragon 29 moves W to (11,0)
+60 [B] dragon 30 asks to move E
+60 [B] dragon 30 moves E to (18,6)
+60 [B] dragon 31 asks to move W
+60 [B] dragon 31 moves W to (17,8)
+60 [B] dragon 32 asks to move N
+60 [B] dragon 32 moves N to (13,16)
+60 [B] dragon 33 asks to move N
+60 [B] dragon 33 moves N to (13,5)
+60 [B] dragon 34 asks to move W
+60 (7,13) pearl taken
+60 [B] dragon 34 moves W to (7,13), eats a pearl
+60 [B] dragon 35 asks to move W
+60 [B] dragon 35 moves W to (9,16)
+60 [B] dragon 36 asks to move N
+60 [B] dragon 36 moves N to (14,7)
+=== round 61 === A: 3 dragons, total length 8, queen dead | B: 22 dragons, total length 56, queen dead
+61 (6,6) pearl appears
+61 [B] dragon 2 asks to move E
+61 [B] dragon 2 moves E to (5,19)
+61 [A] dragon 5 indicator: col war pearl L3 s0
+61 [A] dragon 5 asks to move W  (cpu 6292091)
+61 [A] dragon 5 moves W to (20,18)
+61 [B] dragon 8 asks to move E
+61 [B] dragon 8 moves E to (16,11)
+61 [B] dragon 11 asks to move S
+61 [B] dragon 11 moves S to (14,21)
+61 [B] dragon 12 asks to move W
+61 [B] dragon 12 moves W to (20,19)
+61 [A] dragon 13 indicator: col war pearl L2 s0
+61 [A] dragon 13 asks to move N  (cpu 6893030)
+61 [A] dragon 13 moves N to (18,16)
+61 [B] dragon 15 asks to move W
+61 [B] dragon 15 moves W to (6,7)
+61 [B] dragon 17 asks to move E
+61 [B] dragon 17 moves E to (17,19)
+61 [A] dragon 18 indicator: col war pearl L3
+61 [A] dragon 18 asks to move W  (cpu 6664748)
+61 [A] dragon 18 moves W to (0,17)
+61 [B] dragon 19 asks to move N
+61 [B] dragon 19 moves N to (19,13)
+61 [B] dragon 20 asks to move S
+61 [B] dragon 20 moves S to (15,15)
+61 [B] dragon 22 asks to move N
+61 [B] dragon 22 moves N to (19,3)
+61 [B] dragon 23 asks to move W
+61 [B] dragon 23 moves W to (10,13)
+61 [B] dragon 25 asks to move W
+61 [B] dragon 25 moves W to (9,5)
+61 [B] dragon 26 asks to split off 2
+61 [B] dragon 26 splits off dragon 37, 2 cells (parent keeps 2)
+61 [B] dragon 27 asks to move N
+61 (10,19) pearl taken
+61 [B] dragon 27 moves N to (10,19), eats a pearl
+61 [B] dragon 28 asks to move W
+61 [B] dragon 28 moves W to (11,10)
+61 [B] dragon 29 asks to move W
+61 [B] dragon 29 moves W to (10,0)
+61 [B] dragon 30 asks to move S
+61 [B] dragon 30 moves S to (18,7)
+61 [B] dragon 31 asks to move S
+61 [B] dragon 31 moves S to (17,9)
+61 [B] dragon 32 asks to move E
+61 [B] dragon 32 moves E to (14,16)
+61 [B] dragon 33 asks to move N
+61 [B] dragon 33 moves N to (13,4)
+61 [B] dragon 34 asks to move S
+61 (7,14) pearl taken
+61 [B] dragon 34 moves S to (7,14), eats a pearl
+61 [B] dragon 35 asks to move W
+61 [B] dragon 35 moves W to (8,16)
+61 [B] dragon 36 asks to move E
+61 [B] dragon 36 moves E to (15,7)
+61 [B] dragon 37 asks to move E
+61 (13,18) pearl taken
+61 [B] dragon 37 moves E to (13,18), eats a pearl
+=== round 62 === A: 3 dragons, total length 8, queen dead | B: 23 dragons, total length 59, queen dead
+62 [B] dragon 2 asks to move E
+62 [B] dragon 2 moves E to (6,19)
+62 [A] dragon 5 indicator: col war pearl L3 s0
+62 [A] dragon 5 asks to move N  (cpu 6305733)
+62 [A] dragon 5 moves N to (20,17)
+62 [B] dragon 8 asks to move S
+62 [B] dragon 8 moves S to (16,12)
+62 [B] dragon 11 asks to move S
+62 [B] dragon 11 moves S to (14,22)
+62 [B] dragon 12 asks to move W
+62 [B] dragon 12 moves W to (19,19)
+62 [A] dragon 13 indicator: col war pearl L2 s0
+62 [A] dragon 13 asks to move W  (cpu 6947863)
+62 [A] dragon 13 moves W to (17,16)
+62 [B] dragon 15 asks to move N
+62 (6,6) pearl taken
+62 [B] dragon 15 moves N to (6,6), eats a pearl
+62 [B] dragon 17 asks to move N
+62 [B] dragon 17 moves N to (17,18)
+62 [A] dragon 18 indicator: col nrm pearl L3
+62 [A] dragon 18 asks to move S  (cpu 6696648)
+62 [A] dragon 18 moves S to (0,18)
+62 [B] dragon 19 asks to move W
+62 (18,13) pearl taken
+62 [B] dragon 19 moves W to (18,13), eats a pearl
+62 [B] dragon 20 asks to move E
+62 [B] dragon 20 moves E to (16,15)
+62 [B] dragon 22 asks to move N
+62 [B] dragon 22 moves N to (19,2)
+62 [B] dragon 23 asks to move S
+62 [B] dragon 23 moves S to (10,14)
+62 [B] dragon 25 asks to move N
+62 [B] dragon 25 moves N to (9,4)
+62 [B] dragon 26 asks to move W
+62 [B] dragon 26 moves W to (9,17)
+62 [B] dragon 27 asks to split off 2
+62 [B] dragon 27 splits off dragon 38, 2 cells (parent keeps 2)
+62 [B] dragon 28 asks to move N
+62 [B] dragon 28 moves N to (11,9)
+62 [B] dragon 29 asks to move W
+62 [B] dragon 29 moves W to (9,0)
+62 [B] dragon 30 asks to move S
+62 [B] dragon 30 moves S to (18,8)
+62 [B] dragon 31 asks to move S
+62 [B] dragon 31 moves S to (17,10)
+62 [B] dragon 32 asks to move S
+62 [B] dragon 32 moves S to (14,17)
+62 [B] dragon 33 asks to move W
+62 [B] dragon 33 moves W to (12,4)
+62 [B] dragon 34 asks to split off 2
+62 [B] dragon 34 splits off dragon 39, 2 cells (parent keeps 2)
+62 [B] dragon 35 asks to move W
+62 [B] dragon 35 moves W to (7,16)
+62 [B] dragon 36 asks to move N
+62 [B] dragon 36 moves N to (15,6)
+62 [B] dragon 37 asks to move S
+62 (13,19) pearl taken
+62 [B] dragon 37 moves S to (13,19), eats a pearl
+62 [B] dragon 38 asks to move E
+62 [B] dragon 38 moves E to (11,22)
+62 [B] dragon 39 asks to move N
+62 [B] dragon 39 moves N to (8,11)
+=== round 63 === A: 3 dragons, total length 8, queen dead | B: 25 dragons, total length 62, queen dead
+63 (12,8) pearl appears
+63 (12,9) pearl appears
+63 [B] dragon 2 asks to move S
+63 [B] dragon 2 moves S to (6,20)
+63 [A] dragon 5 indicator: col war pearl L3 s0
+63 [A] dragon 5 asks to move E  (cpu 6921117)
+63 [A] dragon 5 moves E to (21,17)
+63 [B] dragon 8 asks to move W
+63 [B] dragon 8 moves W to (15,12)
+63 [B] dragon 11 asks to move S
+63 [B] dragon 11 moves S to (14,23)
+63 [B] dragon 12 asks to move S
+63 [B] dragon 12 moves S to (19,20)
+63 [A] dragon 13 indicator: col war pearl L2 s0
+63 [A] dragon 13 asks to move S  (cpu 6431387)
+63 [A] dragon 13 moves S to (17,17)
+63 [B] dragon 15 asks to move E
+63 [B] dragon 15 moves E to (7,6)
+63 [B] dragon 17 asks to move N
+63 [A] dragon 13 dies: lost a head-to-head
+63 (17,17) pearl appears
+63 [B] dragon 17 dies: lost a head-to-head
+63 (17,18) pearl appears
+63 [A] dragon 18 indicator: col nrm pearl L3
+63 [A] dragon 18 asks to move S  (cpu 6682188)
+63 [A] dragon 18 moves S to (0,19)
+63 [B] dragon 19 asks to split off 2
+63 [B] dragon 19 splits off dragon 40, 2 cells (parent keeps 2)
+63 [B] dragon 20 asks to move S
+63 [B] dragon 20 moves S to (16,16)
+63 [B] dragon 22 asks to move N
+63 [B] dragon 22 moves N to (19,1)
+63 [B] dragon 23 asks to move E
+63 [B] dragon 23 moves E to (11,14)
+63 [B] dragon 25 asks to move W
+63 [B] dragon 25 moves W to (8,4)
+63 [B] dragon 26 asks to move N
+63 [B] dragon 26 moves N to (9,16)
+63 [B] dragon 27 asks to move W
+63 [B] dragon 27 moves W to (9,19)
+63 [B] dragon 28 asks to move E
+63 (12,9) pearl taken
+63 [B] dragon 28 moves E to (12,9), eats a pearl
+63 [B] dragon 29 asks to move W
+63 [B] dragon 29 moves W to (8,0)
+63 [B] dragon 30 asks to move W
+63 [B] dragon 30 moves W to (17,8)
+63 [B] dragon 31 asks to move E
+63 [B] dragon 31 moves E to (18,10)
+63 [B] dragon 32 asks to move E
+63 [B] dragon 32 moves E to (15,17)
+63 [B] dragon 33 asks to move S
+63 [B] dragon 33 moves S to (12,5)
+63 [B] dragon 34 asks to move E
+63 (8,14) pearl taken
+63 [B] dragon 34 moves E to (8,14), eats a pearl
+63 [B] dragon 35 asks to move W
+63 [B] dragon 35 moves W to (6,16)
+63 [B] dragon 36 asks to move W
+63 [B] dragon 36 moves W to (14,6)
+63 [B] dragon 37 asks to split off 2
+63 [B] dragon 37 splits off dragon 41, 2 cells (parent keeps 2)
+63 [B] dragon 38 asks to move N
+63 [B] dragon 38 moves N to (11,21)
+63 [B] dragon 39 asks to move N
+63 [B] dragon 39 moves N to (8,10)
+63 [B] dragon 40 asks to move S
+63 [B] dragon 40 moves S to (19,16)
+63 [B] dragon 41 asks to move W
+63 (10,18) pearl taken
+63 [B] dragon 41 moves W to (10,18), eats a pearl
+=== round 64 === A: 2 dragons, total length 6, queen dead | B: 26 dragons, total length 63, queen dead
+64 (7,9) pearl appears
+64 (17,9) pearl appears
+64 (6,10) pearl appears
+64 [B] dragon 2 asks to move S
+64 [B] dragon 2 moves S to (6,21)
+64 [A] dragon 5 indicator: col war pearl L3 s0
+64 [A] dragon 5 asks to move S  (cpu 6839191)
+64 [A] dragon 5 moves S to (21,18)
+64 [B] dragon 8 asks to move W
+64 [B] dragon 8 moves W to (14,12)
+64 [B] dragon 11 asks to move E
+64 [B] dragon 11 moves E to (15,23)
+64 [B] dragon 12 asks to move W
+64 [B] dragon 12 moves W to (18,20)
+64 [B] dragon 15 asks to move S
+64 [B] dragon 15 moves S to (7,7)
+64 [A] dragon 18 indicator: col war pearl L3
+64 [A] dragon 18 asks to move E  (cpu 6674796)
+64 [A] dragon 18 moves E to (1,19)
+64 [B] dragon 19 asks to move S
+64 [B] dragon 19 moves S to (18,14)
+64 [B] dragon 20 asks to move S
+64 [B] dragon 20 moves S to (16,17)
+64 [B] dragon 22 asks to move N
+64 [B] dragon 22 moves N to (19,0)
+64 [B] dragon 23 asks to move E
+64 [B] dragon 23 moves E to (12,14)
+64 [B] dragon 25 asks to move S
+64 [B] dragon 25 moves S to (8,5)
+64 [B] dragon 26 asks to move E
+64 [B] dragon 26 moves E to (10,16)
+64 [B] dragon 27 asks to move W
+64 [B] dragon 27 moves W to (8,19)
+64 [B] dragon 28 asks to split off 2
+64 [B] dragon 28 splits off dragon 42, 2 cells (parent keeps 2)
+64 [B] dragon 29 asks to move W
+64 [B] dragon 29 moves W to (7,0)
+64 [B] dragon 30 asks to move S
+64 (17,9) pearl taken
+64 [B] dragon 30 moves S to (17,9), eats a pearl
+64 [B] dragon 31 asks to move N
+64 [B] dragon 31 moves N to (18,9)
+64 [B] dragon 32 asks to move N
+64 [B] dragon 32 moves N to (15,16)
+64 [B] dragon 33 asks to move S
+64 [B] dragon 33 moves S to (12,22)
+64 [B] dragon 34 asks to move N
+64 [B] dragon 34 moves N to (8,13)
+64 [B] dragon 35 asks to move W
+64 [B] dragon 35 moves W to (5,16)
+64 [B] dragon 36 asks to move S
+64 [B] dragon 36 moves S to (14,7)
+64 [B] dragon 37 asks to move W
+64 [B] dragon 37 moves W to (12,19)
+64 [B] dragon 38 asks to move W
+64 [B] dragon 38 moves W to (10,21)
+64 [B] dragon 39 asks to move W
+64 [B] dragon 39 moves W to (7,10)
+64 [B] dragon 40 asks to move S
+64 [B] dragon 40 moves S to (19,17)
+64 [B] dragon 41 asks to move N
+64 [B] dragon 41 moves N to (10,17)
+64 [B] dragon 42 asks to move S
+64 [B] dragon 42 moves S to (12,11)
+=== round 65 === A: 2 dragons, total length 6, queen dead | B: 27 dragons, total length 64, queen dead
+65 (10,8) pearl appears
+65 (14,8) pearl appears
+65 [B] dragon 2 asks to move S
+65 [B] dragon 2 moves S to (6,22)
+65 [A] dragon 5 indicator: col war pearl L3 s0
+65 [A] dragon 5 asks to move S  (cpu 6868051)
+65 [A] dragon 5 moves S to (21,19)
+65 [B] dragon 8 asks to move S
+65 [B] dragon 8 moves S to (14,13)
+65 [B] dragon 11 asks to move N
+65 [B] dragon 11 moves N to (15,22)
+65 [B] dragon 12 asks to move W
+65 [B] dragon 12 moves W to (17,20)
+65 [B] dragon 15 asks to move S
+65 [B] dragon 15 moves S to (7,8)
+65 [A] dragon 18 indicator: col nrm pearl L3
+65 [A] dragon 18 asks to move E  (cpu 6651817)
+65 [A] dragon 18 moves E to (2,19)
+65 [B] dragon 19 asks to move E
+65 [B] dragon 19 moves E to (19,14)
+65 [B] dragon 20 asks to move E
+65 (17,17) pearl taken
+65 [B] dragon 20 moves E to (17,17), eats a pearl
+65 [B] dragon 22 asks to move N
+65 [B] dragon 22 moves N to (19,24)
+65 [B] dragon 23 asks to move S
+65 [B] dragon 23 moves S to (12,15)
+65 [B] dragon 25 asks to move E
+65 [B] dragon 25 moves E to (9,5)
+65 [B] dragon 26 asks to move E
+65 [B] dragon 26 moves E to (11,16)
+65 [B] dragon 27 asks to move W
+65 [B] dragon 27 moves W to (7,19)
+65 [B] dragon 28 asks to move N
+65 (12,8) pearl taken
+65 [B] dragon 28 moves N to (12,8), eats a pearl
+65 [B] dragon 29 asks to move S
+65 [B] dragon 29 moves S to (7,1)
+65 [B] dragon 30 asks to split off 2
+65 [B] dragon 30 splits off dragon 43, 2 cells (parent keeps 2)
+65 [B] dragon 31 asks to move N
+65 [B] dragon 31 dies: hit another dragon
+65 (18,9) pearl appears
+65 [B] dragon 32 asks to move W
+65 [B] dragon 32 moves W to (14,16)
+65 [B] dragon 33 asks to move E
+65 [B] dragon 33 moves E to (13,22)
+65 [B] dragon 34 asks to move E
+65 [B] dragon 34 moves E to (9,13)
+65 [B] dragon 35 asks to move N
+65 [B] dragon 35 moves N to (5,15)
+65 [B] dragon 36 asks to move S
+65 (14,8) pearl taken
+65 [B] dragon 36 moves S to (14,8), eats a pearl
+65 [B] dragon 37 asks to move N
+65 [B] dragon 37 moves N to (12,18)
+65 [B] dragon 38 asks to move W
+65 [B] dragon 38 moves W to (9,21)
+65 [B] dragon 39 asks to move W
+65 (6,10) pearl taken
+65 [B] dragon 39 moves W to (6,10), eats a pearl
+65 [B] dragon 40 asks to move S
+65 [B] dragon 40 moves S to (19,18)
+65 [B] dragon 41 asks to move W
+65 [B] dragon 41 moves W to (9,17)
+65 [B] dragon 42 asks to move W
+65 [B] dragon 42 moves W to (11,11)
+65 [B] dragon 43 asks to move N
+65 [B] dragon 43 moves N to (18,6)
+=== round 66 === A: 2 dragons, total length 6, queen dead | B: 27 dragons, total length 66, queen dead
+66 (3,19) pearl appears
+66 [B] dragon 2 asks to move S
+66 [B] dragon 2 moves S to (6,23)
+66 [A] dragon 5 indicator: col war pearl L3 s0
+66 [A] dragon 5 asks to move S  (cpu 6828407)
+66 [A] dragon 5 moves S to (21,20)
+66 [B] dragon 8 asks to move E
+66 [B] dragon 8 moves E to (15,13)
+66 [B] dragon 11 asks to move N
+66 [B] dragon 11 moves N to (15,21)
+66 [B] dragon 12 asks to move W
+66 [B] dragon 12 moves W to (16,20)
+66 [B] dragon 15 asks to move E
+66 [B] dragon 15 moves E to (8,8)
+66 [A] dragon 18 indicator: col nrm pearl L3
+66 [A] dragon 18 asks to move E  (cpu 6638028)
+66 (3,19) pearl taken
+66 [A] dragon 18 moves E to (3,19), eats a pearl
+66 [B] dragon 19 asks to move N
+66 [B] dragon 19 moves N to (19,13)
+66 [B] dragon 20 asks to move S
+66 (17,18) pearl taken
+66 [B] dragon 20 moves S to (17,18), eats a pearl
+66 [B] dragon 22 asks to move N
+66 [B] dragon 22 moves N to (19,23)
+66 [B] dragon 23 asks to move E
+66 [B] dragon 23 moves E to (13,15)
+66 [B] dragon 25 asks to move E
+66 [B] dragon 25 moves E to (10,5)
+66 [B] dragon 26 asks to move N
+66 [B] dragon 26 moves N to (11,15)
+66 [B] dragon 27 asks to move W
+66 [B] dragon 27 moves W to (6,19)
+66 [B] dragon 28 asks to move W
+66 [B] dragon 28 moves W to (11,8)
+66 [B] dragon 29 asks to move S
+66 [B] dragon 29 moves S to (7,2)
+66 [B] dragon 30 asks to move S
+66 [B] dragon 30 moves S to (17,10)
+66 [B] dragon 32 asks to move S
+66 [B] dragon 32 moves S to (14,17)
+66 [B] dragon 33 asks to move N
+66 [B] dragon 33 moves N to (13,21)
+66 [B] dragon 34 asks to move S
+66 [B] dragon 34 moves S to (9,14)
+66 [B] dragon 35 asks to move E
+66 [B] dragon 35 moves E to (6,15)
+66 [B] dragon 36 asks to move E
+66 [B] dragon 36 moves E to (15,8)
+66 [B] dragon 37 asks to move W
+66 [B] dragon 37 moves W to (11,18)
+66 [B] dragon 38 asks to move S
+66 [B] dragon 38 moves S to (9,22)
+66 [B] dragon 39 asks to move N
+66 [B] dragon 39 moves N to (6,9)
+66 [B] dragon 40 asks to move S
+66 [B] dragon 40 moves S to (19,19)
+66 [B] dragon 41 asks to move W
+66 [B] dragon 41 moves W to (8,17)
+66 [B] dragon 42 asks to move W
+66 [B] dragon 42 moves W to (10,11)
+66 [B] dragon 43 asks to move W
+66 [B] dragon 43 moves W to (17,6)
+=== round 67 === A: 2 dragons, total length 7, queen dead | B: 27 dragons, total length 67, queen dead
+67 (6,11) pearl appears
+67 (18,11) pearl appears
+67 [B] dragon 2 asks to move S
+67 [B] dragon 2 moves S to (6,24)
+67 [A] dragon 5 indicator: col war pearl L3 s0
+67 [A] dragon 5 asks to move S  (cpu 6840183)
+67 [A] dragon 5 moves S to (21,21)
+67 [B] dragon 8 asks to move E
+67 [B] dragon 8 moves E to (16,13)
+67 [B] dragon 11 asks to move N
+67 [B] dragon 11 moves N to (15,20)
+67 [B] dragon 12 asks to move S
+67 [B] dragon 12 moves S to (16,21)
+67 [B] dragon 15 asks to move E
+67 [B] dragon 15 moves E to (9,8)
+67 [A] dragon 18 indicator: col nrm grow-fleet L4
+67 [A] dragon 18 asks to split off 2  (cpu 5147066)
+67 [A] dragon 18 splits off dragon 44, 2 cells (parent keeps 2)
+67 [B] dragon 19 asks to move N
+67 [B] dragon 19 moves N to (19,12)
+67 [B] dragon 20 asks to split off 2
+67 [B] dragon 20 splits off dragon 45, 2 cells (parent keeps 2)
+67 [B] dragon 22 asks to move E
+67 [B] dragon 22 moves E to (20,23)
+67 [B] dragon 23 asks to move N
+67 [B] dragon 23 moves N to (13,14)
+67 [B] dragon 25 asks to move E
+67 [B] dragon 25 moves E to (11,5)
+67 [B] dragon 26 asks to move W
+67 [B] dragon 26 moves W to (10,15)
+67 [B] dragon 27 asks to move S
+67 [B] dragon 27 moves S to (6,20)
+67 [B] dragon 28 asks to move S
+67 [B] dragon 28 moves S to (11,9)
+67 [B] dragon 29 asks to move S
+67 [B] dragon 29 moves S to (7,3)
+67 [B] dragon 30 asks to move E
+67 [B] dragon 30 moves E to (18,10)
+67 [B] dragon 32 asks to move S
+67 (14,18) pearl taken
+67 [B] dragon 32 moves S to (14,18), eats a pearl
+67 [B] dragon 33 asks to move W
+67 [B] dragon 33 moves W to (12,21)
+67 [B] dragon 34 asks to move W
+67 [B] dragon 34 moves W to (8,14)
+67 [B] dragon 35 asks to move N
+67 [B] dragon 35 moves N to (6,14)
+67 [B] dragon 36 asks to move S
+67 [B] dragon 36 moves S to (15,9)
+67 [B] dragon 37 asks to move S
+67 (11,19) pearl taken
+67 [B] dragon 37 moves S to (11,19), eats a pearl
+67 [B] dragon 38 asks to move S
+67 [B] dragon 38 moves S to (9,23)
+67 [B] dragon 39 asks to move E
+67 (7,9) pearl taken
+67 [B] dragon 39 moves E to (7,9), eats a pearl
+67 [B] dragon 40 asks to move S
+67 [B] dragon 40 moves S to (19,20)
+67 [B] dragon 41 asks to move W
+67 [B] dragon 41 moves W to (7,17)
+67 [B] dragon 42 asks to move S
+67 [B] dragon 42 moves S to (10,12)
+67 [B] dragon 43 asks to move W
+67 [B] dragon 43 moves W to (16,6)
+67 [A] dragon 44 indicator: cmb war pearl L2
+67 [A] dragon 44 asks to move S  (cpu 6797921)
+67 [A] dragon 44 moves S to (0,20)
+67 [B] dragon 45 asks to move E
+67 [B] dragon 45 moves E to (17,16)
+=== round 68 === A: 3 dragons, total length 7, queen dead | B: 28 dragons, total length 70, queen dead
+68 (7,14) pearl appears
+68 (17,14) pearl appears
+68 (10,16) pearl appears
+68 [B] dragon 2 asks to move S
+68 [B] dragon 2 moves S to (6,0)
+68 [A] dragon 5 indicator: col war pearl L3 s0
+68 [A] dragon 5 asks to move S  (cpu 6868152)
+68 [A] dragon 5 moves S to (21,22)
+68 [B] dragon 8 asks to move E
+68 [B] dragon 8 moves E to (17,13)
+68 [B] dragon 11 asks to move N
+68 [B] dragon 11 moves N to (15,19)
+68 [B] dragon 12 asks to move S
+68 [B] dragon 12 moves S to (16,22)
+68 [B] dragon 15 asks to move E
+68 (10,8) pearl taken
+68 [B] dragon 15 moves E to (10,8), eats a pearl
+68 [A] dragon 18 indicator: col nrm pearl L2
+68 [A] dragon 18 asks to move N  (cpu 6662149)
+68 [A] dragon 18 moves N to (3,18)
+68 [B] dragon 19 asks to move E
+68 [B] dragon 19 moves E to (20,12)
+68 [B] dragon 20 asks to move E
+68 [B] dragon 20 moves E to (18,18)
+68 [B] dragon 22 asks to move E
+68 [B] dragon 22 moves E to (21,23)
+68 [B] dragon 23 asks to move N
+68 [B] dragon 23 moves N to (13,13)
+68 [B] dragon 25 asks to move E
+68 [B] dragon 25 moves E to (12,5)
+68 [B] dragon 26 asks to move S
+68 (10,16) pearl taken
+68 [B] dragon 26 moves S to (10,16), eats a pearl
+68 [B] dragon 27 asks to move W
+68 [B] dragon 27 moves W to (5,20)
+68 [B] dragon 28 asks to move E
+68 [B] dragon 28 moves E to (12,9)
+68 [B] dragon 29 asks to move W
+68 [B] dragon 29 moves W to (6,3)
+68 [B] dragon 30 asks to move N
+68 (18,9) pearl taken
+68 [B] dragon 30 moves N to (18,9), eats a pearl
+68 [B] dragon 32 asks to split off 2
+68 [B] dragon 32 splits off dragon 46, 2 cells (parent keeps 2)
+68 [B] dragon 33 asks to move W
+68 [B] dragon 33 moves W to (11,21)
+68 [B] dragon 34 asks to move W
+68 (7,14) pearl taken
+68 [B] dragon 34 moves W to (7,14), eats a pearl
+68 [B] dragon 35 asks to move N
+68 (6,13) pearl taken
+68 [B] dragon 35 moves N to (6,13), eats a pearl
+68 [B] dragon 36 asks to move S
+68 [B] dragon 36 moves S to (15,10)
+68 [B] dragon 37 asks to move E
+68 [B] dragon 37 moves E to (12,19)
+68 [B] dragon 38 asks to move S
+68 [B] dragon 38 moves S to (9,24)
+68 [B] dragon 39 asks to split off 2
+68 [B] dragon 39 splits off dragon 47, 2 cells (parent keeps 2)
+68 [B] dragon 40 asks to move E
+68 [B] dragon 40 moves E to (20,20)
+68 [B] dragon 41 asks to move W
+68 [B] dragon 41 moves W to (6,17)
+68 [B] dragon 42 asks to move E
+68 [B] dragon 42 moves E to (11,12)
+68 [B] dragon 43 asks to move W
+68 [B] dragon 43 moves W to (15,6)
+68 [A] dragon 44 indicator: cmb war pearl L2
+68 [A] dragon 44 asks to move W  (cpu 6690596)
+68 [A] dragon 44 moves W to (24,20)
+68 [B] dragon 45 asks to move E
+68 [B] dragon 45 moves E to (18,16)
+68 [B] dragon 46 asks to move N
+68 [B] dragon 46 moves N to (15,15)
+68 [B] dragon 47 asks to move E
+68 [B] dragon 47 moves E to (8,10)
+=== round 69 === A: 3 dragons, total length 7, queen dead | B: 30 dragons, total length 75, queen dead
+69 [B] dragon 2 asks to move W
+69 [B] dragon 2 moves W to (5,0)
+69 [A] dragon 5 indicator: col war pearl L3 s0
+69 [A] dragon 5 asks to move E  (cpu 6366384)
+69 [A] dragon 5 moves E to (22,22)
+69 [B] dragon 8 asks to move S
+69 (17,14) pearl taken
+69 [B] dragon 8 moves S to (17,14), eats a pearl
+69 [B] dragon 11 asks to move W
+69 [B] dragon 11 moves W to (14,19)
+69 [B] dragon 12 asks to move S
+69 [B] dragon 12 moves S to (16,23)
+69 [B] dragon 15 asks to split off 2
+69 [B] dragon 15 splits off dragon 48, 2 cells (parent keeps 2)
+69 [A] dragon 18 indicator: col war pearl L2
+69 [A] dragon 18 asks to move W  (cpu 6682500)
+69 [A] dragon 18 moves W to (2,18)
+69 [B] dragon 19 asks to move N
+69 [B] dragon 19 moves N to (20,11)
+69 [B] dragon 20 asks to move S
+69 [B] dragon 20 moves S to (18,19)
+69 [B] dragon 22 asks to move E
+69 [B] dragon 22 moves E to (22,23)
+69 [B] dragon 23 asks to move E
+69 [B] dragon 23 moves E to (14,13)
+69 [B] dragon 25 asks to move S
+69 [B] dragon 25 moves S to (12,22)
+69 [B] dragon 26 asks to move E
+69 [B] dragon 26 moves E to (11,16)
+69 [B] dragon 27 asks to move W
+69 [B] dragon 27 moves W to (4,20)
+69 [B] dragon 28 asks to move E
+69 [B] dragon 28 moves E to (13,9)
+69 [B] dragon 29 asks to move W
+69 [B] dragon 29 moves W to (5,3)
+69 [B] dragon 30 asks to move N
+69 [B] dragon 30 moves N to (18,8)
+69 [B] dragon 32 asks to move W
+69 [B] dragon 32 moves W to (13,18)
+69 [B] dragon 33 asks to move W
+69 [B] dragon 33 moves W to (10,21)
+69 [B] dragon 34 asks to split off 2
+69 [B] dragon 34 splits off dragon 49, 2 cells (parent keeps 2)
+69 [B] dragon 35 asks to move N
+69 (6,12) pearl taken
+69 [B] dragon 35 moves N to (6,12), eats a pearl
+69 [B] dragon 36 asks to move E
+69 [B] dragon 36 moves E to (16,10)
+69 [B] dragon 37 asks to move S
+69 (12,20) pearl taken
+69 [B] dragon 37 moves S to (12,20), eats a pearl
+69 [B] dragon 38 asks to move S
+69 [B] dragon 38 moves S to (9,0)
+69 [B] dragon 39 asks to move E
+69 [B] dragon 39 moves E to (8,9)
+69 [B] dragon 40 asks to move E
+69 [B] dragon 40 moves E to (21,20)
+69 [B] dragon 41 asks to move S
+69 [B] dragon 41 moves S to (6,18)
+69 [B] dragon 42 asks to move N
+69 [B] dragon 42 moves N to (11,11)
+69 [B] dragon 43 asks to move W
+69 [B] dragon 43 moves W to (14,6)
+69 [A] dragon 44 indicator: cmb war hunt L2
+69 [A] dragon 44 asks to move W  (cpu 6827675)
+69 [A] dragon 44 moves W to (23,20)
+69 [B] dragon 45 asks to move E
+69 [B] dragon 45 moves E to (19,16)
+69 [B] dragon 46 asks to move W
+69 [B] dragon 46 moves W to (14,15)
+69 [B] dragon 47 asks to move S
+69 [B] dragon 47 moves S to (8,11)
+69 [B] dragon 48 asks to move N
+69 [B] dragon 48 moves N to (7,7)
+69 [B] dragon 49 asks to move E
+69 [B] dragon 49 moves E to (10,13)
+=== round 70 === A: 3 dragons, total length 7, queen dead | B: 32 dragons, total length 78, queen dead
+70 (5,6) pearl appears
+70 (19,6) pearl appears
+70 (10,19) pearl appears
+70 [B] dragon 2 asks to move N
+70 [B] dragon 2 moves N to (5,24)
+70 [A] dragon 5 indicator: col war pearl L3 s0
+70 [A] dragon 5 asks to move E  (cpu 6336490)
+70 [A] dragon 5 moves E to (23,22)
+70 [B] dragon 8 asks to split off 2
+70 [B] dragon 8 splits off dragon 50, 2 cells (parent keeps 2)
+70 [B] dragon 11 asks to move S
+70 [B] dragon 11 moves S to (14,20)
+70 [B] dragon 12 asks to move S
+70 [B] dragon 12 moves S to (16,24)
+70 [B] dragon 15 asks to move E
+70 [B] dragon 15 moves E to (11,8)
+70 [A] dragon 18 indicator: col war pearl L2
+70 [A] dragon 18 asks to move W  (cpu 6659954)
+70 [A] dragon 18 moves W to (1,18)
+70 [B] dragon 19 asks to move W
+70 [B] dragon 19 moves W to (19,11)
+70 [B] dragon 20 asks to move W
+70 [B] dragon 20 moves W to (17,19)
+70 [B] dragon 22 asks to move E
+70 [B] dragon 22 moves E to (23,23)
+70 [B] dragon 23 asks to move N
+70 [B] dragon 23 moves N to (14,12)
+70 [B] dragon 25 asks to move E
+70 [B] dragon 25 moves E to (13,22)
+70 [B] dragon 26 asks to move S
+70 [B] dragon 26 moves S to (11,17)
+70 [B] dragon 27 asks to move W
+70 [B] dragon 27 moves W to (3,20)
+70 [B] dragon 28 asks to move N
+70 [B] dragon 28 moves N to (13,8)
+70 [B] dragon 29 asks to move S
+70 [B] dragon 29 moves S to (5,4)
+70 [B] dragon 30 asks to move W
+70 [B] dragon 30 moves W to (17,8)
+70 [B] dragon 32 asks to move N
+70 [B] dragon 32 moves N to (13,17)
+70 [B] dragon 33 asks to move N
+70 [B] dragon 33 moves N to (10,20)
+70 [B] dragon 34 asks to move N
+70 [B] dragon 34 moves N to (7,13)
+70 [B] dragon 35 asks to split off 2
+70 [B] dragon 35 splits off dragon 51, 2 cells (parent keeps 2)
+70 [B] dragon 36 asks to move N
+70 [B] dragon 36 moves N to (16,9)
+70 [B] dragon 37 asks to split off 2
+70 [B] dragon 37 splits off dragon 52, 2 cells (parent keeps 2)
+70 [B] dragon 38 asks to move S
+70 [B] dragon 38 moves S to (9,1)
+70 [B] dragon 39 asks to move E
+70 [B] dragon 39 moves E to (9,9)
+70 [B] dragon 40 asks to move E
+70 [B] dragon 40 moves E to (22,20)
+70 [B] dragon 41 asks to move E
+70 [B] dragon 41 moves E to (7,18)
+70 [B] dragon 42 asks to move E
+70 [B] dragon 42 moves E to (12,11)
+70 [B] dragon 43 asks to move N
+70 [B] dragon 43 moves N to (14,5)
+70 [A] dragon 44 indicator: cmb war pearl L2
+70 [A] dragon 44 asks to move N  (cpu 6311748)
+70 [A] dragon 44 moves N to (23,19)
+70 [B] dragon 45 asks to move E
+70 [B] dragon 45 moves E to (20,16)
+70 [B] dragon 46 asks to move W
+70 [B] dragon 46 moves W to (13,15)
+70 [B] dragon 47 asks to move E
+70 [B] dragon 47 moves E to (9,11)
+70 [B] dragon 48 asks to move N
+70 [B] dragon 48 moves N to (7,6)
+70 [B] dragon 49 asks to move S
+70 [B] dragon 49 moves S to (10,14)
+70 [B] dragon 50 asks to move S
+70 [B] dragon 50 moves S to (15,14)
+70 [B] dragon 51 asks to move W
+70 [B] dragon 51 moves W to (5,15)
+70 [B] dragon 52 asks to move W
+70 [B] dragon 52 moves W to (10,18)
+=== round 71 === A: 3 dragons, total length 7, queen dead | B: 35 dragons, total length 78, queen dead
+71 (5,8) pearl appears
+71 (19,8) pearl appears
+71 [B] dragon 2 asks to move N
+71 [B] dragon 2 moves N to (5,23)
+71 [A] dragon 5 indicator: col war pearl L3 s0
+71 [A] dragon 5 asks to move E  (cpu 6364141)
+71 [A] dragon 5 moves E to (24,22)
+71 [B] dragon 8 asks to move W
+71 [B] dragon 8 moves W to (16,14)
+71 [B] dragon 11 asks to move E
+71 [B] dragon 11 moves E to (15,20)
+71 [B] dragon 12 asks to move S
+71 [B] dragon 12 moves S to (16,0)
+71 [B] dragon 15 asks to move N
+71 [B] dragon 15 moves N to (11,7)
+71 [A] dragon 18 indicator: col war pearl L2
+71 [A] dragon 18 asks to move S  (cpu 6668205)
+71 [A] dragon 18 moves S to (1,19)
+71 [B] dragon 19 asks to move W
+71 (18,11) pearl taken
+71 [B] dragon 19 moves W to (18,11), eats a pearl
+71 [B] dragon 20 asks to move N
+71 [B] dragon 20 moves N to (17,18)
+71 [B] dragon 22 asks to move E
+71 [B] dragon 22 moves E to (24,23)
+71 [B] dragon 23 asks to move E
+71 [B] dragon 23 moves E to (15,12)
+71 [B] dragon 25 asks to move N
+71 [B] dragon 25 moves N to (13,21)
+71 [B] dragon 26 asks to move W
+71 [B] dragon 26 moves W to (10,17)
+71 [B] dragon 27 asks to move N
+71 [B] dragon 27 moves N to (3,19)
+71 [B] dragon 28 asks to move E
+71 [B] dragon 28 moves E to (14,8)
+71 [B] dragon 29 asks to move S
+71 [B] dragon 29 moves S to (5,5)
+71 [B] dragon 30 asks to move N
+71 [B] dragon 30 moves N to (17,7)
+71 [B] dragon 32 asks to move E
+71 [B] dragon 32 moves E to (14,17)
+71 [B] dragon 33 asks to move N
+71 (10,19) pearl taken
+71 [B] dragon 33 moves N to (10,19), eats a pearl
+71 [B] dragon 34 asks to move E
+71 [B] dragon 34 moves E to (8,13)
+71 [B] dragon 35 asks to move N
+71 (6,11) pearl taken
+71 [B] dragon 35 moves N to (6,11), eats a pearl
+71 [B] dragon 36 asks to move W
+71 [B] dragon 36 moves W to (15,9)
+71 [B] dragon 37 asks to move N
+71 [B] dragon 37 dies: hit itself
+71 (12,20) pearl appears
+71 [B] dragon 38 asks to move E
+71 [B] dragon 38 moves E to (10,1)
+71 [B] dragon 39 asks to move E
+71 [B] dragon 39 moves E to (10,9)
+71 [B] dragon 40 asks to move N
+71 [B] dragon 40 moves N to (22,19)
+71 [B] dragon 41 asks to move S
+71 [B] dragon 41 moves S to (7,19)
+71 [B] dragon 42 asks to move N
+71 [B] dragon 42 moves N to (12,10)
+71 [B] dragon 43 asks to move W
+71 [B] dragon 43 moves W to (13,5)
+71 [A] dragon 44 indicator: cmb war hunt L2
+71 [A] dragon 44 asks to move N  (cpu 6264473)
+71 [A] dragon 44 moves N to (23,18)
+71 [B] dragon 45 asks to move E
+71 [B] dragon 45 moves E to (21,16)
+71 [B] dragon 46 asks to move W
+71 [B] dragon 46 moves W to (12,15)
+71 [B] dragon 47 asks to move S
+71 [B] dragon 47 moves S to (9,12)
+71 [B] dragon 48 asks to move E
+71 [B] dragon 48 moves E to (8,6)
+71 [B] dragon 49 asks to move E
+71 [B] dragon 49 moves E to (11,14)
+71 [B] dragon 50 asks to move S
+71 [B] dragon 50 moves S to (15,15)
+71 [B] dragon 51 asks to move W
+71 [B] dragon 51 moves W to (4,15)
+71 [B] dragon 52 asks to move E
+71 [B] dragon 52 dies: hit itself
+71 (10,18) pearl appears
+=== round 72 === A: 3 dragons, total length 7, queen dead | B: 33 dragons, total length 77, queen dead
+72 [B] dragon 2 asks to move N
+72 [B] dragon 2 moves N to (5,22)
+72 [A] dragon 5 indicator: col war pearl L3 s0
+72 [A] dragon 5 asks to move E  (cpu 6377241)
+72 [A] dragon 5 moves E to (0,22)
+72 [B] dragon 8 asks to move N
+72 [B] dragon 8 moves N to (16,13)
+72 [B] dragon 11 asks to move E
+72 [B] dragon 11 moves E to (16,20)
+72 [B] dragon 12 asks to move W
+72 [B] dragon 12 moves W to (15,0)
+72 [B] dragon 15 asks to move E
+72 [B] dragon 15 moves E to (12,7)
+72 [A] dragon 18 indicator: col war pearl L2
+72 [A] dragon 18 asks to move S  (cpu 6796681)
+72 [A] dragon 18 moves S to (1,20)
+72 [B] dragon 19 asks to move S
+72 [B] dragon 19 moves S to (18,12)
+72 [B] dragon 20 asks to move E
+72 [B] dragon 20 moves E to (18,18)
+72 [B] dragon 22 asks to move E
+72 [B] dragon 22 moves E to (0,23)
+72 [B] dragon 23 asks to move N
+72 [B] dragon 23 moves N to (15,11)
+72 [B] dragon 25 asks to move W
+72 [B] dragon 25 moves W to (12,21)
+72 [B] dragon 26 asks to move S
+72 (10,18) pearl taken
+72 [B] dragon 26 moves S to (10,18), eats a pearl
+72 [B] dragon 27 asks to move N
+72 [B] dragon 27 moves N to (3,18)
+72 [B] dragon 28 asks to move N
+72 [B] dragon 28 moves N to (14,7)
+72 [B] dragon 29 asks to move W
+72 [B] dragon 29 moves W to (4,5)
+72 [B] dragon 30 asks to move N
+72 [B] dragon 30 moves N to (17,6)
+72 [B] dragon 32 asks to move S
+72 [B] dragon 32 moves S to (14,18)
+72 [B] dragon 33 asks to move W
+72 [B] dragon 33 moves W to (9,19)
+72 [B] dragon 34 asks to move S
+72 [B] dragon 34 moves S to (8,14)
+72 [B] dragon 35 asks to move W
+72 [B] dragon 35 moves W to (5,11)
+72 [B] dragon 36 asks to move N
+72 [B] dragon 36 moves N to (15,8)
+72 [B] dragon 38 asks to move N
+72 [B] dragon 38 moves N to (10,0)
+72 [B] dragon 39 asks to move N
+72 [B] dragon 39 moves N to (10,8)
+72 [B] dragon 40 asks to move N
+72 [B] dragon 40 moves N to (22,18)
+72 [B] dragon 41 asks to move W
+72 [B] dragon 41 moves W to (6,19)
+72 [B] dragon 42 asks to move E
+72 [B] dragon 42 moves E to (13,10)
+72 [B] dragon 43 asks to move N
+72 [B] dragon 43 moves N to (13,4)
+72 [A] dragon 44 indicator: cmb war pearl L2
+72 [A] dragon 44 asks to move E  (cpu 6246890)
+72 [A] dragon 44 moves E to (24,18)
+72 [B] dragon 45 asks to move N
+72 [B] dragon 45 moves N to (21,15)
+72 [B] dragon 46 asks to move S
+72 [B] dragon 46 moves S to (12,16)
+72 [B] dragon 47 asks to move E
+72 [B] dragon 47 moves E to (10,12)
+72 [B] dragon 48 asks to move N
+72 [B] dragon 48 moves N to (8,5)
+72 [B] dragon 49 asks to move E
+72 [B] dragon 49 moves E to (12,14)
+72 [B] dragon 50 asks to move S
+72 [B] dragon 50 moves S to (15,16)
+72 [B] dragon 51 asks to move W
+72 [B] dragon 51 moves W to (3,15)
+=== round 73 === A: 3 dragons, total length 7, queen dead | B: 33 dragons, total length 78, queen dead
+73 (7,14) pearl appears
+73 (17,14) pearl appears
+73 [B] dragon 2 asks to move N
+73 [B] dragon 2 moves N to (5,21)
+73 [A] dragon 5 indicator: col war pearl L3 s0
+73 [A] dragon 5 asks to move E  (cpu 6327624)
+73 [A] dragon 5 moves E to (1,22)
+73 [B] dragon 8 asks to move E
+73 [B] dragon 8 moves E to (17,13)
+73 [B] dragon 11 asks to move S
+73 [B] dragon 11 moves S to (16,21)
+73 [B] dragon 12 asks to move W
+73 [B] dragon 12 moves W to (14,0)
+73 [B] dragon 15 asks to move N
+73 [B] dragon 15 moves N to (12,6)
+73 [A] dragon 18 indicator: col war pearl L2
+73 [A] dragon 18 asks to move W  (cpu 6813740)
+73 [A] dragon 18 moves W to (0,20)
+73 [B] dragon 19 asks to move E
+73 [B] dragon 19 moves E to (19,12)
+73 [B] dragon 20 asks to move E
+73 [B] dragon 20 moves E to (19,18)
+73 [B] dragon 22 asks to move E
+73 [B] dragon 22 moves E to (1,23)
+73 [B] dragon 23 asks to move W
+73 [B] dragon 23 moves W to (14,11)
+73 [B] dragon 25 asks to move W
+73 [B] dragon 25 moves W to (11,21)
+73 [B] dragon 26 asks to split off 2
+73 [B] dragon 26 splits off dragon 53, 2 cells (parent keeps 2)
+73 [B] dragon 27 asks to move W
+73 [B] dragon 27 moves W to (2,18)
+73 [B] dragon 28 asks to move N
+73 [B] dragon 28 moves N to (14,6)
+73 [B] dragon 29 asks to move N
+73 [B] dragon 29 moves N to (4,4)
+73 [B] dragon 30 asks to move N
+73 [B] dragon 30 moves N to (17,5)
+73 [B] dragon 32 asks to move W
+73 [B] dragon 32 moves W to (13,18)
+73 [B] dragon 33 asks to move S
+73 [B] dragon 33 moves S to (9,20)
+73 [B] dragon 34 asks to move W
+73 (7,14) pearl taken
+73 [B] dragon 34 moves W to (7,14), eats a pearl
+73 [B] dragon 35 asks to move N
+73 [B] dragon 35 moves N to (5,10)
+73 [B] dragon 36 asks to move E
+73 [B] dragon 36 moves E to (16,8)
+73 [B] dragon 38 asks to move E
+73 [B] dragon 38 moves E to (11,0)
+73 [B] dragon 39 asks to move W
+73 [B] dragon 39 moves W to (9,8)
+73 [B] dragon 40 asks to move N
+73 [B] dragon 40 moves N to (22,17)
+73 [B] dragon 41 asks to move N
+73 [B] dragon 41 moves N to (6,18)
+73 [B] dragon 42 asks to move N
+73 [B] dragon 42 moves N to (13,9)
+73 [B] dragon 43 asks to move W
+73 [B] dragon 43 moves W to (12,4)
+73 [A] dragon 44 indicator: cmb war pearl L2
+73 [A] dragon 44 asks to move S  (cpu 6799299)
+73 [A] dragon 44 moves S to (24,19)
+73 [B] dragon 45 asks to move N
+73 [B] dragon 45 moves N to (21,14)
+73 [B] dragon 46 asks to move S
+73 [B] dragon 46 moves S to (12,17)
+73 [B] dragon 47 asks to move N
+73 [B] dragon 47 moves N to (10,11)
+73 [B] dragon 48 asks to move E
+73 [B] dragon 48 moves E to (9,5)
+73 [B] dragon 49 asks to move E
+73 [B] dragon 49 moves E to (13,14)
+73 [B] dragon 50 asks to move E
+73 [B] dragon 50 moves E to (16,16)
+73 [B] dragon 51 asks to move W
+73 [B] dragon 51 moves W to (2,15)
+73 [B] dragon 53 asks to move N
+73 [B] dragon 53 moves N to (11,15)
+=== round 74 === A: 3 dragons, total length 7, queen dead | B: 34 dragons, total length 79, queen dead
+74 [B] dragon 2 asks to move W
+74 [B] dragon 2 moves W to (4,21)
+74 [A] dragon 5 indicator: col war pearl L3 s0
+74 [A] dragon 5 asks to move E  (cpu 6317590)
+74 [A] dragon 5 moves E to (2,22)
+74 [B] dragon 8 asks to move S
+74 (17,14) pearl taken
+74 [B] dragon 8 moves S to (17,14), eats a pearl
+74 [B] dragon 11 asks to move S
+74 [B] dragon 11 moves S to (16,22)
+74 [B] dragon 12 asks to move N
+74 [B] dragon 12 moves N to (14,24)
+74 [B] dragon 15 asks to move N
+74 [B] dragon 15 dies: hit another dragon
+74 (12,6) pearl appears
+74 [A] dragon 18 indicator: col war pearl L2
+74 [A] dragon 18 asks to move S  (cpu 6849276)
+74 [A] dragon 18 moves S to (0,21)
+74 [B] dragon 19 asks to move N
+74 [B] dragon 19 moves N to (19,11)
+74 [B] dragon 20 asks to move S
+74 [B] dragon 20 moves S to (19,19)
+74 [B] dragon 22 asks to move E
+74 [B] dragon 22 moves E to (2,23)
+74 [B] dragon 23 asks to move W
+74 [B] dragon 23 moves W to (13,11)
+74 [B] dragon 25 asks to move S
+74 [B] dragon 25 moves S to (11,22)
+74 [B] dragon 26 asks to move E
+74 [B] dragon 26 moves E to (11,18)
+74 [B] dragon 27 asks to move W
+74 [B] dragon 27 moves W to (1,18)
+74 [B] dragon 28 asks to move W
+74 [B] dragon 28 moves W to (13,6)
+74 [B] dragon 29 asks to move W
+74 [B] dragon 29 moves W to (3,4)
+74 [B] dragon 30 asks to move W
+74 [B] dragon 30 moves W to (16,5)
+74 [B] dragon 32 asks to move N
+74 [B] dragon 32 moves N to (13,17)
+74 [B] dragon 33 asks to move W
+74 [B] dragon 33 moves W to (8,20)
+74 [B] dragon 34 asks to move N
+74 [B] dragon 34 moves N to (7,13)
+74 [B] dragon 35 asks to move N
+74 [B] dragon 35 moves N to (5,9)
+74 [B] dragon 36 asks to move E
+74 [B] dragon 36 moves E to (17,8)
+74 [B] dragon 38 asks to move E
+74 [B] dragon 38 moves E to (12,0)
+74 [B] dragon 39 asks to move W
+74 [B] dragon 39 moves W to (8,8)
+74 [B] dragon 40 asks to move E
+74 [B] dragon 40 moves E to (23,17)
+74 [B] dragon 41 asks to move N
+74 [B] dragon 41 moves N to (6,17)
+74 [B] dragon 42 asks to move W
+74 [B] dragon 42 moves W to (12,9)
+74 [B] dragon 43 asks to move W
+74 [B] dragon 43 moves W to (11,4)
+74 [A] dragon 44 indicator: cmb war pearl L2
+74 [A] dragon 44 asks to move S  (cpu 6810656)
+74 [A] dragon 44 moves S to (24,20)
+74 [B] dragon 45 asks to move E
+74 [B] dragon 45 moves E to (22,14)
+74 [B] dragon 46 asks to move W
+74 [B] dragon 46 moves W to (11,17)
+74 [B] dragon 47 asks to move W
+74 [B] dragon 47 moves W to (9,11)
+74 [B] dragon 48 asks to move S
+74 [B] dragon 48 moves S to (9,6)
+74 [B] dragon 49 asks to move E
+74 [B] dragon 49 moves E to (14,14)
+74 [B] dragon 50 asks to move S
+74 [B] dragon 50 moves S to (16,17)
+74 [B] dragon 51 asks to move N
+74 [B] dragon 51 moves N to (2,14)
+74 [B] dragon 53 asks to move W
+74 [B] dragon 53 moves W to (10,15)
+=== round 75 === A: 3 dragons, total length 7, queen dead | B: 33 dragons, total length 78, queen dead
+75 (2,3) pearl appears
+75 (22,3) pearl appears
+75 (11,19) pearl appears
+75 (13,19) pearl appears
+75 [B] dragon 2 asks to move N
+75 [B] dragon 2 moves N to (4,20)
+75 [A] dragon 5 indicator: col war pearl L3 s0
+75 [A] dragon 5 asks to move N  (cpu 6357808)
+75 [A] dragon 5 moves N to (2,21)
+75 [B] dragon 8 asks to move W
+75 [B] dragon 8 moves W to (16,14)
+75 [B] dragon 11 asks to move E
+75 [B] dragon 11 moves E to (17,22)
+75 [B] dragon 12 asks to move N
+75 [B] dragon 12 moves N to (14,23)
+75 [A] dragon 18 indicator: col war pearl L2
+75 [A] dragon 18 asks to move S  (cpu 6881025)
+75 [A] dragon 18 moves S to (0,22)
+75 [B] dragon 19 asks to move N
+75 [B] dragon 19 moves N to (19,10)
+75 [B] dragon 20 asks to move E
+75 [B] dragon 20 moves E to (20,19)
+75 [B] dragon 22 asks to move E
+75 [B] dragon 22 moves E to (3,23)
+75 [B] dragon 23 asks to move S
+75 [B] dragon 23 moves S to (13,12)
+75 [B] dragon 25 asks to move W
+75 [B] dragon 25 moves W to (10,22)
+75 [B] dragon 26 asks to move S
+75 (11,19) pearl taken
+75 [B] dragon 26 moves S to (11,19), eats a pearl
+75 [B] dragon 27 asks to move W
+75 [B] dragon 27 moves W to (0,18)
+75 [B] dragon 28 asks to move W
+75 (12,6) pearl taken
+75 [B] dragon 28 moves W to (12,6), eats a pearl
+75 [B] dragon 29 asks to move W
+75 [B] dragon 29 moves W to (2,4)
+75 [B] dragon 30 asks to move W
+75 [B] dragon 30 moves W to (15,5)
+75 [B] dragon 32 asks to move N
+75 [B] dragon 32 moves N to (13,16)
+75 [B] dragon 33 asks to move S
+75 [B] dragon 33 moves S to (8,21)
+75 [B] dragon 34 asks to move N
+75 [B] dragon 34 moves N to (7,12)
+75 [B] dragon 35 asks to move N
+75 (5,8) pearl taken
+75 [B] dragon 35 moves N to (5,8), eats a pearl
+75 [B] dragon 36 asks to move S
+75 [B] dragon 36 moves S to (17,9)
+75 [B] dragon 38 asks to move S
+75 [B] dragon 38 moves S to (12,1)
+75 [B] dragon 39 asks to move S
+75 [B] dragon 39 moves S to (8,9)
+75 [B] dragon 40 asks to move S
+75 [B] dragon 40 moves S to (23,18)
+75 [B] dragon 41 asks to move E
+75 [B] dragon 41 moves E to (7,17)
+75 [B] dragon 42 asks to move W
+75 [B] dragon 42 moves W to (11,9)
+75 [B] dragon 43 asks to move W
+75 [B] dragon 43 moves W to (10,4)
+75 [A] dragon 44 indicator: cmb war pearl L2
+75 [A] dragon 44 asks to move E  (cpu 6893709)
+75 [A] dragon 44 moves E to (0,20)
+75 [B] dragon 45 asks to move E
+75 [B] dragon 45 moves E to (23,14)
+75 [B] dragon 46 asks to move W
+75 [B] dragon 46 moves W to (10,17)
+75 [B] dragon 47 asks to move S
+75 [B] dragon 47 moves S to (9,12)
+75 [B] dragon 48 asks to move S
+75 [B] dragon 48 moves S to (9,7)
+75 [B] dragon 49 asks to move N
+75 [B] dragon 49 moves N to (14,13)
+75 [B] dragon 50 asks to move S
+75 [B] dragon 50 moves S to (16,18)
+75 [B] dragon 51 asks to move W
+75 [B] dragon 51 moves W to (1,14)
+75 [B] dragon 53 asks to move W
+75 [B] dragon 53 moves W to (9,15)
+=== round 76 === A: 3 dragons, total length 7, queen dead | B: 33 dragons, total length 81, queen dead
+76 (11,20) pearl appears
+76 (13,20) pearl appears
+76 [B] dragon 2 asks to move E
+76 [B] dragon 2 moves E to (5,20)
+76 [A] dragon 5 indicator: col war pearl L3 s0
+76 [A] dragon 5 asks to move N  (cpu 6934897)
+76 [A] dragon 5 moves N to (2,20)
+76 [B] dragon 8 asks to move S
+76 [B] dragon 8 moves S to (16,15)
+76 [B] dragon 11 asks to move E
+76 [B] dragon 11 moves E to (18,22)
+76 [B] dragon 12 asks to move W
+76 [B] dragon 12 moves W to (13,23)
+76 [A] dragon 18 indicator: col war pearl L2 s0
+76 [A] dragon 18 asks to move W  (cpu 6927210)
+76 [A] dragon 18 moves W to (24,22)
+76 [B] dragon 19 asks to move N
+76 [B] dragon 19 moves N to (19,9)
+76 [B] dragon 20 asks to move S
+76 [B] dragon 20 moves S to (20,20)
+76 [B] dragon 22 asks to move E
+76 [B] dragon 22 moves E to (4,23)
+76 [B] dragon 23 asks to move W
+76 [B] dragon 23 moves W to (12,12)
+76 [B] dragon 25 asks to move N
+76 [B] dragon 25 moves N to (10,21)
+76 [B] dragon 26 asks to move E
+76 [B] dragon 26 moves E to (12,19)
+76 [B] dragon 27 asks to move S
+76 [B] dragon 27 moves S to (0,19)
+76 [B] dragon 28 asks to split off 2
+76 [B] dragon 28 splits off dragon 54, 2 cells (parent keeps 2)
+76 [B] dragon 29 asks to move N
+76 (2,3) pearl taken
+76 [B] dragon 29 moves N to (2,3), eats a pearl
+76 [B] dragon 30 asks to move N
+76 [B] dragon 30 moves N to (15,4)
+76 [B] dragon 32 asks to move N
+76 [B] dragon 32 moves N to (13,15)
+76 [B] dragon 33 asks to move S
+76 [B] dragon 33 moves S to (8,22)
+76 [B] dragon 34 asks to move N
+76 [B] dragon 34 moves N to (7,11)
+76 [B] dragon 35 asks to split off 2
+76 [B] dragon 35 splits off dragon 55, 2 cells (parent keeps 2)
+76 [B] dragon 36 asks to move W
+76 [B] dragon 36 moves W to (16,9)
+76 [B] dragon 38 asks to move W
+76 [B] dragon 38 moves W to (11,1)
+76 [B] dragon 39 asks to move S
+76 [B] dragon 39 moves S to (8,10)
+76 [B] dragon 40 asks to move S
+76 [B] dragon 40 moves S to (23,19)
+76 [B] dragon 41 asks to move N
+76 [B] dragon 41 moves N to (7,16)
+76 [B] dragon 42 asks to move S
+76 [B] dragon 42 moves S to (11,10)
+76 [B] dragon 43 asks to move S
+76 [B] dragon 43 moves S to (10,5)
+76 [A] dragon 44 indicator: cmb war hunt L2 s0
+76 [A] dragon 44 asks to move S  (cpu 6426577)
+76 [A] dragon 44 moves S to (0,21)
+76 [B] dragon 45 asks to move N
+76 (23,13) pearl taken
+76 [B] dragon 45 moves N to (23,13), eats a pearl
+76 [B] dragon 46 asks to move W
+76 [B] dragon 46 moves W to (9,17)
+76 [B] dragon 47 asks to move S
+76 [B] dragon 47 moves S to (9,13)
+76 [B] dragon 48 asks to move S
+76 [B] dragon 48 moves S to (9,8)
+76 [B] dragon 49 asks to move E
+76 [B] dragon 49 moves E to (15,13)
+76 [B] dragon 50 asks to move S
+76 [B] dragon 50 moves S to (16,19)
+76 [B] dragon 51 asks to move S
+76 [B] dragon 51 moves S to (1,15)
+76 [B] dragon 53 asks to move W
+76 [B] dragon 53 moves W to (8,15)
+76 [B] dragon 54 asks to move S
+76 [B] dragon 54 moves S to (14,8)
+76 [B] dragon 55 asks to move W
+76 [B] dragon 55 moves W to (4,11)
+=== round 77 === A: 3 dragons, total length 7, queen dead | B: 35 dragons, total length 83, queen dead
+77 [B] dragon 2 asks to move N
+77 [B] dragon 2 moves N to (5,19)
+77 [A] dragon 5 indicator: col war pearl L3 s0
+77 [A] dragon 5 asks to move N  (cpu 6959819)
+77 [A] dragon 5 moves N to (2,19)
+77 [B] dragon 8 asks to move S
+77 [B] dragon 8 moves S to (16,16)
+77 [B] dragon 11 asks to move S
+77 [B] dragon 11 moves S to (18,23)
+77 [B] dragon 12 asks to move N
+77 [B] dragon 12 moves N to (13,22)
+77 [A] dragon 18 indicator: col war pearl L2 s0
+77 [A] dragon 18 asks to move W  (cpu 6829469)
+77 [A] dragon 18 moves W to (23,22)
+77 [B] dragon 19 asks to move N
+77 (19,8) pearl taken
+77 [B] dragon 19 moves N to (19,8), eats a pearl
+77 [B] dragon 20 asks to move W
+77 [B] dragon 20 moves W to (19,20)
+77 [B] dragon 22 asks to move E
+77 [B] dragon 22 moves E to (5,23)
+77 [B] dragon 23 asks to move N
+77 [B] dragon 23 moves N to (12,11)
+77 [B] dragon 25 asks to move E
+77 [B] dragon 25 moves E to (11,21)
+77 [B] dragon 26 asks to move S
+77 (12,20) pearl taken
+77 [B] dragon 26 moves S to (12,20), eats a pearl
+77 [B] dragon 27 asks to move E
+77 [B] dragon 27 moves E to (1,19)
+77 [B] dragon 28 asks to move N
+77 [B] dragon 28 moves N to (12,21)
+77 [B] dragon 29 asks to move E
+77 [B] dragon 29 moves E to (3,3)
+77 [B] dragon 30 asks to move W
+77 [B] dragon 30 moves W to (14,4)
+77 [B] dragon 32 asks to move W
+77 [B] dragon 32 moves W to (12,15)
+77 [B] dragon 33 asks to move E
+77 [B] dragon 33 moves E to (9,22)
+77 [B] dragon 34 asks to move E
+77 [B] dragon 34 moves E to (8,11)
+77 [B] dragon 35 asks to move W
+77 [B] dragon 35 moves W to (4,8)
+77 [B] dragon 36 asks to move W
+77 [B] dragon 36 moves W to (15,9)
+77 [B] dragon 38 asks to move S
+77 [B] dragon 38 moves S to (11,2)
+77 [B] dragon 39 asks to move W
+77 [B] dragon 39 moves W to (7,10)
+77 [B] dragon 40 asks to move S
+77 [B] dragon 40 moves S to (23,20)
+77 [B] dragon 41 asks to move W
+77 [B] dragon 41 moves W to (6,16)
+77 [B] dragon 42 asks to move W
+77 [B] dragon 42 moves W to (10,10)
+77 [B] dragon 43 asks to move S
+77 [B] dragon 43 moves S to (10,6)
+77 [A] dragon 44 indicator: cmb war hunt L2 s0
+77 [A] dragon 44 asks to move S  (cpu 6890566)
+77 [A] dragon 44 moves S to (0,22)
+77 [B] dragon 45 asks to move E
+77 [B] dragon 45 moves E to (24,13)
+77 [B] dragon 46 asks to move S
+77 [B] dragon 46 moves S to (9,18)
+77 [B] dragon 47 asks to move E
+77 [B] dragon 47 moves E to (10,13)
+77 [B] dragon 48 asks to move W
+77 [B] dragon 48 moves W to (8,8)
+77 [B] dragon 49 asks to move N
+77 [B] dragon 49 moves N to (15,12)
+77 [B] dragon 50 asks to move W
+77 [B] dragon 50 moves W to (15,19)
+77 [B] dragon 51 asks to move S
+77 [B] dragon 51 moves S to (1,16)
+77 [B] dragon 53 asks to move N
+77 [B] dragon 53 moves N to (8,14)
+77 [B] dragon 54 asks to move W
+77 [B] dragon 54 moves W to (13,8)
+77 [B] dragon 55 asks to move W
+77 [B] dragon 55 moves W to (3,11)
+=== round 78 === A: 3 dragons, total length 7, queen dead | B: 35 dragons, total length 85, queen dead
+78 [B] dragon 2 asks to move W
+78 [B] dragon 2 moves W to (4,19)
+78 [A] dragon 5 indicator: col war pearl L3 s0
+78 [A] dragon 5 asks to move N  (cpu 6341203)
+78 [A] dragon 5 moves N to (2,18)
+78 [B] dragon 8 asks to move W
+78 [B] dragon 8 moves W to (15,16)
+78 [B] dragon 11 asks to move S
+78 [B] dragon 11 moves S to (18,24)
+78 [B] dragon 12 asks to move E
+78 [B] dragon 12 moves E to (14,22)
+78 [A] dragon 18 indicator: col war pearl L2 s0
+78 [A] dragon 18 asks to move W  (cpu 6851137)
+78 [A] dragon 18 moves W to (22,22)
+78 [B] dragon 19 asks to split off 2
+78 [B] dragon 19 splits off dragon 56, 2 cells (parent keeps 2)
+78 [B] dragon 20 asks to move W
+78 [B] dragon 20 moves W to (18,20)
+78 [B] dragon 22 asks to move E
+78 [B] dragon 22 moves E to (6,23)
+78 [B] dragon 23 asks to move N
+78 [B] dragon 23 moves N to (12,10)
+78 [B] dragon 25 asks to move N
+78 (11,20) pearl taken
+78 [B] dragon 25 moves N to (11,20), eats a pearl
+78 [B] dragon 26 asks to split off 2
+78 [B] dragon 26 splits off dragon 57, 2 cells (parent keeps 2)
+78 [B] dragon 27 asks to move S
+78 [B] dragon 27 moves S to (1,20)
+78 [B] dragon 28 asks to move E
+78 [B] dragon 28 moves E to (13,21)
+78 [B] dragon 29 asks to move E
+78 [B] dragon 29 moves E to (4,3)
+78 [B] dragon 30 asks to move W
+78 [B] dragon 30 moves W to (13,4)
+78 [B] dragon 32 asks to move N
+78 [B] dragon 32 moves N to (12,14)
+78 [B] dragon 33 asks to move E
+78 [B] dragon 33 moves E to (10,22)
+78 [B] dragon 34 asks to move E
+78 [B] dragon 34 moves E to (9,11)
+78 [B] dragon 35 asks to move W
+78 [B] dragon 35 moves W to (3,8)
+78 [B] dragon 36 asks to move W
+78 [B] dragon 36 moves W to (14,9)
+78 [B] dragon 38 asks to move W
+78 [B] dragon 38 moves W to (10,2)
+78 [B] dragon 39 asks to move W
+78 [B] dragon 39 moves W to (6,10)
+78 [B] dragon 40 asks to move S
+78 [B] dragon 40 moves S to (23,21)
+78 [B] dragon 41 asks to move W
+78 [B] dragon 41 moves W to (5,16)
+78 [B] dragon 42 asks to move N
+78 [B] dragon 42 moves N to (10,9)
+78 [B] dragon 43 asks to move E
+78 [B] dragon 43 moves E to (11,6)
+78 [A] dragon 44 indicator: cmb war hunt L2 s0
+78 [A] dragon 44 asks to move E  (cpu 6870245)
+78 [A] dragon 44 moves E to (1,22)
+78 [B] dragon 45 asks to move N
+78 [B] dragon 45 moves N to (24,12)
+78 [B] dragon 46 asks to move W
+78 [B] dragon 46 moves W to (8,18)
+78 [B] dragon 47 asks to move E
+78 [B] dragon 47 moves E to (11,13)
+78 [B] dragon 48 asks to move N
+78 [B] dragon 48 moves N to (8,7)
+78 [B] dragon 49 asks to move W
+78 [B] dragon 49 moves W to (14,12)
+78 [B] dragon 50 asks to move N
+78 [B] dragon 50 moves N to (15,18)
+78 [B] dragon 51 asks to move E
+78 [B] dragon 51 moves E to (2,16)
+78 [B] dragon 53 asks to move E
+78 [B] dragon 53 moves E to (9,14)
+78 [B] dragon 54 asks to move N
+78 [B] dragon 54 moves N to (13,7)
+78 [B] dragon 55 asks to move W
+78 [B] dragon 55 moves W to (2,11)
+78 [B] dragon 56 asks to move E
+78 [B] dragon 56 moves E to (20,11)
+78 [B] dragon 57 asks to move N
+78 [B] dragon 57 moves N to (11,17)
+=== round 79 === A: 3 dragons, total length 7, queen dead | B: 37 dragons, total length 86, queen dead
+79 (11,10) pearl appears
+79 (13,10) pearl appears
+79 [B] dragon 2 asks to move N
+79 [B] dragon 2 moves N to (4,18)
+79 [A] dragon 5 indicator: col war pearl L3 s0
+79 [A] dragon 5 asks to move W  (cpu 6952407)
+79 [A] dragon 5 moves W to (1,18)
+79 [B] dragon 8 asks to move N
+79 [B] dragon 8 moves N to (15,15)
+79 [B] dragon 11 asks to move E
+79 [B] dragon 11 moves E to (19,24)
+79 [B] dragon 12 asks to move E
+79 [B] dragon 12 moves E to (15,22)
+79 [A] dragon 18 indicator: col war pearl L2 s0
+79 [A] dragon 18 asks to move W  (cpu 6828282)
+79 [A] dragon 18 moves W to (21,22)
+79 [B] dragon 19 asks to move N
+79 [B] dragon 19 moves N to (19,7)
+79 [B] dragon 20 asks to move W
+79 [B] dragon 20 moves W to (17,20)
+79 [B] dragon 22 asks to move E
+79 [B] dragon 22 moves E to (7,23)
+79 [B] dragon 23 asks to move E
+79 (13,10) pearl taken
+79 [B] dragon 23 moves E to (13,10), eats a pearl
+79 [B] dragon 25 asks to move W
+79 [B] dragon 25 moves W to (10,20)
+79 [B] dragon 26 asks to move N
+79 [B] dragon 26 dies: hit itself
+79 (12,20) pearl appears
+79 [B] dragon 27 asks to move S
+79 [B] dragon 27 moves S to (1,21)
+79 [B] dragon 28 asks to move N
+79 (13,20) pearl taken
+79 [B] dragon 28 moves N to (13,20), eats a pearl
+79 [B] dragon 29 asks to move S
+79 [B] dragon 29 moves S to (4,4)
+79 [B] dragon 30 asks to move W
+79 [B] dragon 30 moves W to (12,4)
+79 [B] dragon 32 asks to move E
+79 [B] dragon 32 moves E to (13,14)
+79 [B] dragon 33 asks to move E
+79 [B] dragon 33 moves E to (11,22)
+79 [B] dragon 34 asks to move S
+79 [B] dragon 34 moves S to (9,12)
+79 [B] dragon 35 asks to move N
+79 [B] dragon 35 moves N to (3,7)
+79 [B] dragon 36 asks to move W
+79 [B] dragon 36 moves W to (13,9)
+79 [B] dragon 38 asks to move W
+79 [B] dragon 38 moves W to (9,2)
+79 [B] dragon 39 asks to move N
+79 [B] dragon 39 moves N to (6,9)
+79 [B] dragon 40 asks to move S
+79 [B] dragon 40 moves S to (23,22)
+79 [B] dragon 41 asks to move N
+79 [B] dragon 41 moves N to (5,15)
+79 [B] dragon 42 asks to move W
+79 [B] dragon 42 moves W to (9,9)
+79 [B] dragon 43 asks to move N
+79 [B] dragon 43 moves N to (11,5)
+79 [A] dragon 44 indicator: cmb war hunt L2 s0
+79 [A] dragon 44 asks to move S  (cpu 6255736)
+79 [A] dragon 44 moves S to (1,23)
+79 [B] dragon 45 asks to move N
+79 [B] dragon 45 moves N to (24,11)
+79 [B] dragon 46 asks to move W
+79 [B] dragon 46 moves W to (7,18)
+79 [B] dragon 47 asks to move N
+79 [B] dragon 47 moves N to (11,12)
+79 [B] dragon 48 asks to move N
+79 [B] dragon 48 moves N to (8,6)
+79 [B] dragon 49 asks to move N
+79 [B] dragon 49 moves N to (14,11)
+79 [B] dragon 50 asks to move E
+79 [B] dragon 50 moves E to (16,18)
+79 [B] dragon 51 asks to move S
+79 [B] dragon 51 moves S to (2,17)
+79 [B] dragon 53 asks to move S
+79 [B] dragon 53 moves S to (9,15)
+79 [B] dragon 54 asks to move E
+79 [B] dragon 54 moves E to (14,7)
+79 [B] dragon 55 asks to move N
+79 [B] dragon 55 moves N to (2,10)
+79 [B] dragon 56 asks to move N
+79 [B] dragon 56 moves N to (20,10)
+79 [B] dragon 57 asks to move E
+79 [B] dragon 57 moves E to (12,17)
+=== round 80 === A: 3 dragons, total length 7, queen dead | B: 36 dragons, total length 86, queen dead
+80 (12,8) pearl appears
+80 (0,9) pearl appears
+80 (24,9) pearl appears
+80 [B] dragon 2 asks to move N
+80 [B] dragon 2 moves N to (4,17)
+80 [A] dragon 5 indicator: col war pearl L3 s0
+80 [A] dragon 5 asks to move S  (cpu 6886019)
+80 [A] dragon 5 moves S to (1,19)
+80 [B] dragon 8 asks to move E
+80 [B] dragon 8 moves E to (16,15)
+80 [B] dragon 11 asks to move N
+80 [B] dragon 11 moves N to (19,23)
+80 [B] dragon 12 asks to move S
+80 [B] dragon 12 moves S to (15,23)
+80 [A] dragon 18 indicator: col war pearl L2 s0
+80 [A] dragon 18 asks to move W  (cpu 6827814)
+80 [A] dragon 18 moves W to (20,22)
+80 [B] dragon 19 asks to move E
+80 [B] dragon 19 moves E to (20,7)
+80 [B] dragon 20 asks to move W
+80 [B] dragon 20 moves W to (16,20)
+80 [B] dragon 22 asks to move N
+80 [B] dragon 22 moves N to (7,22)
+80 [B] dragon 23 asks to move E
+80 [B] dragon 23 moves E to (14,10)
+80 [B] dragon 25 asks to move W
+80 [B] dragon 25 moves W to (9,20)
+80 [B] dragon 27 asks to move E
+80 [B] dragon 27 moves E to (2,21)
+80 [B] dragon 28 asks to move E
+80 [B] dragon 28 moves E to (14,20)
+80 [B] dragon 29 asks to move S
+80 [B] dragon 29 moves S to (4,5)
+80 [B] dragon 30 asks to move W
+80 [B] dragon 30 moves W to (11,4)
+80 [B] dragon 32 asks to move E
+80 [B] dragon 32 moves E to (14,14)
+80 [B] dragon 33 asks to move N
+80 [B] dragon 33 moves N to (11,21)
+80 [B] dragon 34 asks to move W
+80 [B] dragon 34 moves W to (8,12)
+80 [B] dragon 35 asks to move W
+80 [B] dragon 35 moves W to (2,7)
+80 [B] dragon 36 asks to move W
+80 [B] dragon 36 moves W to (12,9)
+80 [B] dragon 38 asks to move W
+80 [B] dragon 38 moves W to (8,2)
+80 [B] dragon 39 asks to move N
+80 [B] dragon 39 moves N to (6,8)
+80 [B] dragon 40 asks to move S
+80 [B] dragon 40 moves S to (23,23)
+80 [B] dragon 41 asks to move N
+80 [B] dragon 41 moves N to (5,14)
+80 [B] dragon 42 asks to move S
+80 [B] dragon 42 moves S to (9,10)
+80 [B] dragon 43 asks to move E
+80 [B] dragon 43 moves E to (12,5)
+80 [A] dragon 44 indicator: cmb war hunt L2 s0
+80 [A] dragon 44 asks to move W  (cpu 6788553)
+80 [A] dragon 44 moves W to (0,23)
+80 [B] dragon 45 asks to move N
+80 [B] dragon 45 moves N to (24,10)
+80 [B] dragon 46 asks to move S
+80 [B] dragon 46 moves S to (7,19)
+80 [B] dragon 47 asks to move E
+80 [B] dragon 47 moves E to (12,12)
+80 [B] dragon 48 asks to move E
+80 [B] dragon 48 moves E to (9,6)
+80 [B] dragon 49 asks to move E
+80 [B] dragon 49 moves E to (15,11)
+80 [B] dragon 50 asks to move E
+80 [B] dragon 50 moves E to (17,18)
+80 [B] dragon 51 asks to move W
+80 [B] dragon 51 moves W to (1,17)
+80 [B] dragon 53 asks to move S
+80 [B] dragon 53 moves S to (9,16)
+80 [B] dragon 54 asks to move E
+80 [B] dragon 54 moves E to (15,7)
+80 [B] dragon 55 asks to move E
+80 [B] dragon 55 moves E to (3,10)
+80 [B] dragon 56 asks to move E
+80 [B] dragon 56 moves E to (21,10)
+80 [B] dragon 57 asks to move S
+80 [B] dragon 57 moves S to (12,18)
+=== round 81 === A: 3 dragons, total length 7, queen dead | B: 36 dragons, total length 86, queen dead
+81 (7,9) pearl appears
+81 (17,9) pearl appears
+81 (8,11) pearl appears
+81 (16,11) pearl appears
+81 (12,19) pearl appears
+81 [B] dragon 2 asks to move E
+81 [B] dragon 2 moves E to (5,17)
+81 [A] dragon 5 indicator: col war pearl L3 s0
+81 [A] dragon 5 asks to move W  (cpu 6854328)
+81 [A] dragon 5 moves W to (0,19)
+81 [B] dragon 8 asks to move N
+81 [B] dragon 8 moves N to (16,14)
+81 [B] dragon 11 asks to move W
+81 [B] dragon 11 moves W to (18,23)
+81 [B] dragon 12 asks to move S
+81 [B] dragon 12 moves S to (15,24)
+81 [A] dragon 18 indicator: col war pearl L2 s0
+81 [A] dragon 18 asks to move W  (cpu 6806211)
+81 [A] dragon 18 moves W to (19,22)
+81 [B] dragon 19 asks to move E
+81 [B] dragon 19 moves E to (21,7)
+81 [B] dragon 20 asks to move S
+81 [B] dragon 20 moves S to (16,21)
+81 [B] dragon 22 asks to move W
+81 [B] dragon 22 moves W to (6,22)
+81 [B] dragon 23 asks to move E
+81 [B] dragon 23 moves E to (15,10)
+81 [B] dragon 25 asks to move N
+81 [B] dragon 25 moves N to (9,19)
+81 [B] dragon 27 asks to move N
+81 [B] dragon 27 moves N to (2,20)
+81 [B] dragon 28 asks to move S
+81 [B] dragon 28 moves S to (14,21)
+81 [B] dragon 29 asks to move S
+81 (4,6) pearl taken
+81 [B] dragon 29 moves S to (4,6), eats a pearl
+81 [B] dragon 30 asks to move W
+81 [B] dragon 30 moves W to (10,4)
+81 [B] dragon 32 asks to move S
+81 [B] dragon 32 moves S to (14,15)
+81 [B] dragon 33 asks to move E
+81 [B] dragon 33 moves E to (12,21)
+81 [B] dragon 34 asks to move N
+81 (8,11) pearl taken
+81 [B] dragon 34 moves N to (8,11), eats a pearl
+81 [B] dragon 35 asks to move W
+81 [B] dragon 35 moves W to (1,7)
+81 [B] dragon 36 asks to move W
+81 [B] dragon 36 moves W to (11,9)
+81 [B] dragon 38 asks to move W
+81 [B] dragon 38 moves W to (7,2)
+81 [B] dragon 39 asks to move E
+81 [B] dragon 39 moves E to (7,8)
+81 [B] dragon 40 asks to move E
+81 [B] dragon 40 moves E to (24,23)
+81 [B] dragon 41 asks to move N
+81 [B] dragon 41 moves N to (5,13)
+81 [B] dragon 42 asks to move W
+81 [B] dragon 42 moves W to (8,10)
+81 [B] dragon 43 asks to move S
+81 [B] dragon 43 moves S to (12,22)
+81 [A] dragon 44 indicator: cmb war pearl L2 s0
+81 [A] dragon 44 asks to move N  (cpu 6255819)
+81 [A] dragon 44 moves N to (0,22)
+81 [B] dragon 45 asks to move N
+81 (24,9) pearl taken
+81 [B] dragon 45 moves N to (24,9), eats a pearl
+81 [B] dragon 46 asks to move S
+81 [B] dragon 46 moves S to (7,20)
+81 [B] dragon 47 asks to move S
+81 [B] dragon 47 moves S to (12,13)
+81 [B] dragon 48 asks to move E
+81 [B] dragon 48 moves E to (10,6)
+81 [B] dragon 49 asks to move E
+81 (16,11) pearl taken
+81 [B] dragon 49 moves E to (16,11), eats a pearl
+81 [B] dragon 50 asks to move E
+81 [B] dragon 50 moves E to (18,18)
+81 [B] dragon 51 asks to move W
+81 [B] dragon 51 moves W to (0,17)
+81 [B] dragon 53 asks to move W
+81 [B] dragon 53 moves W to (8,16)
+81 [B] dragon 54 asks to move S
+81 [B] dragon 54 moves S to (15,8)
+81 [B] dragon 55 asks to move E
+81 [B] dragon 55 moves E to (4,10)
+81 [B] dragon 56 asks to move S
+81 [B] dragon 56 moves S to (21,11)
+81 [B] dragon 57 asks to move S
+81 (12,19) pearl taken
+81 [B] dragon 57 moves S to (12,19), eats a pearl
+=== round 82 === A: 3 dragons, total length 7, queen dead | B: 36 dragons, total length 91, queen dead
+82 [B] dragon 2 asks to move S
+82 [B] dragon 2 moves S to (5,18)
+82 [A] dragon 5 indicator: col war pearl L3 s0
+82 [A] dragon 5 asks to move W  (cpu 6877101)
+82 [A] dragon 5 moves W to (24,19)
+82 [B] dragon 8 asks to move E
+82 [B] dragon 8 moves E to (17,14)
+82 [B] dragon 11 asks to move W
+82 [B] dragon 11 moves W to (17,23)
+82 [B] dragon 12 asks to move S
+82 [B] dragon 12 moves S to (15,0)
+82 [A] dragon 18 indicator: col war pearl L2 s0
+82 [A] dragon 18 asks to move N  (cpu 6267433)
+82 [A] dragon 18 moves N to (19,21)
+82 [B] dragon 19 asks to move S
+82 [B] dragon 19 moves S to (21,8)
+82 [B] dragon 20 asks to move E
+82 [B] dragon 20 moves E to (17,21)
+82 [B] dragon 22 asks to move W
+82 [B] dragon 22 moves W to (5,22)
+82 [B] dragon 23 asks to move E
+82 [B] dragon 23 moves E to (16,10)
+82 [B] dragon 25 asks to move N
+82 [B] dragon 25 moves N to (9,18)
+82 [B] dragon 27 asks to move W
+82 [B] dragon 27 moves W to (1,20)
+82 [B] dragon 28 asks to move S
+82 [B] dragon 28 moves S to (14,22)
+82 [B] dragon 29 asks to split off 2
+82 [B] dragon 29 splits off dragon 58, 2 cells (parent keeps 2)
+82 [B] dragon 30 asks to move W
+82 [B] dragon 30 moves W to (9,4)
+82 [B] dragon 32 asks to move S
+82 [B] dragon 32 moves S to (14,16)
+82 [B] dragon 33 asks to move S
+82 [B] dragon 33 moves S to (12,6)
+82 [B] dragon 34 asks to split off 2
+82 [B] dragon 34 splits off dragon 59, 2 cells (parent keeps 2)
+82 [B] dragon 35 asks to move S
+82 [B] dragon 35 moves S to (1,8)
+82 [B] dragon 36 asks to move W
+82 [B] dragon 36 moves W to (10,9)
+82 [B] dragon 38 asks to move N
+82 [B] dragon 38 moves N to (7,1)
+82 [B] dragon 39 asks to move N
+82 [B] dragon 39 moves N to (7,7)
+82 [B] dragon 40 asks to move N
+82 [B] dragon 40 moves N to (24,22)
+82 [B] dragon 41 asks to move E
+82 [B] dragon 41 moves E to (6,13)
+82 [B] dragon 42 asks to move W
+82 [B] dragon 42 moves W to (7,10)
+82 [B] dragon 43 asks to move W
+82 [B] dragon 43 moves W to (11,22)
+82 [A] dragon 44 indicator: cmb war pearl L2 s0
+82 [A] dragon 44 asks to move E  (cpu 6252644)
+82 [A] dragon 44 moves E to (1,22)
+82 [B] dragon 45 asks to split off 2
+82 [B] dragon 45 splits off dragon 60, 2 cells (parent keeps 2)
+82 [B] dragon 46 asks to move S
+82 [B] dragon 46 moves S to (7,21)
+82 [B] dragon 47 asks to move E
+82 [B] dragon 47 moves E to (13,13)
+82 [B] dragon 48 asks to move S
+82 [B] dragon 48 moves S to (10,7)
+82 [B] dragon 49 asks to move E
+82 [B] dragon 49 moves E to (17,11)
+82 [B] dragon 50 asks to move E
+82 [B] dragon 50 moves E to (19,18)
+82 [B] dragon 51 asks to move W
+82 [B] dragon 51 moves W to (24,17)
+82 [B] dragon 53 asks to move N
+82 [B] dragon 53 moves N to (8,15)
+82 [B] dragon 54 asks to move S
+82 [B] dragon 54 moves S to (15,9)
+82 [B] dragon 55 asks to move N
+82 [B] dragon 55 moves N to (4,9)
+82 [B] dragon 56 asks to move W
+82 [B] dragon 56 moves W to (20,11)
+82 [B] dragon 57 asks to move S
+82 (12,20) pearl taken
+82 [B] dragon 57 moves S to (12,20), eats a pearl
+82 [B] dragon 58 asks to move N
+82 [B] dragon 58 moves N to (4,2)
+82 [B] dragon 59 asks to move E
+82 [B] dragon 59 moves E to (10,11)
+82 [B] dragon 60 asks to move S
+82 [B] dragon 60 moves S to (24,13)
+=== round 83 === A: 3 dragons, total length 7, queen dead | B: 39 dragons, total length 92, queen dead
+83 (17,10) pearl appears
+83 (7,14) pearl appears
+83 [B] dragon 2 asks to move E
+83 [B] dragon 2 moves E to (6,18)
+83 [A] dragon 5 indicator: col war pearl L3 s0
+83 [A] dragon 5 asks to move S  (cpu 6899959)
+83 [A] dragon 5 moves S to (24,20)
+83 [B] dragon 8 asks to move N
+83 [B] dragon 8 moves N to (17,13)
+83 [B] dragon 11 asks to move S
+83 [B] dragon 11 moves S to (17,24)
+83 [B] dragon 12 asks to move S
+83 [B] dragon 12 moves S to (15,1)
+83 [A] dragon 18 indicator: col war pearl L2 s0
+83 [A] dragon 18 asks to move N  (cpu 6940307)
+83 [A] dragon 18 moves N to (19,20)
+83 [B] dragon 19 asks to move W
+83 [B] dragon 19 moves W to (20,8)
+83 [B] dragon 20 asks to move E
+83 [B] dragon 20 moves E to (18,21)
+83 [B] dragon 22 asks to move W
+83 [B] dragon 22 moves W to (4,22)
+83 [B] dragon 23 asks to move E
+83 (17,10) pearl taken
+83 [B] dragon 23 moves E to (17,10), eats a pearl
+83 [B] dragon 25 asks to move N
+83 [B] dragon 25 moves N to (9,17)
+83 [B] dragon 27 asks to move S
+83 [B] dragon 27 moves S to (1,21)
+83 [B] dragon 28 asks to move S
+83 [B] dragon 28 moves S to (14,23)
+83 [B] dragon 29 asks to move E
+83 (5,6) pearl taken
+83 [B] dragon 29 moves E to (5,6), eats a pearl
+83 [B] dragon 30 asks to move W
+83 [B] dragon 30 moves W to (8,4)
+83 [B] dragon 32 asks to move E
+83 [B] dragon 32 moves E to (15,16)
+83 [B] dragon 33 asks to move S
+83 [B] dragon 33 moves S to (12,7)
+83 [B] dragon 34 asks to move W
+83 [B] dragon 34 moves W to (7,11)
+83 [B] dragon 35 asks to move E
+83 [B] dragon 35 moves E to (2,8)
+83 [B] dragon 36 asks to move N
+83 [B] dragon 36 moves N to (10,8)
+83 [B] dragon 38 asks to move N
+83 [B] dragon 38 moves N to (7,0)
+83 [B] dragon 39 asks to move W
+83 [B] dragon 39 moves W to (6,7)
+83 [B] dragon 40 asks to move N
+83 [B] dragon 40 moves N to (24,21)
+83 [B] dragon 41 asks to move S
+83 [B] dragon 41 moves S to (6,14)
+83 [B] dragon 42 asks to move N
+83 (7,9) pearl taken
+83 [B] dragon 42 moves N to (7,9), eats a pearl
+83 [B] dragon 43 asks to move S
+83 [B] dragon 43 moves S to (11,23)
+83 [A] dragon 44 indicator: cmb war hunt L2 s0
+83 [A] dragon 44 asks to move E  (cpu 6280685)
+83 [A] dragon 44 moves E to (2,22)
+83 [B] dragon 45 asks to move E
+83 (0,9) pearl taken
+83 [B] dragon 45 moves E to (0,9), eats a pearl
+83 [B] dragon 46 asks to move E
+83 [B] dragon 46 moves E to (8,21)
+83 [B] dragon 47 asks to move N
+83 [B] dragon 47 moves N to (13,12)
+83 [B] dragon 48 asks to move E
+83 [B] dragon 48 moves E to (11,7)
+83 [B] dragon 49 asks to move S
+83 [B] dragon 49 moves S to (17,12)
+83 [B] dragon 50 asks to move S
+83 [B] dragon 50 moves S to (19,19)
+83 [B] dragon 51 asks to move W
+83 [B] dragon 51 moves W to (23,17)
+83 [B] dragon 53 asks to move N
+83 [B] dragon 53 moves N to (8,14)
+83 [B] dragon 54 asks to move W
+83 [B] dragon 54 moves W to (14,9)
+83 [B] dragon 55 asks to move W
+83 [B] dragon 55 moves W to (3,9)
+83 [B] dragon 56 asks to move S
+83 [B] dragon 56 moves S to (20,12)
+83 [B] dragon 57 asks to split off 2
+83 [B] dragon 57 splits off dragon 61, 2 cells (parent keeps 2)
+83 [B] dragon 58 asks to move N
+83 [B] dragon 58 moves N to (4,1)
+83 [B] dragon 59 asks to move E
+83 [B] dragon 59 moves E to (11,11)
+83 [B] dragon 60 asks to move E
+83 [B] dragon 60 moves E to (0,13)
+83 [B] dragon 61 asks to move N
+83 [B] dragon 61 moves N to (12,16)
+=== round 84 === A: 3 dragons, total length 7, queen dead | B: 40 dragons, total length 96, queen dead
+84 (14,8) pearl appears
+84 [B] dragon 2 asks to move S
+84 [B] dragon 2 moves S to (6,19)
+84 [A] dragon 5 indicator: col war pearl L3 s0
+84 [A] dragon 5 asks to move W  (cpu 6365354)
+84 [A] dragon 5 moves W to (23,20)
+84 [B] dragon 8 asks to move W
+84 [B] dragon 8 moves W to (16,13)
+84 [B] dragon 11 asks to move S
+84 [B] dragon 11 moves S to (17,0)
+84 [B] dragon 12 asks to move S
+84 [B] dragon 12 moves S to (15,2)
+84 [A] dragon 18 indicator: col war pearl L2 s0
+84 [A] dragon 18 asks to move E  (cpu 6328413)
+84 [A] dragon 18 moves E to (20,20)
+84 [B] dragon 19 asks to move W
+84 [B] dragon 19 moves W to (19,8)
+84 [B] dragon 20 asks to move S
+84 [B] dragon 20 moves S to (18,22)
+84 [B] dragon 22 asks to move N
+84 [B] dragon 22 moves N to (4,21)
+84 [B] dragon 23 asks to split off 2
+84 [B] dragon 23 splits off dragon 62, 2 cells (parent keeps 2)
+84 [B] dragon 25 asks to move E
+84 [B] dragon 25 moves E to (10,17)
+84 [B] dragon 27 asks to move W
+84 [B] dragon 27 moves W to (0,21)
+84 [B] dragon 28 asks to move S
+84 [B] dragon 28 moves S to (14,24)
+84 [B] dragon 29 asks to move N
+84 [B] dragon 29 moves N to (5,5)
+84 [B] dragon 30 asks to move S
+84 [B] dragon 30 moves S to (8,5)
+84 [B] dragon 32 asks to move S
+84 [B] dragon 32 moves S to (15,17)
+84 [B] dragon 33 asks to move S
+84 (12,8) pearl taken
+84 [B] dragon 33 moves S to (12,8), eats a pearl
+84 [B] dragon 34 asks to move S
+84 [B] dragon 34 moves S to (7,12)
+84 [B] dragon 35 asks to move N
+84 [B] dragon 35 moves N to (2,7)
+84 [B] dragon 36 asks to move W
+84 [B] dragon 36 moves W to (9,8)
+84 [B] dragon 38 asks to move N
+84 [B] dragon 38 moves N to (7,24)
+84 [B] dragon 39 asks to move N
+84 [B] dragon 39 moves N to (6,6)
+84 [B] dragon 40 asks to move W
+84 [B] dragon 40 moves W to (23,21)
+84 [B] dragon 41 asks to move S
+84 [B] dragon 41 moves S to (6,15)
+84 [B] dragon 42 asks to move E
+84 [B] dragon 42 moves E to (8,9)
+84 [B] dragon 43 asks to move E
+84 [B] dragon 43 moves E to (12,23)
+84 [A] dragon 44 indicator: cmb war pearl L2 s0
+84 [A] dragon 44 asks to move N  (cpu 6799755)
+84 [A] dragon 44 moves N to (2,21)
+84 [B] dragon 45 asks to move S
+84 [B] dragon 45 moves S to (0,10)
+84 [B] dragon 46 asks to move E
+84 [B] dragon 46 moves E to (9,21)
+84 [B] dragon 47 asks to move E
+84 [B] dragon 47 moves E to (14,12)
+84 [B] dragon 48 asks to move N
+84 [B] dragon 48 moves N to (11,6)
+84 [B] dragon 49 asks to move W
+84 [B] dragon 49 moves W to (16,12)
+84 [B] dragon 50 asks to move E
+84 [B] dragon 50 moves E to (20,19)
+84 [B] dragon 51 asks to move S
+84 [B] dragon 51 moves S to (23,18)
+84 [B] dragon 53 asks to move W
+84 (7,14) pearl taken
+84 [B] dragon 53 moves W to (7,14), eats a pearl
+84 [B] dragon 54 asks to move N
+84 (14,8) pearl taken
+84 [B] dragon 54 moves N to (14,8), eats a pearl
+84 [B] dragon 55 asks to move S
+84 [B] dragon 55 moves S to (3,10)
+84 [B] dragon 56 asks to move W
+84 [B] dragon 56 moves W to (19,12)
+84 [B] dragon 57 asks to move N
+84 [B] dragon 57 dies: hit itself
+84 (12,20) pearl appears
+84 [B] dragon 58 asks to move N
+84 [B] dragon 58 moves N to (4,0)
+84 [B] dragon 59 asks to move N
+84 (11,10) pearl taken
+84 [B] dragon 59 moves N to (11,10), eats a pearl
+84 [B] dragon 60 asks to move S
+84 [B] dragon 60 moves S to (0,14)
+84 [B] dragon 61 asks to move N
+84 [B] dragon 61 moves N to (12,15)
+84 [B] dragon 62 asks to move W
+84 [B] dragon 62 moves W to (13,10)
+=== round 85 === A: 3 dragons, total length 7, queen dead | B: 40 dragons, total length 98, queen dead
+85 (1,19) pearl appears
+85 (23,19) pearl appears
+85 (0,20) pearl appears
+85 [B] dragon 2 asks to move E
+85 [B] dragon 2 moves E to (7,19)
+85 [A] dragon 5 indicator: col war pearl L3 s0
+85 [A] dragon 5 asks to move N  (cpu 6365337)
+85 (23,19) pearl taken
+85 [A] dragon 5 moves N to (23,19), eats a pearl
+85 [B] dragon 8 asks to move S
+85 [B] dragon 8 moves S to (16,14)
+85 [B] dragon 11 asks to move S
+85 [B] dragon 11 moves S to (17,1)
+85 [B] dragon 12 asks to move S
+85 [B] dragon 12 moves S to (15,3)
+85 [A] dragon 18 indicator: col war pearl L2 s0
+85 [A] dragon 18 asks to move S  (cpu 6360595)
+85 [A] dragon 18 moves S to (20,21)
+85 [B] dragon 19 asks to move N
+85 [B] dragon 19 moves N to (19,7)
+85 [B] dragon 20 asks to move E
+85 [B] dragon 20 moves E to (19,22)
+85 [B] dragon 22 asks to move N
+85 [B] dragon 22 moves N to (4,20)
+85 [B] dragon 23 asks to move N
+85 (17,9) pearl taken
+85 [B] dragon 23 moves N to (17,9), eats a pearl
+85 [B] dragon 25 asks to move E
+85 [B] dragon 25 moves E to (11,17)
+85 [B] dragon 27 asks to move N
+85 (0,20) pearl taken
+85 [B] dragon 27 moves N to (0,20), eats a pearl
+85 [B] dragon 28 asks to move S
+85 [B] dragon 28 moves S to (14,0)
+85 [B] dragon 29 asks to move N
+85 [B] dragon 29 moves N to (5,4)
+85 [B] dragon 30 asks to move E
+85 [B] dragon 30 moves E to (9,5)
+85 [B] dragon 32 asks to move S
+85 [B] dragon 32 moves S to (15,18)
+85 [B] dragon 33 asks to split off 2
+85 [B] dragon 33 splits off dragon 63, 2 cells (parent keeps 2)
+85 [B] dragon 34 asks to move E
+85 [B] dragon 34 moves E to (8,12)
+85 [B] dragon 35 asks to move N
+85 [B] dragon 35 moves N to (2,6)
+85 [B] dragon 36 asks to move S
+85 [B] dragon 36 moves S to (9,9)
+85 [B] dragon 38 asks to move N
+85 [B] dragon 38 moves N to (7,23)
+85 [B] dragon 39 asks to move E
+85 [B] dragon 39 moves E to (7,6)
+85 [B] dragon 40 asks to move W
+85 [B] dragon 40 moves W to (22,21)
+85 [B] dragon 41 asks to move S
+85 [B] dragon 41 moves S to (6,16)
+85 [B] dragon 42 asks to move N
+85 [B] dragon 42 moves N to (8,8)
+85 [B] dragon 43 asks to move E
+85 [B] dragon 43 moves E to (13,23)
+85 [A] dragon 44 indicator: cmb war hunt L2 s0
+85 [A] dragon 44 asks to move E  (cpu 6272009)
+85 [A] dragon 44 moves E to (3,21)
+85 [B] dragon 45 asks to move W
+85 [B] dragon 45 moves W to (24,10)
+85 [B] dragon 46 asks to move N
+85 [B] dragon 46 moves N to (9,20)
+85 [B] dragon 47 asks to move S
+85 [B] dragon 47 moves S to (14,13)
+85 [B] dragon 48 asks to move N
+85 [B] dragon 48 moves N to (11,5)
+85 [B] dragon 49 asks to move W
+85 [B] dragon 49 moves W to (15,12)
+85 [B] dragon 50 asks to move E
+85 [B] dragon 50 moves E to (21,19)
+85 [B] dragon 51 asks to move S
+85 [A] dragon 5 dies: lost a head-to-head
+85 (23,19) pearl appears
+85 (24,20) pearl appears
+85 [B] dragon 51 dies: lost a head-to-head
+85 (23,18) pearl appears
+85 [B] dragon 53 asks to move N
+85 [B] dragon 53 moves N to (7,13)
+85 [B] dragon 54 asks to move N
+85 [B] dragon 54 moves N to (14,7)
+85 [B] dragon 55 asks to move E
+85 [B] dragon 55 moves E to (4,10)
+85 [B] dragon 56 asks to move S
+85 [B] dragon 56 moves S to (19,13)
+85 [B] dragon 58 asks to move W
+85 [B] dragon 58 moves W to (3,0)
+85 [B] dragon 59 asks to move W
+85 [B] dragon 59 moves W to (10,10)
+85 [B] dragon 60 asks to move S
+85 [B] dragon 60 moves S to (0,15)
+85 [B] dragon 61 asks to move N
+85 [B] dragon 61 moves N to (12,14)
+85 [B] dragon 62 asks to move S
+85 [B] dragon 62 moves S to (13,11)
+85 [B] dragon 63 asks to move S
+85 [B] dragon 63 dies: hit itself
+85 (12,21) pearl appears
+=== round 86 === A: 2 dragons, total length 4, queen dead | B: 39 dragons, total length 96, queen dead
+86 (5,7) pearl appears
+86 (12,9) pearl appears
+86 [B] dragon 2 asks to move N
+86 [B] dragon 2 moves N to (7,18)
+86 [B] dragon 8 asks to move S
+86 [B] dragon 8 moves S to (16,15)
+86 [B] dragon 11 asks to move E
+86 [B] dragon 11 moves E to (18,1)
+86 [B] dragon 12 asks to move E
+86 [B] dragon 12 moves E to (16,3)
+86 [A] dragon 18 indicator: col war pearl L2 s0
+86 [A] dragon 18 asks to move W  (cpu 6868724)
+86 [A] dragon 18 moves W to (19,21)
+86 [B] dragon 19 asks to move E
+86 [B] dragon 19 moves E to (20,7)
+86 [B] dragon 20 asks to move N
+86 [A] dragon 18 dies: lost a head-to-head
+86 (19,21) pearl appears
+86 [B] dragon 20 dies: lost a head-to-head
+86 (19,22) pearl appears
+86 [B] dragon 22 asks to move N
+86 [B] dragon 22 moves N to (4,19)
+86 [B] dragon 23 asks to move N
+86 [B] dragon 23 moves N to (17,8)
+86 [B] dragon 25 asks to move N
+86 [B] dragon 25 moves N to (11,16)
+86 [B] dragon 27 asks to move N
+86 [B] dragon 27 moves N to (0,19)
+86 [B] dragon 28 asks to move S
+86 [B] dragon 28 moves S to (14,1)
+86 [B] dragon 29 asks to move N
+86 [B] dragon 29 moves N to (5,3)
+86 [B] dragon 30 asks to move E
+86 [B] dragon 30 moves E to (10,5)
+86 [B] dragon 32 asks to move S
+86 [B] dragon 32 moves S to (15,19)
+86 [B] dragon 33 asks to move S
+86 (12,9) pearl taken
+86 [B] dragon 33 moves S to (12,9), eats a pearl
+86 [B] dragon 34 asks to move E
+86 [B] dragon 34 moves E to (9,12)
+86 [B] dragon 35 asks to move E
+86 [B] dragon 35 moves E to (3,6)
+86 [B] dragon 36 asks to move S
+86 [B] dragon 36 moves S to (9,10)
+86 [B] dragon 38 asks to move N
+86 [B] dragon 38 moves N to (7,22)
+86 [B] dragon 39 asks to move N
+86 [B] dragon 39 moves N to (7,5)
+86 [B] dragon 40 asks to move W
+86 [B] dragon 40 moves W to (21,21)
+86 [B] dragon 41 asks to move E
+86 [B] dragon 41 moves E to (7,16)
+86 [B] dragon 42 asks to move N
+86 [B] dragon 42 moves N to (8,7)
+86 [B] dragon 43 asks to move N
+86 [B] dragon 43 moves N to (13,22)
+86 [A] dragon 44 indicator: cmb war pearl L2 s0
+86 [A] dragon 44 asks to move N  (cpu 6219247)
+86 [A] dragon 44 moves N to (3,20)
+86 [B] dragon 45 asks to move S
+86 [B] dragon 45 moves S to (24,11)
+86 [B] dragon 46 asks to move E
+86 [B] dragon 46 moves E to (10,20)
+86 [B] dragon 47 asks to move S
+86 [B] dragon 47 moves S to (14,14)
+86 [B] dragon 48 asks to move E
+86 [B] dragon 48 moves E to (12,5)
+86 [B] dragon 49 asks to move N
+86 [B] dragon 49 moves N to (15,11)
+86 [B] dragon 50 asks to move E
+86 [B] dragon 50 moves E to (22,19)
+86 [B] dragon 53 asks to move E
+86 [B] dragon 53 moves E to (8,13)
+86 [B] dragon 54 asks to move N
+86 [B] dragon 54 moves N to (14,6)
+86 [B] dragon 55 asks to move E
+86 [B] dragon 55 moves E to (5,10)
+86 [B] dragon 56 asks to move S
+86 [B] dragon 56 moves S to (19,14)
+86 [B] dragon 58 asks to move N
+86 [B] dragon 58 moves N to (3,24)
+86 [B] dragon 59 asks to move S
+86 [B] dragon 59 moves S to (10,11)
+86 [B] dragon 60 asks to move S
+86 [B] dragon 60 moves S to (0,16)
+86 [B] dragon 61 asks to move N
+86 [B] dragon 61 moves N to (12,13)
+86 [B] dragon 62 asks to move S
+86 [B] dragon 62 moves S to (13,12)
+=== round 87 === A: 1 dragons, total length 2, queen dead | B: 38 dragons, total length 95, queen dead
+87 [B] dragon 2 asks to move E
+87 [B] dragon 2 moves E to (8,18)
+87 [B] dragon 8 asks to move S
+87 [B] dragon 8 moves S to (16,16)
+87 [B] dragon 11 asks to move E
+87 [B] dragon 11 moves E to (19,1)
+87 [B] dragon 12 asks to move E
+87 [B] dragon 12 moves E to (17,3)
+87 [B] dragon 19 asks to move E
+87 [B] dragon 19 moves E to (21,7)
+87 [B] dragon 22 asks to move N
+87 [B] dragon 22 moves N to (4,18)
+87 [B] dragon 23 asks to move N
+87 [B] dragon 23 moves N to (17,7)
+87 [B] dragon 25 asks to move W
+87 [B] dragon 25 moves W to (10,16)
+87 [B] dragon 27 asks to move E
+87 (1,19) pearl taken
+87 [B] dragon 27 moves E to (1,19), eats a pearl
+87 [B] dragon 28 asks to move E
+87 [B] dragon 28 moves E to (15,1)
+87 [B] dragon 29 asks to move N
+87 [B] dragon 29 moves N to (5,2)
+87 [B] dragon 30 asks to move S
+87 [B] dragon 30 moves S to (10,6)
+87 [B] dragon 32 asks to move S
+87 [B] dragon 32 moves S to (15,20)
+87 [B] dragon 33 asks to move S
+87 [B] dragon 33 moves S to (12,10)
+87 [B] dragon 34 asks to move S
+87 [B] dragon 34 moves S to (9,13)
+87 [B] dragon 35 asks to move S
+87 [B] dragon 35 moves S to (3,7)
+87 [B] dragon 36 asks to move W
+87 [B] dragon 36 moves W to (8,10)
+87 [B] dragon 38 asks to move N
+87 [B] dragon 38 moves N to (7,21)
+87 [B] dragon 39 asks to move N
+87 [B] dragon 39 moves N to (7,4)
+87 [B] dragon 40 asks to move W
+87 [B] dragon 40 moves W to (20,21)
+87 [B] dragon 41 asks to move E
+87 [B] dragon 41 moves E to (8,16)
+87 [B] dragon 42 asks to move W
+87 [B] dragon 42 moves W to (7,7)
+87 [B] dragon 43 asks to move N
+87 [B] dragon 43 moves N to (13,21)
+87 [A] dragon 44 indicator: cmb war hunt L2 s0
+87 [A] dragon 44 asks to move W  (cpu 6205730)
+87 [A] dragon 44 moves W to (2,20)
+87 [B] dragon 45 asks to move S
+87 [B] dragon 45 moves S to (24,12)
+87 [B] dragon 46 asks to move S
+87 [B] dragon 46 moves S to (10,21)
+87 [B] dragon 47 asks to move S
+87 [B] dragon 47 moves S to (14,15)
+87 [B] dragon 48 asks to move S
+87 [B] dragon 48 moves S to (12,22)
+87 [B] dragon 49 asks to move E
+87 [B] dragon 49 moves E to (16,11)
+87 [B] dragon 50 asks to move E
+87 (23,19) pearl taken
+87 [B] dragon 50 moves E to (23,19), eats a pearl
+87 [B] dragon 53 asks to move S
+87 [B] dragon 53 moves S to (8,14)
+87 [B] dragon 54 asks to move W
+87 [B] dragon 54 moves W to (13,6)
+87 [B] dragon 55 asks to move S
+87 [B] dragon 55 moves S to (5,11)
+87 [B] dragon 56 asks to move S
+87 [B] dragon 56 moves S to (19,15)
+87 [B] dragon 58 asks to move N
+87 [B] dragon 58 moves N to (3,23)
+87 [B] dragon 59 asks to move E
+87 [B] dragon 59 moves E to (11,11)
+87 [B] dragon 60 asks to move W
+87 [B] dragon 60 moves W to (24,16)
+87 [B] dragon 61 asks to move E
+87 [B] dragon 61 moves E to (13,13)
+87 [B] dragon 62 asks to move E
+87 [B] dragon 62 moves E to (14,12)
+=== round 88 === A: 1 dragons, total length 2, queen dead | B: 38 dragons, total length 97, queen dead
+88 (9,16) pearl appears
+88 (15,16) pearl appears
+88 [B] dragon 2 asks to move S
+88 [B] dragon 2 moves S to (8,19)
+88 [B] dragon 8 asks to move S
+88 [B] dragon 8 moves S to (16,17)
+88 [B] dragon 11 asks to move E
+88 [B] dragon 11 moves E to (20,1)
+88 [B] dragon 12 asks to move E
+88 [B] dragon 12 moves E to (18,3)
+88 [B] dragon 19 asks to move S
+88 [B] dragon 19 moves S to (21,8)
+88 [B] dragon 22 asks to move N
+88 [B] dragon 22 moves N to (4,17)
+88 [B] dragon 23 asks to move W
+88 [B] dragon 23 moves W to (16,7)
+88 [B] dragon 25 asks to move W
+88 (9,16) pearl taken
+88 [B] dragon 25 moves W to (9,16), eats a pearl
+88 [B] dragon 27 asks to split off 2
+88 [B] dragon 27 splits off dragon 64, 2 cells (parent keeps 2)
+88 [B] dragon 28 asks to move S
+88 [B] dragon 28 moves S to (15,2)
+88 [B] dragon 29 asks to move N
+88 [B] dragon 29 moves N to (5,1)
+88 [B] dragon 30 asks to move E
+88 [B] dragon 30 moves E to (11,6)
+88 [B] dragon 32 asks to move E
+88 [B] dragon 32 moves E to (16,20)
+88 [B] dragon 33 asks to move W
+88 [B] dragon 33 moves W to (11,10)
+88 [B] dragon 34 asks to move E
+88 [B] dragon 34 moves E to (10,13)
+88 [B] dragon 35 asks to move E
+88 [B] dragon 35 moves E to (4,7)
+88 [B] dragon 36 asks to move N
+88 [B] dragon 36 moves N to (8,9)
+88 [B] dragon 38 asks to move W
+88 [B] dragon 38 moves W to (6,21)
+88 [B] dragon 39 asks to move E
+88 [B] dragon 39 moves E to (8,4)
+88 [B] dragon 40 asks to move W
+88 (19,21) pearl taken
+88 [B] dragon 40 moves W to (19,21), eats a pearl
+88 [B] dragon 41 asks to move S
+88 [B] dragon 41 moves S to (8,17)
+88 [B] dragon 42 asks to move S
+88 [B] dragon 42 moves S to (7,8)
+88 [B] dragon 43 asks to move W
+88 (12,21) pearl taken
+88 [B] dragon 43 moves W to (12,21), eats a pearl
+88 [A] dragon 44 indicator: cmb war hunt L2 s0
+88 [A] dragon 44 asks to move S  (cpu 6792987)
+88 [A] dragon 44 moves S to (2,21)
+88 [B] dragon 45 asks to move S
+88 [B] dragon 45 moves S to (24,13)
+88 [B] dragon 46 asks to move S
+88 [B] dragon 46 moves S to (10,22)
+88 [B] dragon 47 asks to move S
+88 [B] dragon 47 moves S to (14,16)
+88 [B] dragon 48 asks to move S
+88 [B] dragon 48 moves S to (12,23)
+88 [B] dragon 49 asks to move N
+88 [B] dragon 49 moves N to (16,10)
+88 [B] dragon 50 asks to move S
+88 [B] dragon 50 moves S to (23,20)
+88 [B] dragon 53 asks to move W
+88 [B] dragon 53 moves W to (7,14)
+88 [B] dragon 54 asks to move S
+88 [B] dragon 54 moves S to (13,7)
+88 [B] dragon 55 asks to move S
+88 [B] dragon 55 moves S to (5,12)
+88 [B] dragon 56 asks to move S
+88 [B] dragon 56 moves S to (19,16)
+88 [B] dragon 58 asks to move W
+88 [B] dragon 58 moves W to (2,23)
+88 [B] dragon 59 asks to move E
+88 [B] dragon 59 moves E to (12,11)
+88 [B] dragon 60 asks to move W
+88 [B] dragon 60 moves W to (23,16)
+88 [B] dragon 61 asks to move S
+88 [B] dragon 61 moves S to (13,14)
+88 [B] dragon 62 asks to move E
+88 [B] dragon 62 moves E to (15,12)
+88 [B] dragon 64 asks to move S
+88 [B] dragon 64 moves S to (0,22)
+=== round 89 === A: 1 dragons, total length 2, queen dead | B: 39 dragons, total length 100, queen dead
+89 [B] dragon 2 asks to move S
+89 [B] dragon 2 moves S to (8,20)
+89 [B] dragon 8 asks to move E
+89 [B] dragon 8 moves E to (17,17)
+89 [B] dragon 11 asks to move E
+89 [B] dragon 11 moves E to (21,1)
+89 [B] dragon 12 asks to move E
+89 [B] dragon 12 moves E to (19,3)
+89 [B] dragon 19 asks to move S
+89 [B] dragon 19 moves S to (21,9)
+89 [B] dragon 22 asks to move E
+89 [B] dragon 22 moves E to (5,17)
+89 [B] dragon 23 asks to move W
+89 [B] dragon 23 moves W to (15,7)
+89 [B] dragon 25 asks to split off 2
+89 [B] dragon 25 splits off dragon 65, 2 cells (parent keeps 2)
+89 [B] dragon 27 asks to move E
+89 [B] dragon 27 moves E to (2,19)
+89 [B] dragon 28 asks to move W
+89 [B] dragon 28 moves W to (14,2)
+89 [B] dragon 29 asks to move N
+89 [B] dragon 29 moves N to (5,0)
+89 [B] dragon 30 asks to move S
+89 [B] dragon 30 moves S to (11,7)
+89 [B] dragon 32 asks to move S
+89 [B] dragon 32 moves S to (16,21)
+89 [B] dragon 33 asks to move N
+89 [B] dragon 33 moves N to (11,9)
+89 [B] dragon 34 asks to move N
+89 [B] dragon 34 moves N to (10,12)
+89 [B] dragon 35 asks to move E
+89 (5,7) pearl taken
+89 [B] dragon 35 moves E to (5,7), eats a pearl
+89 [B] dragon 36 asks to move N
+89 [B] dragon 36 moves N to (8,8)
+89 [B] dragon 38 asks to move W
+89 [B] dragon 38 moves W to (5,21)
+89 [B] dragon 39 asks to move E
+89 [B] dragon 39 moves E to (9,4)
+89 [B] dragon 40 asks to move S
+89 (19,22) pearl taken
+89 [B] dragon 40 moves S to (19,22), eats a pearl
+89 [B] dragon 41 asks to move E
+89 [B] dragon 41 moves E to (9,17)
+89 [B] dragon 42 asks to move S
+89 [B] dragon 42 moves S to (7,9)
+89 [B] dragon 43 asks to move W
+89 [B] dragon 43 moves W to (11,21)
+89 [A] dragon 44 indicator: cmb war pearl L2 s0
+89 [A] dragon 44 asks to move W  (cpu 6907612)
+89 [A] dragon 44 moves W to (1,21)
+89 [B] dragon 45 asks to move E
+89 [B] dragon 45 moves E to (0,13)
+89 [B] dragon 46 asks to move W
+89 [B] dragon 46 moves W to (9,22)
+89 [B] dragon 47 asks to move E
+89 (15,16) pearl taken
+89 [B] dragon 47 moves E to (15,16), eats a pearl
+89 [B] dragon 48 asks to move E
+89 [B] dragon 48 moves E to (13,23)
+89 [B] dragon 49 asks to move E
+89 [B] dragon 49 moves E to (17,10)
+89 [B] dragon 50 asks to move E
+89 (24,20) pearl taken
+89 [B] dragon 50 moves E to (24,20), eats a pearl
+89 [B] dragon 53 asks to move N
+89 [B] dragon 53 moves N to (7,13)
+89 [B] dragon 54 asks to move S
+89 [B] dragon 54 moves S to (13,8)
+89 [B] dragon 55 asks to move W
+89 [B] dragon 55 moves W to (4,12)
+89 [B] dragon 56 asks to move E
+89 [B] dragon 56 moves E to (20,16)
+89 [B] dragon 58 asks to move W
+89 [B] dragon 58 moves W to (1,23)
+89 [B] dragon 59 asks to move E
+89 [B] dragon 59 moves E to (13,11)
+89 [B] dragon 60 asks to move S
+89 [B] dragon 60 moves S to (23,17)
+89 [B] dragon 61 asks to move W
+89 [B] dragon 61 moves W to (12,14)
+89 [B] dragon 62 asks to move S
+89 [B] dragon 62 moves S to (15,13)
+89 [B] dragon 64 asks to move E
+89 [B] dragon 64 moves E to (1,22)
+89 [B] dragon 65 asks to move E
+89 [B] dragon 65 moves E to (12,17)
+=== round 90 === A: 1 dragons, total length 2, queen dead | B: 40 dragons, total length 104, queen dead
+90 (13,9) pearl appears
+90 [B] dragon 2 asks to move W
+90 [B] dragon 2 moves W to (7,20)
+90 [B] dragon 8 asks to move E
+90 [B] dragon 8 moves E to (18,17)
+90 [B] dragon 11 asks to move E
+90 [B] dragon 11 moves E to (22,1)
+90 [B] dragon 12 asks to move S
+90 [B] dragon 12 moves S to (19,4)
+90 [B] dragon 19 asks to move S
+90 [B] dragon 19 moves S to (21,10)
+90 [B] dragon 22 asks to move N
+90 [B] dragon 22 moves N to (5,16)
+90 [B] dragon 23 asks to move S
+90 [B] dragon 23 moves S to (15,8)
+90 [B] dragon 25 asks to move N
+90 [B] dragon 25 moves N to (9,15)
+90 [B] dragon 27 asks to move E
+90 [B] dragon 27 moves E to (3,19)
+90 [B] dragon 28 asks to move W
+90 [B] dragon 28 moves W to (13,2)
+90 [B] dragon 29 asks to move N
+90 [B] dragon 29 moves N to (5,24)
+90 [B] dragon 30 asks to move E
+90 [B] dragon 30 moves E to (12,7)
+90 [B] dragon 32 asks to move W
+90 [B] dragon 32 moves W to (15,21)
+90 [B] dragon 33 asks to move W
+90 [B] dragon 33 moves W to (10,9)
+90 [B] dragon 34 asks to move W
+90 [B] dragon 34 moves W to (9,12)
+90 [B] dragon 35 asks to move S
+90 [B] dragon 35 moves S to (5,8)
+90 [B] dragon 36 asks to move N
+90 [B] dragon 36 moves N to (8,7)
+90 [B] dragon 38 asks to move W
+90 [B] dragon 38 moves W to (4,21)
+90 [B] dragon 39 asks to move E
+90 [B] dragon 39 moves E to (10,4)
+90 [B] dragon 40 asks to split off 2
+90 [B] dragon 40 splits off dragon 66, 2 cells (parent keeps 2)
+90 [B] dragon 41 asks to move S
+90 [B] dragon 41 moves S to (9,18)
+90 [B] dragon 42 asks to move S
+90 [B] dragon 42 moves S to (7,10)
+90 [B] dragon 43 asks to move S
+90 [B] dragon 43 moves S to (11,22)
+90 [A] dragon 44 indicator: cmb war hunt L2 s0
+90 [A] dragon 44 asks to move N  (cpu 6322542)
+90 [A] dragon 44 moves N to (1,20)
+90 [B] dragon 45 asks to move S
+90 [B] dragon 45 moves S to (0,14)
+90 [B] dragon 46 asks to move S
+90 [B] dragon 46 moves S to (9,23)
+90 [B] dragon 47 asks to move E
+90 [B] dragon 47 moves E to (16,16)
+90 [B] dragon 48 asks to move S
+90 [B] dragon 48 moves S to (13,24)
+90 [B] dragon 49 asks to move N
+90 [B] dragon 49 moves N to (17,9)
+90 [B] dragon 50 asks to split off 2
+90 [B] dragon 50 splits off dragon 67, 2 cells (parent keeps 2)
+90 [B] dragon 53 asks to move E
+90 [B] dragon 53 moves E to (8,13)
+90 [B] dragon 54 asks to move S
+90 (13,9) pearl taken
+90 [B] dragon 54 moves S to (13,9), eats a pearl
+90 [B] dragon 55 asks to move W
+90 [B] dragon 55 moves W to (3,12)
+90 [B] dragon 56 asks to move N
+90 [B] dragon 56 moves N to (20,15)
+90 [B] dragon 58 asks to move W
+90 [B] dragon 58 moves W to (0,23)
+90 [B] dragon 59 asks to move E
+90 [B] dragon 59 moves E to (14,11)
+90 [B] dragon 60 asks to move S
+90 (23,18) pearl taken
+90 [B] dragon 60 moves S to (23,18), eats a pearl
+90 [B] dragon 61 asks to move W
+90 [B] dragon 61 moves W to (11,14)
+90 [B] dragon 62 asks to move W
+90 [B] dragon 62 moves W to (14,13)
+90 [B] dragon 64 asks to move E
+90 [B] dragon 64 moves E to (2,22)
+90 [B] dragon 65 asks to move E
+90 [B] dragon 65 moves E to (13,17)
+90 [B] dragon 66 asks to move S
+90 [B] dragon 66 moves S to (21,22)
+90 [B] dragon 67 asks to move W
+90 [B] dragon 67 moves W to (21,19)
+=== round 91 === A: 1 dragons, total length 2, queen dead | B: 42 dragons, total length 106, queen dead
+91 [B] dragon 2 asks to move W
+91 [B] dragon 2 moves W to (6,20)
+91 [B] dragon 8 asks to move S
+91 [B] dragon 8 moves S to (18,18)
+91 [B] dragon 11 asks to move S
+91 [B] dragon 11 moves S to (22,2)
+91 [B] dragon 12 asks to move S
+91 [B] dragon 12 moves S to (19,5)
+91 [B] dragon 19 asks to move S
+91 [B] dragon 19 moves S to (21,11)
+91 [B] dragon 22 asks to move N
+91 [B] dragon 22 moves N to (5,15)
+91 [B] dragon 23 asks to move W
+91 [B] dragon 23 moves W to (14,8)
+91 [B] dragon 25 asks to move E
+91 [B] dragon 25 moves E to (10,15)
+91 [B] dragon 27 asks to move N
+91 [B] dragon 27 moves N to (3,18)
+91 [B] dragon 28 asks to move W
+91 [B] dragon 28 moves W to (12,2)
+91 [B] dragon 29 asks to move E
+91 [B] dragon 29 moves E to (6,24)
+91 [B] dragon 30 asks to move N
+91 [B] dragon 30 moves N to (12,6)
+91 [B] dragon 32 asks to move W
+91 [B] dragon 32 moves W to (14,21)
+91 [B] dragon 33 asks to move N
+91 [B] dragon 33 moves N to (10,8)
+91 [B] dragon 34 asks to move N
+91 [B] dragon 34 moves N to (9,11)
+91 [B] dragon 35 asks to move W
+91 [B] dragon 35 moves W to (4,8)
+91 [B] dragon 36 asks to move W
+91 [B] dragon 36 moves W to (7,7)
+91 [B] dragon 38 asks to move N
+91 [B] dragon 38 moves N to (4,20)
+91 [B] dragon 39 asks to move S
+91 [B] dragon 39 moves S to (10,5)
+91 [B] dragon 40 asks to move S
+91 [B] dragon 40 moves S to (19,23)
+91 [B] dragon 41 asks to move S
+91 [B] dragon 41 moves S to (9,19)
+91 [B] dragon 42 asks to move W
+91 [B] dragon 42 moves W to (6,10)
+91 [B] dragon 43 asks to move E
+91 [B] dragon 43 moves E to (12,22)
+91 [A] dragon 44 indicator: cmb war hunt L2 s0
+91 [A] dragon 44 asks to move N  (cpu 6984048)
+91 [A] dragon 44 moves N to (1,19)
+91 [B] dragon 45 asks to move S
+91 [B] dragon 45 moves S to (0,15)
+91 [B] dragon 46 asks to move S
+91 [B] dragon 46 moves S to (9,24)
+91 [B] dragon 47 asks to move N
+91 [B] dragon 47 moves N to (16,15)
+91 [B] dragon 48 asks to move E
+91 [B] dragon 48 moves E to (14,24)
+91 [B] dragon 49 asks to move E
+91 [B] dragon 49 moves E to (18,9)
+91 [B] dragon 50 asks to move E
+91 [B] dragon 50 moves E to (0,20)
+91 [B] dragon 53 asks to move S
+91 [B] dragon 53 moves S to (8,14)
+91 [B] dragon 54 asks to split off 2
+91 [B] dragon 54 splits off dragon 68, 2 cells (parent keeps 2)
+91 [B] dragon 55 asks to move W
+91 [B] dragon 55 moves W to (2,12)
+91 [B] dragon 56 asks to move E
+91 [B] dragon 56 moves E to (21,15)
+91 [B] dragon 58 asks to move W
+91 [B] dragon 58 moves W to (24,23)
+91 [B] dragon 59 asks to move E
+91 [B] dragon 59 moves E to (15,11)
+91 [B] dragon 60 asks to move E
+91 [B] dragon 60 moves E to (24,18)
+91 [B] dragon 61 asks to move N
+91 [B] dragon 61 moves N to (11,13)
+91 [B] dragon 62 asks to move S
+91 [B] dragon 62 moves S to (14,14)
+91 [B] dragon 64 asks to move E
+91 [B] dragon 64 moves E to (3,22)
+91 [B] dragon 65 asks to move S
+91 [B] dragon 65 moves S to (13,18)
+91 [B] dragon 66 asks to move E
+91 [B] dragon 66 moves E to (22,22)
+91 [B] dragon 67 asks to move W
+91 [B] dragon 67 moves W to (20,19)
+91 [B] dragon 68 asks to move N
+91 [B] dragon 68 moves N to (13,5)
+=== round 92 === A: 1 dragons, total length 2, queen dead | B: 43 dragons, total length 106, queen dead
+92 (12,9) pearl appears
+92 [B] dragon 2 asks to move S
+92 [B] dragon 2 moves S to (6,21)
+92 [B] dragon 8 asks to move W
+92 [B] dragon 8 moves W to (17,18)
+92 [B] dragon 11 asks to move S
+92 (22,3) pearl taken
+92 [B] dragon 11 moves S to (22,3), eats a pearl
+92 [B] dragon 12 asks to move S
+92 (19,6) pearl taken
+92 [B] dragon 12 moves S to (19,6), eats a pearl
+92 [B] dragon 19 asks to move W
+92 [B] dragon 19 moves W to (20,11)
+92 [B] dragon 22 asks to move N
+92 [B] dragon 22 moves N to (5,14)
+92 [B] dragon 23 asks to move S
+92 [B] dragon 23 moves S to (14,9)
+92 [B] dragon 25 asks to move S
+92 [B] dragon 25 moves S to (10,16)
+92 [B] dragon 27 asks to move W
+92 [B] dragon 27 moves W to (2,18)
+92 [B] dragon 28 asks to move W
+92 [B] dragon 28 moves W to (11,2)
+92 [B] dragon 29 asks to move S
+92 [B] dragon 29 moves S to (6,0)
+92 [B] dragon 30 asks to move N
+92 [B] dragon 30 moves N to (12,21)
+92 [B] dragon 32 asks to move N
+92 [B] dragon 32 moves N to (14,20)
+92 [B] dragon 33 asks to move E
+92 [B] dragon 33 moves E to (11,8)
+92 [B] dragon 34 asks to move N
+92 [B] dragon 34 moves N to (9,10)
+92 [B] dragon 35 asks to move W
+92 [B] dragon 35 moves W to (3,8)
+92 [B] dragon 36 asks to move S
+92 [B] dragon 36 moves S to (7,8)
+92 [B] dragon 38 asks to move N
+92 [B] dragon 38 moves N to (4,19)
+92 [B] dragon 39 asks to move W
+92 [B] dragon 39 moves W to (9,5)
+92 [B] dragon 40 asks to move W
+92 [B] dragon 40 moves W to (18,23)
+92 [B] dragon 41 asks to move S
+92 [B] dragon 41 moves S to (9,20)
+92 [B] dragon 42 asks to move N
+92 [B] dragon 42 moves N to (6,9)
+92 [B] dragon 43 asks to move S
+92 [B] dragon 43 moves S to (12,23)
+92 [A] dragon 44 indicator: cmb war hunt L2 s0
+92 [A] dragon 44 asks to move E  (cpu 6893860)
+92 [A] dragon 44 moves E to (2,19)
+92 [B] dragon 45 asks to move E
+92 [B] dragon 45 moves E to (1,15)
+92 [B] dragon 46 asks to move S
+92 [B] dragon 46 moves S to (9,0)
+92 [B] dragon 47 asks to move N
+92 [B] dragon 47 moves N to (16,14)
+92 [B] dragon 48 asks to move E
+92 [B] dragon 48 moves E to (15,24)
+92 [B] dragon 49 asks to move S
+92 [B] dragon 49 moves S to (18,10)
+92 [B] dragon 50 asks to move E
+92 [B] dragon 50 moves E to (1,20)
+92 [B] dragon 53 asks to move S
+92 [B] dragon 53 moves S to (8,15)
+92 [B] dragon 54 asks to move W
+92 (12,9) pearl taken
+92 [B] dragon 54 moves W to (12,9), eats a pearl
+92 [B] dragon 55 asks to move N
+92 [B] dragon 55 moves N to (2,11)
+92 [B] dragon 56 asks to move S
+92 [B] dragon 56 moves S to (21,16)
+92 [B] dragon 58 asks to move S
+92 [B] dragon 58 moves S to (24,24)
+92 [B] dragon 59 asks to move E
+92 [B] dragon 59 moves E to (16,11)
+92 [B] dragon 60 asks to move N
+92 [B] dragon 60 moves N to (24,17)
+92 [B] dragon 61 asks to move N
+92 [B] dragon 61 moves N to (11,12)
+92 [B] dragon 62 asks to move W
+92 [B] dragon 62 moves W to (13,14)
+92 [B] dragon 64 asks to move S
+92 [B] dragon 64 moves S to (3,23)
+92 [B] dragon 65 asks to move S
+92 (13,19) pearl taken
+92 [B] dragon 65 moves S to (13,19), eats a pearl
+92 [B] dragon 66 asks to move N
+92 [B] dragon 66 moves N to (22,21)
+92 [B] dragon 67 asks to move S
+92 [B] dragon 67 moves S to (20,20)
+92 [B] dragon 68 asks to move E
+92 [B] dragon 68 moves E to (14,5)
+=== round 93 === A: 1 dragons, total length 2, queen dead | B: 43 dragons, total length 110, queen dead
+93 (6,12) pearl appears
+93 (18,12) pearl appears
+93 [B] dragon 2 asks to move S
+93 [B] dragon 2 moves S to (6,22)
+93 [B] dragon 8 asks to move W
+93 [B] dragon 8 moves W to (16,18)
+93 [B] dragon 11 asks to split off 2
+93 [B] dragon 11 splits off dragon 69, 2 cells (parent keeps 2)
+93 [B] dragon 12 asks to move E
+93 [B] dragon 12 moves E to (20,6)
+93 [B] dragon 19 asks to move S
+93 [B] dragon 19 moves S to (20,12)
+93 [B] dragon 22 asks to move N
+93 [B] dragon 22 moves N to (5,13)
+93 [B] dragon 23 asks to move E
+93 [B] dragon 23 moves E to (15,9)
+93 [B] dragon 25 asks to move E
+93 [B] dragon 25 moves E to (11,16)
+93 [B] dragon 27 asks to move S
+93 [A] dragon 44 dies: lost a head-to-head
+93 (2,19) pearl appears
+93 [B] dragon 27 dies: lost a head-to-head
+93 (2,18) pearl appears
+93 [B] dragon 28 asks to move W
+93 [B] dragon 28 moves W to (10,2)
+93 [B] dragon 29 asks to move S
+93 [B] dragon 29 moves S to (6,1)
+93 [B] dragon 30 asks to move W
+93 [B] dragon 30 moves W to (11,21)
+93 [B] dragon 32 asks to move N
+93 [B] dragon 32 moves N to (14,19)
+93 [B] dragon 33 asks to move N
+93 [B] dragon 33 moves N to (11,7)
+93 [B] dragon 34 asks to move E
+93 [B] dragon 34 moves E to (10,10)
+93 [B] dragon 35 asks to move N
+93 [B] dragon 35 moves N to (3,7)
+93 [B] dragon 36 asks to move W
+93 [B] dragon 36 moves W to (6,8)
+93 [B] dragon 38 asks to move W
+93 [B] dragon 38 moves W to (3,19)
+93 [B] dragon 39 asks to move W
+93 [B] dragon 39 moves W to (8,5)
+93 [B] dragon 40 asks to move N
+93 [B] dragon 40 moves N to (18,22)
+93 [B] dragon 41 asks to move W
+93 [B] dragon 41 moves W to (8,20)
+93 [B] dragon 42 asks to move E
+93 [B] dragon 42 moves E to (7,9)
+93 [B] dragon 43 asks to move E
+93 [B] dragon 43 moves E to (13,23)
+93 [B] dragon 45 asks to move E
+93 [B] dragon 45 moves E to (2,15)
+93 [B] dragon 46 asks to move W
+93 [B] dragon 46 moves W to (8,0)
+93 [B] dragon 47 asks to move E
+93 [B] dragon 47 moves E to (17,14)
+93 [B] dragon 48 asks to move E
+93 [B] dragon 48 moves E to (16,24)
+93 [B] dragon 49 asks to move W
+93 [B] dragon 49 moves W to (17,10)
+93 [B] dragon 50 asks to move S
+93 [B] dragon 50 moves S to (1,21)
+93 [B] dragon 53 asks to move E
+93 [B] dragon 53 moves E to (9,15)
+93 [B] dragon 54 asks to move S
+93 [B] dragon 54 moves S to (12,10)
+93 [B] dragon 55 asks to move W
+93 [B] dragon 55 moves W to (1,11)
+93 [B] dragon 56 asks to move S
+93 [B] dragon 56 moves S to (21,17)
+93 [B] dragon 58 asks to move S
+93 [B] dragon 58 moves S to (24,0)
+93 [B] dragon 59 asks to move S
+93 [B] dragon 59 moves S to (16,12)
+93 [B] dragon 60 asks to move E
+93 [B] dragon 60 moves E to (0,17)
+93 [B] dragon 61 asks to move W
+93 [B] dragon 61 moves W to (10,12)
+93 [B] dragon 62 asks to move N
+93 [B] dragon 62 moves N to (13,13)
+93 [B] dragon 64 asks to move S
+93 [B] dragon 64 moves S to (3,24)
+93 [B] dragon 65 asks to move W
+93 [B] dragon 65 moves W to (12,19)
+93 [B] dragon 66 asks to move E
+93 [B] dragon 66 moves E to (23,21)
+93 [B] dragon 67 asks to move W
+93 [B] dragon 67 moves W to (19,20)
+93 [B] dragon 68 asks to move E
+93 [B] dragon 68 moves E to (15,5)
+93 [B] dragon 69 asks to move W
+93 [B] dragon 69 moves W to (20,1)
+
+=== deaths ===
+A lost a head-to-head: 10
+B hit another dragon: 2
+B hit itself: 5
+B lost a head-to-head: 10
+queen of team B died in round 13: lost a head-to-head
+queen of team A died in round 52: lost a head-to-head

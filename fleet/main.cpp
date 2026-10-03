@@ -121,16 +121,34 @@ using namespace unswbc;
 #define QUEEN_SPACE_PEN 40000 // teammate head ending within 2 of the queen's head (PEN / 3.5 at distance 3)
 #endif
 #ifndef HUNTERS
-#define HUNTERS 0 // 1: part of the fleet hunts the enemy queen (no gain vs local opponents, whose queens die anyway)
+#define HUNTERS 1 // part of the fleet hunts in coordinated packs (enemy queen first, then long dragons)
 #endif
 #ifndef HUNT_START
-#define HUNT_START 80 // hunters start by this round (or as soon as expansion ends)
+#define HUNT_START 60 // hunters start by this round (or as soon as expansion ends)
 #endif
 #ifndef HUNTER_SHARE
-#define HUNTER_SHARE 4 // tenths of the non-leader fleet that hunt
+#define HUNTER_SHARE 3 // tenths of the non-leader fleet that hunt
 #endif
 #ifndef HUNTER_LEN
-#define HUNTER_LEN 5 // hunters grow to this before going in (strike reach = free + L - 2 steps)
+#define HUNTER_LEN 4 // hunters grow to this before going in (strike reach = free + L - 2 steps)
+#endif
+#ifndef HUNTER_SPLIT_LEN
+#define HUNTER_SPLIT_LEN 8 // hunters still split from this length (both halves can strike); 0 = never
+#endif
+#ifndef PACK_SIZE
+#define PACK_SIZE 3 // hunters sent at one long enemy dragon
+#endif
+#ifndef PREY_MIN_LEN
+#define PREY_MIN_LEN 8 // enemy dragons this long are worth a small dragon in a head-on
+#endif
+#ifndef PACK_REGROUP
+#define PACK_REGROUP 5 // a pack member this close to its prey waits for a mate (0 = off)
+#endif
+#ifndef ENDGAME_PACKS
+#define ENDGAME_PACKS 1 // our queen dead: small dragons hunt in packs, long ones keep growing
+#endif
+#ifndef AGGRO_EXPANSION
+#define AGGRO_EXPANSION 1 // while expanding: contest pearls nearer the enemy, push idle hunters toward its side
 #endif
 #ifndef PAID_REGICIDE
 #define PAID_REGICIDE 1 // strike the visible enemy queen from as far as free + paid steps allow
@@ -164,6 +182,24 @@ using namespace unswbc;
 #endif
 #ifndef SCOUT_PEARL_MARGIN
 #define SCOUT_PEARL_MARGIN 4 // a scout keeps its pearl only if it is this much closer than the portal
+#endif
+#ifndef UNKNOWN_EDGE_COST
+#define UNKNOWN_EDGE_COST 1 // >1: route cost of an edge nobody has seen (benchmarked at 2: about 8 wins worse)
+#endif
+#ifndef TARGET_COMMIT
+#define TARGET_COMMIT 1 // keep the current pearl unless another is clearly closer
+#endif
+#ifndef COMMIT_MARGIN
+#define COMMIT_MARGIN 4 // ... by this many steps and by 30%
+#endif
+#ifndef STALL_ROUNDS
+#define STALL_ROUNDS 12 // no progress toward a pearl for this long: give it up (0 = off)
+#endif
+#ifndef STALL_SKIP
+#define STALL_SKIP 30 // ... for this many rounds
+#endif
+#ifndef PREPOS_SLACK
+#define PREPOS_SLACK 15 // head for a future pearl when its spawn is within travel time + this (not just 25 rounds)
 #endif
 #ifndef QUEEN_CLEAR
 #define QUEEN_CLEAR 0 // >0: teammates keep this path distance from the queen's head (benchmarked at 4: fewer wall deaths, more head-ons)
@@ -403,6 +439,8 @@ bool amQueen = false;
 bool ourQueenDead = false, enemyQueenDead = false;
 int prevEnemyQueenCell = -1;
 int ourQueenSpawn = -1; // where our queen started (the enemy queen started at its mirror image)
+int lastPearl = -1;     // the pearl this dragon went for last turn
+int stallTarget = -1, stallBest = INF, stallRound = 0; // progress toward the current pearl
 bool isHunter = false;
 bool isGuard = false;
 bool hunterSlot = false; // in the hunter group (scouts portals before the hunt starts)
@@ -1343,9 +1381,56 @@ FloodRes flood(int start, int tailCell, int cap)
 
 // Optimistic shortest paths for planning: unknown edges count as open, kelp and
 // unlocated portals as closed, known portals as shortcuts.
+std::vector<int> planSteps;
+std::vector<std::vector<int>> planRing;
+
 void plan_bfs(int start, std::vector<int>& dist)
 {
     std::fill(dist.begin(), dist.end(), INF);
+    if (UNKNOWN_EDGE_COST > 1)
+    {
+        // Dial's algorithm: known edges cost 1, edges nobody has seen cost
+        // more (in a maze most of them turn out to be kelp). Bodies are still
+        // timed by the number of steps, not by the cost.
+        int const K = UNKNOWN_EDGE_COST + 1;
+        planRing.resize(K);
+        for (auto& b : planRing)
+            b.clear();
+        dist[start] = 0;
+        planSteps[start] = 0;
+        planRing[0].push_back(start);
+        int pending = 1;
+        for (int cost = 0; pending > 0; cost++)
+        {
+            auto& bk = planRing[cost % K];
+            for (std::size_t i = 0; i < bk.size(); i++)
+            {
+                int const c = bk[i];
+                if (dist[c] != cost)
+                    continue;
+                for (int d = 0; d < 4; d++)
+                {
+                    int n = cross(c, d);
+                    int w = 1;
+                    if (n == -2)
+                    {
+                        n = nb(c, d);
+                        w = UNKNOWN_EDGE_COST;
+                    }
+                    int const nt = planSteps[c] + 1;
+                    if (n < 0 || cost + w >= dist[n] || !passable(n, nt))
+                        continue;
+                    dist[n] = cost + w;
+                    planSteps[n] = nt;
+                    planRing[(cost + w) % K].push_back(n);
+                    pending++;
+                }
+            }
+            pending -= static_cast<int>(bk.size());
+            bk.clear();
+        }
+        return;
+    }
     bfsQ.clear();
     bfsQ.push_back(start);
     dist[start] = 0;
@@ -1450,7 +1535,7 @@ void compute_fleet_state()
     // once the opening is over. The queen and the leaders never hunt.
     {
         std::uint32_t const hh = static_cast<std::uint32_t>(me) * 2246822519u + 3266489917u;
-        bool const active = HUNTERS && !enemyQueenDead && !ourQueenDead && (R >= HUNT_START || !expansionPhase);
+        bool const active = HUNTERS && !(enemyQueenDead && !ourQueenDead) && (R >= HUNT_START || !expansionPhase);
         int const slot = static_cast<int>((hh >> 13) % 10);
         hunterSlot = !amQueen && slot < HUNTER_SHARE;
         isHunter = active && !amQueen && !isLeader && slot < HUNTER_SHARE;
@@ -1618,7 +1703,7 @@ std::vector<PearlCand> gather_pearls()
             conf = vis[c] ? 1.0 : std::max(0.2, 0.9 - 0.02 * (R - pearlRound[c]));
         else if (pearlState[c] == 2)
             conf = std::max(0.15, 0.55 - 0.01 * (R - pearlRound[c]));
-        else if (nextSpawn[c] >= R && nextSpawn[c] - R <= 25)
+        else if (nextSpawn[c] >= R && nextSpawn[c] - R <= std::max(25, (distHead[c] < INF ? distHead[c] : 0) + PREPOS_SLACK))
         {
             conf = nextEst[c] ? 0.35 : 0.6;
             appear = nextSpawn[c];
@@ -1631,7 +1716,7 @@ std::vector<PearlCand> gather_pearls()
         // Contested: an enemy head is clearly closer.
         for (auto const& h : heads)
             if (!h.mine && manhattan(h.cell, c) + 1 < eta)
-                conf *= 0.35;
+                conf *= (AGGRO_EXPANSION && expansionPhase && !amQueen) ? 0.8 : 0.35;
         // The queen leaves pearls near recently reported enemies to others.
         if (amQueen)
             for (auto const& e : enemyReps)
@@ -1877,7 +1962,7 @@ std::vector<int> simulate_steps(std::vector<int> b, int len, std::vector<int> co
 // segments behind and the rest leaves as a child, whose head is our old tail
 // outside the dead end. This searches our own moves through known water;
 // other dragons keep their bodies. Value = net segments won.
-int diveNodes = 0;
+int diveNodes = 0, diveCap = DIVE_NODE_CAP;
 
 // After a split of all but the front 2 segments, can the child get away?
 bool split_child_escapes(std::vector<int> const& b, int len)
@@ -1903,7 +1988,7 @@ double dive_rec(std::vector<int> const& b, int len, int depth, int eaten, std::v
     FloodRes const f = flood(h, tailCell, 2 * len + 4);
     if (f.tail || f.area + (f.frontier ? len : 0) >= 2 * len + 4 || (FRONTIER_OPEN && !isLeader && f.frontier))
         return eaten + 0.5; // back in open water: everything eaten is profit, nobody lost
-    if (depth >= DIVE_DEPTH || ++diveNodes > DIVE_NODE_CAP)
+    if (depth >= DIVE_DEPTH || ++diveNodes > diveCap)
         return eaten - 3; // unresolved: assume the split and a bit more
     double best = -1e9;
     for (int d = 0; d < 4; d++)
@@ -2202,6 +2287,107 @@ int enemy_queen_target()
     return mirror_cell(ks[me % ks.size()], ourQueenSpawn);
 }
 
+// ---------------------------------------------------------------------------
+// Packs: hunters (and, once our queen is dead, every small dragon) share out
+// prey the same way pearls are shared: every dragon solves the same greedy
+// matching from what the fleet knows, so packs form without negotiation.
+// ---------------------------------------------------------------------------
+int hunter_slot(int id)
+{
+    std::uint32_t const hh = static_cast<std::uint32_t>(id) * 2246822519u + 3266489917u;
+    return static_cast<int>((hh >> 13) % 10);
+}
+
+bool hunts_now()
+{
+    return HUNTERS && !(enemyQueenDead && !ourQueenDead) && (R >= HUNT_START || !expansionPhase);
+}
+
+// Would teammate `id` (length len) be in a pack right now?
+bool pack_member(int id, int len, bool leader)
+{
+    if (id == queenId || leader)
+        return false;
+    if (ENDGAME_PACKS && ourQueenDead && len <= 6)
+        return true;
+    return hunts_now() && hunter_slot(id) < HUNTER_SHARE && len >= HUNTER_LEN;
+}
+
+struct Prey
+{
+    int cell, id, len;
+    bool queen;
+};
+std::vector<Prey> preyList;
+int myPrey = -1, myPackSize = 0;
+
+void assign_prey()
+{
+    preyList.clear();
+    myPrey = -1;
+    myPackSize = 0;
+    int const qt = enemyQueenDead ? -1 : enemy_queen_target();
+    if (qt >= 0)
+        preyList.push_back({qt, enemyQueenId, 0, true});
+    // Long enemy dragons: when the queens no longer decide the game, or while
+    // nobody knows where the enemy queen is.
+    if (ourQueenDead || enemyQueenDead || qt < 0)
+        for (auto const& e : enemyReps)
+            if (e.id != enemyQueenId && R - e.round <= 6 && e.len >= PREY_MIN_LEN)
+                preyList.push_back({e.cell, e.id, e.len, false});
+    if (preyList.empty())
+        return;
+
+    struct Agent
+    {
+        int id, cell;
+    };
+    std::vector<Agent> agents{{me, body[0]}};
+    for (auto const& [id, st] : fleet)
+        if (id != me && R - st.round <= 4 && pack_member(id, st.len, st.leader))
+            agents.push_back({id, st.cell});
+    struct Pair
+    {
+        double cost;
+        int a, p;
+    };
+    std::vector<Pair> pairs;
+    for (int pi = 0; pi < static_cast<int>(preyList.size()); pi++)
+        for (int ai = 0; ai < static_cast<int>(agents.size()); ai++)
+        {
+            int const d = agents[ai].id == me ? dist_to(distHead, preyList[pi].cell) : manhattan(agents[ai].cell, preyList[pi].cell);
+            if (d >= INF)
+                continue;
+            double const c = d - (preyList[pi].queen ? 8.0 : 0.25 * preyList[pi].len) + agents[ai].id * 1e-6;
+            pairs.push_back({c, ai, pi});
+        }
+    std::sort(pairs.begin(), pairs.end(), [](Pair const& x, Pair const& y) { return x.cost < y.cost; });
+    std::vector<int> taken(preyList.size(), 0);
+    std::vector<char> used(agents.size(), 0);
+    for (auto const& pr : pairs)
+    {
+        int const cap = preyList[pr.p].queen ? 1000 : PACK_SIZE;
+        if (used[pr.a] || taken[pr.p] >= cap)
+            continue;
+        used[pr.a] = 1;
+        taken[pr.p]++;
+        if (agents[pr.a].id == me)
+            myPrey = pr.p;
+    }
+    if (myPrey >= 0)
+        myPackSize = taken[myPrey];
+}
+
+// Pack mates (other than us) within `r` of a cell, from fleet reports.
+int mates_near(int cell, int r)
+{
+    int k = 0;
+    for (auto const& [id, st] : fleet)
+        if (id != me && R - st.round <= 3 && pack_member(id, st.len, st.leader) && manhattan(st.cell, cell) <= r)
+            k++;
+    return k;
+}
+
 // Shortest step sequence that ends in the enemy queen's head. Other dragons
 // stand still during our turn; our own body follows us. Steps past the free
 // ones cost a segment each, which does not matter: a head-on kills us anyway.
@@ -2348,13 +2534,14 @@ void decide(Controller& ct)
     // Dead ends with pearls (non-queens): worth it when the pearls pay for
     // the survival split at the bottom (the user's compensation rule).
     double bestDive = -1e9;
-    // Dives are for small expendable dragons; the node budget is per turn
-    // (each node floods ~2L cells, so long dragons would be expensive).
-    diveNodes = 0;
-    if (DIVE_ENABLE && !amQueen && !isLeader && L <= 16)
+    // Each dive node floods ~2L+4 cells, so the node budget shrinks with
+    // length: a long dragon costs no more per candidate than a short one.
+    diveCap = DIVE_NODE_CAP * 12 / std::max(12, 2 * L + 4);
+    if (DIVE_ENABLE && !amQueen)
         for (auto& cd : cands)
             if (cd.legal && !cd.blind && !cd.ok1 && !cd.nb1.empty() && !contested[cd.dest])
             {
+                diveNodes = 0;
                 std::vector<int> ec;
                 if (cd.eat)
                     ec.push_back(cd.dest);
@@ -2434,6 +2621,26 @@ void decide(Controller& ct)
                     return act_moves(ct, path, "regicide");
                 }
             }
+    // Pack members: work out the shared prey, and strike a long enemy dragon
+    // when its head is within reach (a short dragon for a long one).
+    bool const packer = HUNTERS && !amQueen && !isLeader && !isGuard && (isHunter || (ENDGAME_PACKS && ourQueenDead && L <= 6));
+    if (packer)
+    {
+        assign_prey();
+        int const preyId = myPrey >= 0 ? preyList[myPrey].id : -1;
+        for (auto const& h : heads)
+            if (!h.mine && h.id != enemyQueenId && (h.id == preyId || h.len >= std::max(PREY_MIN_LEN, L + 4)))
+            {
+                int const reach = std::min(REGICIDE_MAX, free_steps() + std::max(0, L - 2));
+                std::vector<int> const path = regicide_path(h.cell, reach);
+                set_body(body, L);
+                if (!path.empty())
+                {
+                    queue_fact(msg_danger(h.cell, 1), 70, 2);
+                    return act_moves(ct, path, "pack-strike");
+                }
+            }
+    }
     if (!amQueen && !enemyQueenDead && !queenAdjacent)
     {
         bool near = false;
@@ -2564,7 +2771,24 @@ void decide(Controller& ct)
     int target = -1;
     int portalDir = -1;
     char const* why = "explore";
-    int const pi = choose_pearl(pearls);
+    int pi = choose_pearl(pearls);
+    // Commitment: switching pearls every other turn wastes the moves made so
+    // far (in a maze the two pearls are often in different corridors).
+    if (TARGET_COMMIT && lastPearl >= 0 && !amQueen)
+    {
+        int prevIdx = -1;
+        for (int k = 0; k < static_cast<int>(pearls.size()); k++)
+            if (pearls[k].cell == lastPearl)
+                prevIdx = k;
+        if (prevIdx >= 0 && prevIdx != pi && distHead[lastPearl] < INF)
+        {
+            int const dPrev = distHead[lastPearl];
+            int const dNew = pi >= 0 ? distHead[pearls[pi].cell] : INF;
+            bool const clearlyBetter = pi >= 0 && dNew + COMMIT_MARGIN <= dPrev && dNew * 10 <= dPrev * 7;
+            if (!clearlyBetter)
+                pi = prevIdx;
+        }
+    }
     if (pi >= 0)
     {
         target = pearls[pi].cell;
@@ -2657,14 +2881,26 @@ void decide(Controller& ct)
         }
     }
 
-    // Hunters: once long enough to strike from a distance, go for the queen.
-    if (isHunter && L >= HUNTER_LEN && !feedPhase && (target < 0 || std::string(why) != "pearl" || distHead[target] > 2))
+    // Packs: go for the shared prey; the first one there waits a little for
+    // a mate so the pack arrives together (alone, it just goes in).
+    if (packer && !feedPhase && (L >= HUNTER_LEN || ourQueenDead) && myPrey >= 0 &&
+        (target < 0 || std::string(why) != "pearl" || distHead[target] > 2))
     {
-        int const qt = enemy_queen_target();
-        if (qt >= 0 && distHead[qt] < INF)
+        Prey const& pr = preyList[myPrey];
+        if (dist_to(distHead, pr.cell) < INF)
         {
-            target = qt;
-            why = "hunter";
+            target = pr.cell;
+            why = pr.queen ? "hunter" : "pack";
+            bool preyInView = false;
+            for (auto const& h : heads)
+                if (!h.mine && h.id == pr.id)
+                    preyInView = true;
+            if (PACK_REGROUP > 0 && myPackSize >= 2 && !preyInView && manhattan(head, pr.cell) <= PACK_REGROUP &&
+                mates_near(pr.cell, PACK_REGROUP + 3) == 0)
+            {
+                target = -1;
+                why = "regroup";
+            }
         }
     }
 
@@ -2749,8 +2985,45 @@ void decide(Controller& ct)
             why = "portal";
         }
     }
-    if (target < 0 && !(GUARDS && amQueen && enemyQueenDead) && std::string(why) != "guard")
+    if (AGGRO_EXPANSION && target < 0 && hunterSlot && expansionPhase && !isLeader && !isGuard)
+    {
+        // Take the middle early: idle hunter-group dragons head for the enemy
+        // side (the mirror image of our queen's start), past the centre.
+        int const qt = enemyQueenDead ? -1 : enemy_queen_target();
+        if (qt >= 0 && distHead[qt] < INF)
+        {
+            target = qt;
+            why = "push";
+        }
+    }
+    if (target < 0 && !(GUARDS && amQueen && enemyQueenDead) && std::string(why) != "guard" && std::string(why) != "regroup")
         target = choose_explore_goal();
+
+    // Stalled: no step closer to this pearl for STALL_ROUNDS turns (it is
+    // behind kelp we keep running into): leave it to others for a while.
+    if (std::string(why) == "pearl" && target >= 0)
+    {
+        int const dNow = distHead[target];
+        if (target != stallTarget)
+        {
+            stallTarget = target;
+            stallBest = dNow;
+            stallRound = R;
+        }
+        else if (dNow < stallBest)
+        {
+            stallBest = dNow;
+            stallRound = R;
+        }
+        else if (STALL_ROUNDS > 0 && R - stallRound >= STALL_ROUNDS)
+        {
+            skipPearl[target] = R + STALL_SKIP;
+            stallTarget = -1;
+        }
+        lastPearl = target;
+    }
+    else
+        lastPearl = -1;
 
     // ---- 3. Feeding sacrifice (section 13) ----------------------------------
     if (feedPhase && feedLeader >= 0 && L >= 3 && units > 2)
@@ -2785,7 +3058,7 @@ void decide(Controller& ct)
         else if (calm && R < EARLY_SPLIT_ROUNDS && units < QUEEN_SEED_UNITS && L >= 5 && ct.can_split(2) && child_can_escape(2))
             return act_split(ct, 2, "queen-seed");
     }
-    else if (calm && !isHunter && L >= EARLY_SPLIT_MIN_LEN && (EXPANSION ? R < EXP_END && !isLeader : R < EARLY_SPLIT_ROUNDS) && room_for_more() &&
+    else if (calm && (!isHunter || (HUNTER_SPLIT_LEN > 0 && L >= HUNTER_SPLIT_LEN)) && L >= EARLY_SPLIT_MIN_LEN && (EXPANSION ? R < EXP_END && !isLeader : R < EARLY_SPLIT_ROUNDS) && room_for_more() &&
              ct.can_split(L / 2) && child_can_escape(L / 2))
         return act_split(ct, L / 2, "grow-fleet");
 
@@ -3226,6 +3499,7 @@ void init_world(Controller& ct, Game& game)
     pathStamp.assign(N, 0);
     pathTime.assign(N, 0);
     skipPearl.assign(N, 0);
+    planSteps.assign(N, 0);
     qThreat.assign(N, INF);
     qThreatVis.assign(N, INF);
     qDist.assign(N, INF);

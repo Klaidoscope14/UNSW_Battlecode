@@ -1,0 +1,17 @@
+M977648.replay  Around UNSW  winner B (roundLimit)  us=A  rounds 500  B-queen r73 hit a wall; A-queen r121 lost a head-to-head
+M977649.replay  Australia  winner B (roundLimit)  us=A  rounds 500  A-queen r169 lost a head-to-head; B-queen r315 lost a head-to-head
+M977650.replay  Autarky  winner A (roundLimit)  us=A  rounds 500  B-queen r160 lost a head-to-head
+M977651.replay  Default  winner A (teamEliminated)  us=A  rounds 369  B-queen r3 lost a head-to-head
+M977652.replay  Devil  winner B (teamEliminated)  us=A  rounds 197  A-queen r183 lost a head-to-head
+M977653.replay  Islands  winner A (roundLimit)  us=A  rounds 500  B-queen r62 lost a head-to-head
+M977654.replay  Maze  winner A (roundLimit)  us=A  rounds 500  B-queen r218 hit itself
+M977655.replay  Portals  winner B (roundLimit)  us=A  rounds 500  B-queen r50 hit a wall; A-queen r312 lost a head-to-head
+M977656.replay  Prisoners Dilemma  winner B (teamEliminated)  us=A  rounds 52  B-queen r15 lost a head-to-head; A-queen r51 lost a head-to-head
+M977657.replay  Queen Of Spades  winner B (roundLimit)  us=A  rounds 500  B-queen r52 hit a wall; A-queen r322 lost a head-to-head
+M977658.replay  Schooltime  winner B (roundLimit)  us=A  rounds 500  no queen deaths
+M977659.replay  Slithery Fight  winner A (roundLimit)  us=A  rounds 500  B-queen r380 lost a head-to-head
+M977660.replay  Stripes  winner A (teamEliminated)  us=A  rounds 68  B-queen r67 lost a head-to-head
+M977661.replay  Tower Defense  winner B (roundLimit)  us=A  rounds 500  A-queen r281 lost a head-to-head; B-queen r342 hit a wall
+M977662.replay  Trauma  winner A (roundLimit)  us=A  rounds 500  B-queen r32 hit another dragon
+M977663.replay  Trophy  winner B (teamEliminated)  us=A  rounds 94  B-queen r13 lost a head-to-head; A-queen r52 lost a head-to-head
+M977664.replay  weakhold  winner A (roundLimit)  us=A  rounds 500  A-queen r302 hit itself; B-queen r419 lost a head-to-head
