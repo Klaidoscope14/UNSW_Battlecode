@@ -1,0 +1,61 @@
+AROUND UNSW  -  Low Cortisol vs Vibing++  (reconstructed from Around_UNSW.txt)
+=============================================================================
+Map: 64x64, xy-symmetric, open border (wraps), light kelp (0.21 edges/cell), 8 portal edges,
+     10 starting dragons per side (lengths 2-10). We moved first (our queen = dragon 0).
+Result: our queen died r98. The log stops at r397 with both teams still alive (36 of ours,
+     45 of theirs) - the copied log looks truncated; Vibing++ was far ahead on every tiebreak.
+
+Method: every dragon's body was rebuilt move by move from the log (our logged lengths match the
+rebuild on every turn), so the numbers below are exact, not estimates.
+
+1. SCOREBOARD (alive dragons / total length / queen length / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     25        18    38     2       3     |      16    46     5       5
+     50        24    59     3       4     |      43   115     5       7
+     75        34    77     2       4     |      62   172     5      10
+    100        35    90  dead       4     |      60   207     7      11
+    150        43   113  dead       5     |      61   253    22      22
+    200        35   101  dead       6     |      61   270    27      27
+    300        56   144  dead       6     |      60   323    27      34
+    397        36   132  dead      10     |      45   381    34      62
+   Pearls eaten: us 854, Vibing++ 2012.   Map share (cells nearer their heads): 54% r25 -> 77% r100 -> ~80%.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - Opening tempo: 16 splits and 36 pearls in rounds 1-30 (us 11 / 12). Reached 40 dragons at r47
+   and their plateau of 60-62 dragons at r71. We only reached 20 at r38 and 40 at r97.
+ - Fleet plateau: held ~61 dragons from r75 to r350. That is 62 = their cap on the 64-unit limit.
+ - Speed: 14% of their move orders were multi-step (2-3 cells using free steps); ours 1.1%.
+   Their dragons were longer: 24% of non-queen dragon-turns at length >= 5 (ours 6%).
+ - Raiding: they ate 560 pearls on OUR half of the map; we ate 15 on theirs.
+ - Spawn camping: at the moment a pearl appeared, their nearest head was a median 3 cells away
+   (ours 12). 19% of all spawns had a Vibing++ head within 1 cell already.
+ - Self-destruct recycling: 313 deliberate deaths (they order an illegal "split off 1"). 84% of
+   them happened while the fleet sat at its 60-62 plateau. The 725 pearls dropped were eaten 92%
+   by their own dragons, usually within 2-7 rounds.
+ - Half-splits: from r100 on, dragons of 20-40 split in two (59 splits with a child >= 10).
+   Their final giant (dragon 669, length 62) was born at r348 as a 42-cell half-split.
+
+3. QUEENS
+ - Their queen: a split-factory early (length 4-5, splits off 2s), then grew 7 -> 22 between r100
+   and r150 and reached 27 by r200. She roamed the whole map (351 distinct cells, up to 56 cells from
+   her spawn; at r200 she sat at (14,59) inside OUR area) yet was inside our sprint reach in only
+   2 of 396 rounds. We never seriously threatened her.
+ - Our queen: split down to length 2 by r10 and never grew (4 pearls all game). She moved very
+   little (54 distinct cells). Died r98: Vibing++ dragon 78 (length 2) shadowed her at 1-3 cells
+   for 8 rounds. Our queen was judged "doomed" (no safe move) and took the "last-attack" option
+   into it - a queen-for-a-length-2 trade that lost the game on the spot.
+
+4. COMBAT
+ - 75 head-on trades, almost exactly even (our length lost 231, theirs 255). 32 of their trades used
+   a multi-step strike. Trades did not decide the game; economy and the queen kill did.
+
+5. WHAT WENT WRONG FOR US
+ - Self-inflicted deaths: 113 into kelp (dragons that judged themselves "doomed" walk into a wall),
+   57 into bodies, 44 into themselves. Vibing++ had 4 non-combat deaths (plus their deliberate ones).
+ - 14.9% of our moves were idle 2x2 circling (theirs 4.6%).
+ - Queen at length 2 with no growth plan and no safe pocket.
+
+6. TAKEAWAY FOR LARGE OPEN MAPS
+ Big open maps are where their multi-step speed and pearl raiding matter most. Contest our own
+ half (we lost 40% of our own-half pearls to them), use free steps, and keep the queen in our
+ area out of reach of every enemy head's sprint range.

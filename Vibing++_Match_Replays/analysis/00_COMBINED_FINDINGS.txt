@@ -1,0 +1,262 @@
+VIBING++ REVERSE-ENGINEERING REPORT  -  17 unrated games vs Low Cortisol (fleet v2.5.0)
+=========================================================================================
+Per-map details are in <Map>_findings.txt in this folder. Observations only; no code was changed.
+
+HOW THIS WAS DONE
+ - Every game was re-simulated from the logs. Starting bodies come from the official map files,
+   then every move, eat, paid step, split and death in the log is replayed. Our own logged lengths
+   ("L<n>" in our indicators) matched the rebuild on every turn of every game, so the positions
+   and lengths used below are exact.
+ - Team of each dragon: the starting ids alternate by team, and a split child inherits its
+   parent's team. Note: "even = one team, odd = the other" is only true for starting dragons.
+   Split children get the next global id, so about half of them have the other parity.
+ - Caveats:
+   . The Around_UNSW log stops at r397 (looks like a truncated copy).
+   . The ladder Prisoners Dilemma has 10 starting dragons per side; our local dilemma.map has 6.
+     The ladder may run newer map versions than our local copies.
+   . Some file labels are approximate. For example, the Trauma and Portals games were lost on
+     queen length at r500, and SchoolTime was a queen tie decided by longest dragon.
+
+-----------------------------------------------------------------------------------------
+PART 1. THE BIG PICTURE IN NUMBERS (all 17 games)
+-----------------------------------------------------------------------------------------
+ - Our queen died in 16 of 17 games (SchoolTime was the exception, where both queens bunkered).
+   15 of the 16 deaths were head-on. She was length 2-3 in 13 of them.
+ - Their queen died in 8 games:
+   . 5 to our regicide (Islands, Maze, Queen of Spades, Trophy, Stripes)
+   . 3 to her own self-destruct when boxed in (Devil, Prisoners Dilemma, WeakHold)
+ - In 6 games their queen died BEFORE ours: Devil, Dilemma, WeakHold, Queen of Spades, Stripes,
+   Maze. Keeping our queen alive (and one dragon alive) would have won all 6 at r500. We lost
+   our queen 2-88 rounds later in every one.
+ - Pearls eaten across all games: us 6,273 vs Vibing++ 16,981 (2.7x).
+ - Head-on trades are even: 511 trades, our length lost 1,555 vs theirs 1,582. Fighting is not
+   where we lose; economy and the queen are.
+ - Non-combat deaths (not head-on):
+   . us: 853 into walls/kelp, 480 into ourselves, 384 into bodies
+   . them: 0 walls, 0 self, 92 bodies
+   . them, deliberate: 4,023 self-destructs, 3 of them queens ("gave no valid action", Part 2.6)
+
+-----------------------------------------------------------------------------------------
+PART 2. THE VIBING++ PLAYBOOK (reverse-engineered)
+-----------------------------------------------------------------------------------------
+2.1 OPENING "FACTORY" (rounds 1-100)
+ - Every dragon, the queen included, splits off 2 the moment it reaches length 4, sometimes 3 at
+   length 5. Their queen did this 5-7 times in the first 100 rounds on Devil, Default, Trophy and
+   WeakHold, staying at length 2-5.
+ - Rounds 1-30 pearls eaten, them vs us:
+   Devil 30/4, Dilemma 28/6, Default 14/1, Stripes 19/4, Portals 16/1, UNSW 36/12, Trophy 10/7.
+   The count gap opens here and compounds.
+ - "Production line" (Portals log r5-r29): a farmer walks a pearl lane, splits its tail off on
+   the spot every time it reaches 4-5, and the child keeps farming the same lane. One lane fed a
+   new dragon about every 3 rounds.
+
+2.2 SPAWN CAMPING (pre-positioning by spawn countdown)
+ - When a pearl appears, their nearest head is a median 2-3 cells away on every map. Ours is
+   8-21 cells away.
+ - 19-37% of all spawns already have one of their heads within 1 cell (ours 1-16%).
+ - Their idle 2x2 circling happens next to spawn tiles: 85-95% of their loops are within 2 cells
+   of a spawn tile on Tower Defense, Trauma, Devil, Trophy, Queen of Spades and Portals.
+   Our idle loops mostly are NOT near spawns (SchoolTime: 31 of 534).
+ - Tower Defense: a head was parked at the mouth of the centre field at r97, before the big r100
+   spawn. Their fleet went 5 -> 26 in the next 50 rounds.
+
+2.3 SPEED: FREE STEPS AND MEDIUM-LENGTH DRAGONS
+ - Multi-step move orders as a share of all orders:
+   . them: Australia 24.5%, UNSW 14%, SchoolTime 12.4%, Islands 11.9%, Slithery 9.3%
+   . us: 0-2.8% on every map
+ - On big maps they keep many dragons at length 5-12 (2-3 free steps a turn): 20-43% of their
+   dragon-turns on UNSW, Australia and SchoolTime, against 6-11% of ours. Their giants cruise at
+   3 free steps a turn.
+
+2.4 RAIDING AND TERRITORY
+ - Pearls eaten on OUR half, them vs us: Australia 1073 vs 130, UNSW 560 vs 838, Trauma 315 vs 63,
+   Tower 246 vs 28, SchoolTime 533 vs 33. We almost never eat on their half (0-25 pearls), except
+   Portals, Islands and Slithery.
+ - Their share of the map (cells nearer their heads) typically goes from ~55% at r25 to 75-95%
+   by r100-150. Portals was the only map where we took the map back.
+
+2.5 FLEET SIZE
+ - Big maps: a plateau of 60-62 dragons from r75-150 to about r350 (the unit limit is 64).
+ - Small and medium maps: a plateau of one dragon per about 12-20 cells (Tower 42, Devil 31,
+   WeakHold 36, Trophy 48, Trauma 59).
+ - Our fleet peaked at 57 (Slithery) and was stuck at 2-15 dragons on 10 of the 17 maps.
+
+2.6 DELIBERATE SELF-DESTRUCT ("split off 1" = illegal action = the dragon dies)
+ - 4,023 deaths, every single one of them Vibing++. They always ask "split off 1", which is
+   illegal at any length, so it is a deliberate kill switch.
+ - A dead dragon drops ceil(L/2) pearls, so they convert length into pearls exactly where they
+   want them. 89-100% of those drops are eaten by their own dragons, a median 3-5 rounds later.
+ - Typical context: length 2-3; a teammate's head 1-3 cells away; enemies 10-17 cells away;
+   only 1 free neighbour (pocket or corridor); and the dragon ate 2 rounds ago. It is used for
+   three things:
+   a) Trap recycling. A dragon in a dead end self-destructs instead of walking out or into a
+      wall, and the teammate behind eats the drop. This is why they have 0 wall deaths and
+      happily harvest maze dead ends (664 self-destructs on Maze).
+   b) Fleet recycling at the cap. 60-84% of self-destructs on UNSW, Islands, Maze and Slithery
+      happen while the fleet sits at its 60-62 plateau.
+   c) Feeding the queen or the giant. The final longest Vibing++ dragon got most of its pearls
+      from these drops:
+        queen: Portals 57 of 61, Slithery 58 of 71, Tower 47 of 63, Australia 40 of 47,
+               Trauma 27 of 41
+        giant: SchoolTime 61 of 70, Islands 47 of 57, UNSW 19 of 20
+   Efficiency of the conversion: length 2 -> 1 pearl (50%), 3 -> 2 (67%), 5 -> 3 (60%).
+   They mostly use length 2-3.
+
+2.7 QUEEN LIFECYCLE
+ - r1 to about r150: split factory at length 2-5, roaming freely inside their own territory.
+ - Growth window, varying by map (r100-150 UNSW, r150-200 Maze and Trauma, r150-250 Portals,
+   r300+ Australia and Tower, r350+ Slithery): she grows fast, mainly by being FED drops.
+   Peak queens: 64 Portals, 55 Tower, 52 Slithery, 49 Australia, 41 Trauma, 34 UNSW.
+ - Safety: their queen was inside our sprint reach in 0-1% of rounds on 13 of 16 maps
+   (Queen of Spades 5%, Stripes 12%). Own heads within 3 cells average 0.3-1.0, higher on small
+   maps (Devil 1.55, Tower 0.97, Autarky 0.81). She is safe by distance, not by an escort.
+ - Backup bodies: the queen splits a big child when long (Maze r281: 33 -> 7 plus a 26 child;
+   Slithery r349: 29 -> 11 plus an 18 child).
+ - Weakness: a boxed-in queen self-destructs like any other dragon (Devil r44, Dilemma r54,
+   WeakHold r104).
+
+2.8 QUEEN HUNTING (how they kill our queen)
+ - Targeting: when our queen is within their 7x7 view, their moves go toward her 62% of the time.
+   Toward our other dragons they move closer only 42% of the time (they avoid them).
+   Queen of Spades: 75 closer vs 9 farther.
+ - Stalkers: single small dragons shadow our queen at 1-3 cells for long periods (Trauma
+   dragon 115 for 81 rounds, Queen of Spades dragon 8 for 33, Autarky 83 for 15, SchoolTime 17
+   for 17). On small maps a loose net of 3-7 heads sits within 6 cells (Dilemma, Tower, Stripes).
+ - The kill: the KAMIKAZE SPRINT. Queens move first in every round, so after our queen moves,
+   any enemy dragon that can reach her new head cell this turn strikes. It uses free steps plus
+   paid steps, and paying segments costs nothing because a head-on kills both anyway.
+     Reach of a length-L dragon = ceil(L/4) + (L-2) cells:
+       L2: 1, L3: 2, L4: 3, L5: 5, L6: 6, L7: 7, L8: 8, L9: 10.
+   Logged killing orders, with the killer's distance after our queen's move:
+     Australia NNNE (L5, 4 away)    Trauma EESSS (L6, 5 away)    Maze NENW (L9, 2 away)
+     Slithery NNEE (L8, 4 away)     Devil NWW (L3, 3)            Islands WW (L3, 2)
+     Default EE (L3, 2)             Dilemma NE (L3, 2)           Stripes ES (L3, 2)
+     Trophy NE (L4, 2)
+   Plus adjacent single steps (Autarky, Queen of Spades, Tower). Two more (UNSW, WeakHold) were
+   our boxed-in queen taking "last-attack" into a length-2 stalker.
+ - Over all head-on trades, 48% of their strikes were multi-step.
+
+2.9 MID-GAME HALF-SPLITS AND ENDGAME GIANTS
+ - From about r150, dragons of 20-40 split roughly in half. Children of 10+ cells: UNSW 59,
+   Australia 150, Islands 41, Maze 34, SchoolTime 37, Slithery 56. This keeps every dragon fast
+   and below the unit limit.
+ - Endgame (r350+): fleet count falls (62 -> 30-45) while one giant (or the queen) absorbs drops:
+   Islands 100, SchoolTime 89, Maze 73, UNSW 62. A giant that gets boxed in REVERSES by splitting
+   off almost all of itself, since the child's head is the old tail (Islands r390: 43 off;
+   Maze r476: 70 off; UNSW r348: 42 off).
+ - The point: after a queen tie (SchoolTime) or both queens dead (Islands, Maze) the game goes to
+   longest dragon, and they always have a giant ready. We never did (longest 3-22).
+
+2.10 PORTALS
+ - Portal jumps, them vs us: Islands 405/25, Maze 498/13, SchoolTime 413/0, Default 208/0,
+   Trauma 202/3, Australia 174/0, Autarky 166/4. They use portals for expansion everywhere; we
+   almost never do, except on Portals itself (366 vs 75), where we then collided with ourselves.
+
+-----------------------------------------------------------------------------------------
+PART 3. OUR WEAKNESSES (seen in our own logged indicators)
+-----------------------------------------------------------------------------------------
+ W1. Queen ends her move inside an enemy's sprint reach. The kill is almost always 2-5 cells, not
+     adjacency. In 15 of 16 death rounds our queen was in "war" mode, and in 13 of them she was
+     still heading for a pearl ("QUEEN cmb/prt war pearl").
+ W2. Queen never grows. She sat at length 2-3 most of the game on 14 maps, with 0-23 pearls
+     eaten. She has no feeding pipeline and cannot farm safely.
+ W3. Queen dies AFTER we have already won the queen race (6 games, Part 1).
+ W4. Economy collapse on maze, kelp and portal maps: 2-15 dragons all game on Australia,
+     Autarky, Default, Devil, Dilemma, Queen of Spades, SchoolTime, Stripes, Tower, Trauma, Trophy
+     and WeakHold. At spawn time our nearest head is 8-21 cells away; there is no spawn camping.
+ W5. Idle circling: 10-34% of our moves are 2x2 loops away from spawns (SchoolTime 34%,
+     WeakHold 29%, Portals 16.5%, UNSW 14.9%).
+ W6. "Doomed" dragons walk into kelp: 853 wall deaths, 780 "doomed" turns on Slithery alone,
+     sometimes at r4 for freshly split children. The length is dropped where the enemy may eat it.
+ W7. Portal own-goals (Portals map): 30 pairs of our own dragons head-on through linked portals,
+     and 174 self-collisions inside walled 2x2 pearl boxes entered through portals.
+ W8. Hunters are too short. Our non-queen dragons are 70-97% length 2-4, so their sprint reach is
+     1-3. Their queen sits 4+ cells from our heads and is safe. All 5 of our successful regicides
+     came from length 3-7 dragons using 2-5-step orders.
+ W9. Almost no multi-step movement (0-2.8% of orders). We give away 1-2 free cells a turn on
+     every dragon of length 5+.
+ W10. No endgame plan for "longest dragon" or "total length" when the queens are tied or dead.
+
+-----------------------------------------------------------------------------------------
+PART 4. WHAT TO INTEGRATE / CHANGE / REMOVE IN OUR SUBMISSION (ranked by expected impact)
+-----------------------------------------------------------------------------------------
+(All map-agnostic: nothing below depends on a specific map.)
+
+INTEGRATE
+ I1. [Highest] Hard sprint-reach queen safety. The queen moves first, so every enemy head of
+     length L (seen or recently reported) threatens all cells within ceil(L/4)+(L-2) PATH steps
+     this turn. Treat that zone as forbidden for the queen's end-of-turn cell, not as a soft
+     penalty. If no cell is outside every zone, prefer cells whose paths are blocked by our own
+     bodies, then the fewest threats. This alone addresses 11 of the 16 queen deaths.
+     (Our current paid-reach term is a soft 200k penalty capped at 16 cells; that is not enough.)
+ I2. Queen bunker after the enemy queen dies (and in general when threatened). SchoolTime proves a
+     length-3 queen circling a closed 2x2 is unkillable for 500 rounds when no enemy can reach the
+     loop. Once their queen is confirmed dead, our only job is: queen alive plus at least one
+     dragon alive. That would have converted 6 of these 17 losses into wins.
+ I3. Queen feeding pipeline (their single biggest edge in queen length). From the growth window
+     (they use about r150-300; we could tie it to "queen safe and fleet near its cap"), farmers
+     travel to the queen's safe pocket and self-destruct 1 cell ahead of her head. A length-3
+     farmer gives 2 pearls (67%). The queen grows without leaving safety. The same mechanism builds
+     an endgame giant when the queens are tied or dead.
+ I4. Trap recycling instead of wall deaths. A dragon that is doomed, or stuck in a dead end with
+     nothing left to eat, self-destructs (illegal split) where a teammate can collect the drop,
+     ideally next to one. This replaces our 853 kelp deaths and lets us harvest dead ends without
+     fear, as they do on Maze and WeakHold.
+ I5. Spawn camping. Use the spawn countdowns to send the nearest idle dragon to sit adjacent to
+     a tile shortly before it spawns, circling a 2x2 next to it. Turn our idle loops (W5) into
+     their spawn loops. Large timed prizes (Tower Defense centre) get several campers in advance.
+ I6. Opening factory. Every dragon, the queen included early, splits 2 off at length 4
+     immediately; split on the spot when farming a pearl lane so the child inherits the lane. The
+     target is their r1-30 tempo (we are 2-7x behind).
+ I7. Use free steps. Plan multi-step paths for harvesting and crossing (portals included), and
+     keep a share of the fleet at length 5-8 (2 free steps) instead of 2-4.
+ I8. Half-split long dragons (about 20+) to stay fast and safe, and "reverse-split" a long dragon
+     whose head is boxed in (child head = old tail).
+ I9. Long hunters with kamikaze strikes. Hunters of length 5-9 have 5-10 cells of strike reach.
+     Shadow the enemy queen just outside her escorts' reach and strike the turn she comes within
+     range. Our regicide already works (5 kills); it needs longer hunters and more of them in range.
+ I10. Endgame "longest dragon" plan. When the queens are tied (both bunkered) or both dead, pick
+     one safe long dragon from about r350 and feed it, as they do (Islands 21 -> 100).
+
+CHANGE
+ C1. Queen in combat ("war") mode must stop chasing pearls. Today she keeps the "pearl" target in
+     war mode (13 of 16 deaths). In war mode her objective should be: leave enemy sprint reach,
+     close to our bodies or the bunker.
+ C2. "last-attack" by the queen is only a symptom. Both cases were a length-2 queen already boxed
+     in by one stalker. Prevention is I1 plus: never let a stalker hold her at 1-3 cells for
+     several rounds; move away or call an interceptor.
+ C3. Portal discipline. Claim portal transits (one dragon per portal pair per round) to stop our
+     own head-ons through linked portals, and never enter a walled pocket (such as a 2x2 pearl
+     box) longer than the pocket can hold.
+ C4. Late-game fleet cap. Ours drops to N/32 after round 300 (16 dragons on a 32x16 map); theirs
+     holds one per 12-20 cells until about r350 and then converts the extra dragons into length.
+     Hold the fleet longer, then convert it (I3, I10) instead of just stopping splits.
+ C5. Guard and idle behaviour. Our guards and "keep" dragons circle (W5). Their escorts are few
+     (0.3-1.0 within 3 of the queen); safety comes from distance. Put idle dragons on spawn camping
+     and feeding instead of ring duty.
+
+REMOVE / STOP
+ R1. Stop letting the queen roam for pearls once she is the only thing between us and a win
+     (Part 1: 6 games).
+ R2. Stop sending length-2 dragons as hunters or interceptors against long targets: reach 1 makes
+     them easy to dodge, and they are cheap fodder in even trades.
+ R3. Stop "doomed -> walk into kelp" deaths (replace them with I4).
+
+-----------------------------------------------------------------------------------------
+PART 5. WHERE VIBING++ IS BEATABLE
+-----------------------------------------------------------------------------------------
+ - Their queen self-destructs when boxed in (3 of 17 games). A small net of our dragons that limits
+   her free cells could trigger it without a trade.
+ - Our regicide killed their queen 5 times, with length 3-7 strikers using 2-5-step orders
+   (Islands SWSWS from length 7). Their queen is only safe by distance; longer hunters break that.
+ - They do not depend on their queen. After she dies they still win by elimination or longest
+   dragon. So after a regicide we must (a) bunker our queen and (b) keep at least one dragon alive
+   or out-grow them. Both are cheap if we plan for it.
+ - On Portals we out-harvested them 1098 to 614 and owned the map late. Our harvesting can win when
+   we take the pearl lanes. Losses there came from the queen tiebreak, not the economy.
+ - Head-on trades are even, so a larger fleet wins the attrition. The economy items (I4-I7) are
+   what turn even trades into elimination wins for us.
+
+Suggested order, if and when we change code:
+ I1 + C1 + I2 (queen survival), then I4 + I5 + I6 (economy), then I3 + I10 (queen feeding and
+ the giant), then I7-I9.

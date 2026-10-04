@@ -1,0 +1,28 @@
+STRIPES  -  Low Cortisol vs Vibing++  (reconstructed from Stripes.txt)
+=====================================================================
+Map: 24x12 (tiny), xy-symmetric, very heavy kelp (0.53 edges/cell) in horizontal stripes,
+     16 portal edges, 2 dragons each (length 2). We moved first (our queen = dragon 0).
+Result: their queen died r34 (our regicide); our queen died r63, our last dragon.
+
+1. SCOREBOARD (alive / total / queen / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     10         2     4     2       2     |       2     7     3       4
+     25         3     8     3       3     |       6    13     2       3
+     50         1     3     3       3     |       9    22  dead       4
+     63         0     0  dead       0     |      14    34  dead       3
+   Pearls eaten: us 7, Vibing++ 65.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - 7 splits and 19 pearls in r1-30 (we made 1 split and ate 4 pearls).
+ - The queen split 2 off twice (r12, r29) and kept at 2-4.
+ - 38 portal jumps by them (3 by us). On a striped map the portals are the only fast way across.
+
+3. QUEENS
+ - Their queen (length 2) died r34 at (14,2). Our dragon 6 (length 4, "cmb war regicide")
+   struck with a 2-step order (WW).
+ - Our queen (length 3) died r63 at (22,2), with 3 of their heads within 4 cells. Stalker dragon
+   22 (length 3) sat 3 cells from her for 8 rounds, then struck with a 2-step order (ES).
+
+4. TAKEAWAY
+ Tiny maps are pure tempo. Our regicide worked, but we had 1-3 dragons against their 9-14.
+ Splitting immediately and using portals early is mandatory here.

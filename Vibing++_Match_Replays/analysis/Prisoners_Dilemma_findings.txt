@@ -1,0 +1,34 @@
+PRISONERS DILEMMA  -  Low Cortisol vs Vibing++  (reconstructed from Prisoners_Dilemma.txt)
+=========================================================================================
+Map: 32x16, xy-symmetric, closed border, kelp 0.25 edges/cell, 8 portal edges.
+     NOTE: the ladder version has 10 starting dragons per side; the local dilemma.map has 6.
+     The ladder may be running newer map versions than our local copies.
+     We moved first (our queen = dragon 0).
+Result: their queen died r54 (self-destruct); our queen died r56; we were eliminated by r78.
+
+1. SCOREBOARD (alive / total / queen / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     10         6    15     3       3     |       7    19     3       4
+     25         5    14     3       3     |       9    24     3       5
+     50         4    12     3       3     |       8    21     3       4
+     75         1     3  dead       3     |      12    32  dead       6
+   Pearls eaten: us 7, Vibing++ 90.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - 16 splits and 28 pearls in r1-30, against our 5 and 6. Length-11 starters split right away
+   (both sides did, e.g. our dragon 2 split 5 then 3).
+ - 26 self-destructs; drops eaten by them.
+ - Swarm on our queen: in the 6 rounds before her death, 5-7 of their heads were within 6 cells
+   of her.
+
+3. QUEENS
+ - Their queen self-destructed at r54 at (17,0) on the top edge, length 3, with 1 free neighbour
+   and our nearest dragon 4 cells away. It is the same boxed-in-queen behaviour seen on Devil and
+   WeakHold.
+ - Our queen (length 3) died r56 at (13,2). Vibing++ dragon 35 (length 3) was 2 cells away and
+   used a 2-step strike (NE).
+
+4. TAKEAWAY
+ On small maps with many starters it is a 50-round sprint for pearls. After their queen died,
+ elimination still won it for them. We should check whether our local maps are out of date
+ compared with the ladder.

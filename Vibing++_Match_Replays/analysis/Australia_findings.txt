@@ -1,0 +1,50 @@
+AUSTRALIA  -  Low Cortisol vs Vibing++  (reconstructed from Australia.txt)
+=========================================================================
+Map: 64x64, xy-symmetric, open border, light kelp (0.16 edges/cell), 8 portal edges,
+     9 starting dragons per side. Vibing++ moved first (our queen = dragon 1).
+Result: our queen died r142; game ran to r500. Their queen was alive at length 49, so they won on
+     queen length.
+
+1. SCOREBOARD (alive / total length / queen / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     25        11    24     2       3     |      11    28     4       4
+     50        15    32     2       3     |      20    50     4       4
+    100         9    26     3       3     |      40    97     4       4
+    150         9    21  dead       3     |      62   252     4      10
+    250        10    24  dead       3     |      61   424     6      21
+    350        11    41  dead       8     |      61   501    13      24
+    450         6    29  dead       8     |      40   480    37      37
+    500         4    26  dead       9     |      35   557    49      49
+   Pearls eaten: us 139 (!), Vibing++ 2093.   Map share: 63% r25 -> 87% r100 -> 95% r500.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - Our economy never started: our fleet never passed 15 dragons and made only 40 splits all game.
+   At pearl-spawn time our nearest head was a median 16 cells away; theirs 3.
+ - They ate 1073 pearls on OUR half (we ate 130 there) and 906 on theirs (we ate 8).
+ - Fastest movers of all 17 games: 24.5% of their move orders were multi-step. 28% of their
+   non-queen dragon-turns were at length 9+, which gives 3 free steps a turn.
+ - 321 self-destructs. 150 half-splits with a child >= 10, mostly after r300 (45 in r300-399,
+   84 in r400-500). Late game is a split/recombine churn around a few big dragons.
+
+3. QUEENS
+ - Their queen stayed at length 4 for 200 rounds. She roamed far (up to 43 cells from spawn) but
+   was inside our sprint reach in only 2 of 499 rounds. From r300 she grew 7 -> 49. 40 of her
+   47 pearls were drops from their own self-destructing dragons (feeding).
+ - Our queen (length 2-3) died r142 at (48,20). Vibing++ dragon 165 (length 5) was 4 cells away
+   after our queen's move. It ordered a 4-step sprint (NNNE), paying segments, and hit her head-on.
+   That is the core kill pattern: free + paid steps reach ceil(L/4) + (L-2) cells, here 5.
+
+4. COMBAT
+ - 37 trades; they were the longer side in 16, we in 11. Our length lost 121, theirs 139.
+   25 of their trades used multi-step strikes.
+
+5. WHAT WENT WRONG FOR US
+ - The fleet stalled at ~10 dragons with ~0.03 pearls per dragon-turn (theirs ~0.09). Most of our
+   turns were "col keep pearl" / "col nrm pearl": chasing pearls they reached first.
+ - Our queen walked into the open where a length-5 hunter could sprint 4 cells to her.
+
+6. TAKEAWAY
+ On huge open maps their advantage is distance: spawn camping plus multi-step movement means they
+ arrive first everywhere. If we cannot hold spawns we lose every tiebreak. The queen-feeding
+ pipeline (self-destruct next to the queen) is how they reach queen length 49 without the queen
+ farming herself.

@@ -1,0 +1,45 @@
+AUTARKY  -  Low Cortisol vs Vibing++  (reconstructed from Autarky.txt)
+=====================================================================
+Map: 54x18, xy-symmetric, closed border, kelp 0.22 edges/cell, 16 portal edges, 6 starting
+     dragons per side (one of length 14). We moved first (our queen = dragon 0).
+Result: our queen died r136; all our dragons were eliminated by r274.
+
+1. SCOREBOARD (alive / total / queen / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     25         9    23     3       3     |      14    34     3       3
+     50        10    23     2       3     |      14    38     2       4
+    100        11    32     3       4     |      28    70     2       5
+    150         9    20  dead       3     |      42   101     2       4
+    200         6    14  dead       3     |      54   138     3       4
+    250         1     5  dead       5     |      55   174     3      11
+    274         0     0  dead       0     |      59   191     3       7
+   Pearls eaten: us 117, Vibing++ 598.   Map share: 60% early -> 95% at r250.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - Starting dragons split immediately (21 splits in r1-30 vs our 17) and ate 37 vs 27 pearls.
+   Both sides started fast here, but they kept compounding and we did not.
+ - Slow, single-step play on this map: only 1.2% multi-step orders (corridors).
+ - Spawn camping: their head was within 1 cell at 26% of spawns (ours 3%). Pickup within 1 round:
+   36% for them, 13% for us. 45% of our pickups took more than 5 rounds.
+ - 141 self-destructs (mostly length 2), 154 drops, 97% eaten by them.
+ - Portals: 166 portal jumps by them, 4 by us.
+
+3. QUEENS
+ - Their queen stayed at length 2-3 all game and never grew. She had the most escorts of any
+   map: 0.81 of their own heads within 3 cells on average. None of our heads came within 3 of her.
+ - Our queen (length 3) died r136 at (2,17) in the bottom-left corner. Vibing++ dragon 112
+   (length 3) was already adjacent after her move and struck with one step. Dragon 83 had stalked
+   her within 3 cells for 15 rounds before that, and 3-4 of their small dragons hovered 2-6 cells
+   away in the rounds before the kill.
+
+4. COMBAT
+ - 37 trades, and they were the longer side in 16 of them (we were longer in only 3).
+   Their 3-5 length dragons hit our length-2 dragons 13 times.
+
+5. WHAT WENT WRONG FOR US
+ - Fleet flat at 9-11 dragons from r10 to r150, then died out. 18 wall deaths ("doomed").
+ - The queen spent her time in a corner pocket where adjacent cells are few; stalkers wait there.
+
+6. TAKEAWAY
+ Long narrow maps with portals favour whoever controls portals and spawns. Their queen did not need
+ to grow: they won by elimination, which needs no queen length at all.

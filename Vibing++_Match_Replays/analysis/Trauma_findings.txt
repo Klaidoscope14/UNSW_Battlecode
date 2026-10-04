@@ -1,0 +1,40 @@
+TRAUMA  -  Low Cortisol vs Vibing++  (reconstructed from Trauma.txt)
+===================================================================
+Map: 48x24, xy-symmetric, closed border, heavy kelp (0.49 edges/cell), 12 portal edges, 2 dragons
+     each (length 4). We moved first (our queen = dragon 0).
+Result: our queen died r488 (12 rounds from the end); their queen won at length 41.
+     Even had ours survived, she was 7 against 41.
+
+1. SCOREBOARD (alive / total / queen / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     50         4     9     2       3     |       6    14     2       3
+    100         5    13     3       3     |      18    39     2       3
+    150         7    15     2       3     |      40    92     3       3
+    200         7    17     2       4     |      58   156    12      12
+    300        10    25     2       3     |      46   132    13      13
+    400         9    25     4       4     |      19    91    28      28
+    499         6    24  dead       8     |      13   102    41      41
+   Pearls eaten: us 68 (!), Vibing++ 892.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - Expansion from r75: 10 -> 18 -> 40 -> 58 dragons at r75/100/150/200. We stayed at 4-10 all game.
+ - 202 portal jumps by them, 3 by us. They crossed the map through portals; we did not.
+ - They ate 315 pearls on OUR half (we ate 63) and 553 on theirs (we ate 0).
+ - Spawn camping: 1570 of their 1702 idle loops were within 2 cells of a spawn tile.
+ - Queen plan: length 2-3 until r150, then 12 by r200 and steady growth to 41, 27 pearls of it
+   from self-destruct drops. Fleet 58 -> 13 as it was converted.
+ - A shadow on our queen: dragon 115 stayed within 3 cells of her for 81 rounds.
+
+3. QUEENS
+ - Our queen (length 7) died r488 at (8,21). Vibing++ dragon 304 (length 6) was 5 cells away
+   after her move and ordered a 5-step sprint (EESSS) with paid steps. It arrived at length 4
+   and traded. A length-6 dragon threatens 6 cells.
+
+4. WHAT WENT WRONG FOR US
+ - Economy: 0.02 pearls per dragon-turn. Our notes were almost all "pearl" (col keep pearl,
+   cmb war pearl), but at spawn time our nearest head was a median 15 cells away, against their 2.
+ - No portal use, so the far half of the map was theirs.
+
+5. TAKEAWAY
+ Portal maps reward the side that uses portals for expansion. And a queen that survives 488
+ rounds still loses if she is never fed.

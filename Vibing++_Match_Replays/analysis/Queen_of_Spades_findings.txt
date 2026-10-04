@@ -1,0 +1,37 @@
+QUEEN OF SPADES  -  Low Cortisol vs Vibing++  (reconstructed from Queen_of_Spades.txt)
+=====================================================================================
+Map: 25x35, xy-symmetric, open border, kelp 0.34 edges/cell, 4 portal edges, 2 dragons each
+     (length 3). Vibing++ moved first (our queen = dragon 1).
+Result: their queen died r42 (our regicide); our queen died r130; we were eliminated by r136.
+
+1. SCOREBOARD (alive / total / queen / longest)
+   round   US: n  total  queen  longest  |  VIB: n  total  queen  longest
+     25         4     9     2       3     |       6    13     2       3
+     50         3     8     2       4     |       7    19  dead       4
+     75         4     9     2       3     |       9    24  dead       4
+    100         2     4     2       2     |      16    36  dead       3
+    136         0     0  dead       0     |      20    49  dead       4
+   Pearls eaten: us 7, Vibing++ 85.
+
+2. HOW VIBING++ PLAYED THIS MAP
+ - Same factory pattern: their queen split 2 off at r9. They camped spawns: their head was within
+   1 cell at 19% of spawns, and 109 of their 148 idle loops were next to spawn tiles.
+ - Queen hunting is very visible here. When our queen was in their view, their moves went closer
+   to her 75 times and farther 9 times. Toward our other dragons they moved away more often than
+   closer. Dragon 8 stayed within 3 of our queen for 33 rounds, dragon 23 for 19, dragon 5 for 9.
+
+3. QUEENS
+ - Their queen (length 2) died r42 at (8,29). Our dragon 3 ("exp nrm regicide", length 3) took
+   the trade.
+ - Our queen (length 2) died r130 at (23,2). Stalker dragon 23 (length 2) sat 2 cells away for
+   5 rounds; after her move it was adjacent and stepped in (E).
+
+4. WHAT WENT WRONG FOR US
+ - We killed their queen at r42 and still lost by elimination: our fleet never got above 4
+   dragons, and we ate 7 pearls all game.
+ - Our queen moved 102 distinct cells (she roams) while being shadowed for 30+ rounds.
+
+5. TAKEAWAY
+ Killing their queen early is not enough. Their bot keeps expanding and wins by elimination, so
+ after a regicide our fleet must still out-grow them, and our queen must shake off shadowers
+ (no safe cell next to a waiting enemy head).
