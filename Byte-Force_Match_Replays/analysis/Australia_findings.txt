@@ -1,0 +1,59 @@
+AUSTRALIA vs Byte_Force  (v2.11.0)  -  LOSS on "longest dragon" (35 vs 74) at round 500
+Map 64x64, little kelp (open map). Byte_Force started (they are team A, we are team B).
+Raw numbers: analysis/raw/Australia_{metrics,deep,econ,profile}.txt
+
+HEADLINE
+  Their queen died at round 271 (she hit herself, boxed in by her own swarm, length 4). Ours was alive
+  until round 490. Had our queen lived 10 more rounds we win on queen length. She died at length 24,
+  still chasing pearls, to a head-on from a length-6 dragon she could not see.
+
+TIMELINE (us / them)
+  round   dragons   total length   queen   longest   pearls eaten
+    50     10/19       22/43         2/2      4/3        7/35
+   100      9/26       25/66         2/2      5/4       19/122
+   150     26/61       76/144        3/2      5/4       87/251
+   200     33/64       91/182        3/2      5/11     151/418
+   300     26/64       77/206       12/0     12/14     297/819
+   400     21/57       87/258        9/0     13/15     416/1189
+   500     11/13      117/156        0/0     35/74     553/1443
+  They hit the 64-dragon cap at round ~175 and held it until ~400. We peaked at 42.
+
+WHAT BYTE_FORCE DOES (evidence)
+  1. Split 4 -> 2+2, always (217 of 292 splits had a child of 2; 196 at parent length 4).
+     Fleet is mostly length 2-3 until round 300 (r200: 58% L2, 25% L3).
+  2. Recycling by self-collision: 123 "hit itself" deaths, most with a free cell available and a
+     teammate within 3; 262 of their own drops re-eaten within 3 rounds.
+  3. Sprint strikes with length-3 dragons: 1 free + 1 paid step = 2 cells of reach. 24 of their
+     head-ons came straight after a 2-step move at length 3; in 36 of our trades they sprinted and we
+     were walking. Multi-step moves: 12% of their turns vs 1.9% of ours.
+  4. Endgame consolidation into a giant: from round 400 the fleet shrinks 57 -> 13 while the longest
+     grows 15 -> 42 -> 74 (r499: 31% L6-9, 23% L10+). That giant won the tiebreak.
+  5. Their queen stays short (max 4) and is never fed; she sits among her own dragons (that is what
+     killed her: boxed in at (36,2) under a row of her own bodies).
+  6. Portals: 102 jumps vs our 3.
+
+WHERE WE LACKED
+  A. Opening. Rounds 1-50: 7 pearls for us vs 35 (1.4% vs 4.9% pearls per dragon-turn). 63% of our
+     opening turns were "explore". 146 pearls were taken by them although our head was nearer when the
+     pearl appeared (our nearest dragon was on "pearl" 77, "hunt" 32, "explore" 13, "snipe" 11).
+  B. Attacks while outnumbered. 48 of our dragons died in attacks (snipe 32, hunt 12, attack 4), every
+     one of them while they already had more dragons. 642 turns were spent on "hunt" — hunters looking
+     for a queen that was long dead after r271.
+  C. The queen at the end. Feeding (open-map consolidation) grew her 9 -> 24 between r400 and r490 and
+     she roamed (median 30 cells from her start; she stayed in a 4-cell area only 5% of the time).
+     At r489, length 24, she moved 3 cells in one turn towards a pearl ("farm pearl"); an L6 enemy 5
+     cells away (outside her 7x7 view) struck the next round. No report of it reached her.
+  D. We never knew their queen was dead (no dragon of ours saw her die), so no bunker. But even
+     without knowing: in the last ~30 rounds a long queen has nothing to gain from pearls and
+     everything to lose — this is where the game was lost.
+  E. Our own giant: longest 35 at r500 vs their 74. Our feeding split between queen and giant; the
+     queen's 24 segments vanished with her.
+
+V2.11 FEATURES IN THIS GAME
+  screens 347 turns, recycle 14, lane-split 9, camp 1, feed 91 / feed-leader 8, defenders 0
+  (no "defend" seen), bunker 0, tie bunker 0.
+
+WHAT WOULD HAVE CHANGED THE RESULT
+  - Queen in pure-safety mode for the last ~30-50 rounds (no pearl chasing, no multi-step charges,
+    stay within a small safe area) -> win on queen length (theirs was dead).
+  - Fewer pointless hunts/snipes -> more eaters -> bigger fleet -> bigger giant.

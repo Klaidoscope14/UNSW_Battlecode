@@ -1,0 +1,61 @@
+====================================================================================================
+DEEP  Byte-Force / Default   result: REASON FOR LOSS : Elimination of all our dragons
+
+1. ENEMY QUEEN
+   died round 73: head-on collision at length 4 at (1, 28); our dragons with her in their 7x7 view at that moment: 1 [18]
+                               
+       23 . . . . . . . . . . .
+                               
+       24 . . . . . . . . . . .
+          - -                  
+       25 . *|. . . . . . . . .
+                               
+       26 . *|. . . . . . . . .
+                               
+       27 . .|. . . k k k . . .
+                      - - - - -
+       28 . .|. . . K * . . . .
+                               
+       29 . .|. . . U . . . . .
+          - -         - - - - -
+       30 . . . . . u . . . . .
+                               
+       31 . . . .|. u . . . . .
+                - -            
+        0 . . E .|* u . . . . .
+                               
+        1 . . e . . . . . . . .
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+      18  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       3  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       2  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      5  ('snipe', 'head-on collision')
+      1  ('hunt', 'head-on collision')
+      1  ('regicide', 'head-on collision')
+   attacks made while the opponent already had more dragons: 6/7
+   r36   hunt       L2   head-on collision    fleet 9/9
+   r46   snipe      L2   head-on collision    fleet 7/10
+   r63   snipe      L3   head-on collision    fleet 6/11
+   r68   snipe      L4   head-on collision    fleet 5/10
+   r73   regicide   L4   head-on collision    fleet 4/9
+   r101  snipe      L3   head-on collision    fleet 3/20
+   r190  snipe      L2   head-on collision    fleet 2/47
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 9 pearls / 385 dragon-turns = 2.3%;  after: 11 / 545 = 2.0%
+   opp: rounds<=50: 17 pearls / 418 dragon-turns = 4.1%;  after: 332 / 9589 = 3.5%
+   races (who was nearer when the pearl appeared -> who ate it): {('we were nearer', 'taken by us'): 14, ('they were nearer', 'taken by opp'): 314, ('we were nearer', 'taken by opp'): 27, ('tie', 'taken by opp'): 8, ('they were nearer', 'taken by us'): 4, ('tie', 'taken by us'): 2}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+      4  ('opp', 2, 3)
+      2  ('us', 2, 3)
+      1  ('us', 2, 4)
+      1  ('us', 3, 4)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 97%  (spawn tiles cover 1024 of 1024 cells)

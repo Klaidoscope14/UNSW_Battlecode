@@ -1,0 +1,47 @@
+DEFAULT vs Byte_Force  (v2.11.0)  -  LOSS by elimination at round 298
+Map 32x32, open, every tile can spawn pearls. We started (team A).
+Raw numbers: analysis/raw/Default_{metrics,deep,econ,profile}.txt
+
+HEADLINE
+  We killed their queen at round 73 (regicide by our #18, length 4, which died in the trade). From
+  then on our queen alive at round 500 was a win. Instead we were eliminated: our fleet went 8 -> 3 by
+  round 75 and to just the queen by round 190; 64 enemy length-2 dragons finally rammed her at 298.
+
+TIMELINE (us / them)
+  round   dragons   pearls eaten
+    25      8/8         1/2
+    50      6/11        9/17
+    75      3/9        17/31
+   100      3/20       18/55
+   150      3/29       19/96
+   200      1/52       20/188
+   298      0/64       20/349
+
+WHAT BYTE_FORCE DOES
+  1. Pure swarm: 132 splits, every one 4 -> 2+2. 71-91% of their fleet is length 2 all game.
+  2. Production continued at full speed without a queen (53 splits in r100-199, 54 in r200-298).
+     Losing the queen did not slow them at all.
+  3. Their head was 2 cells from a new pearl (median) vs 13 for us; a dragon of theirs was next to
+     31% of all new pearls.
+  4. Recycling: 23 "hit itself" deaths, 18 of them with a free cell, a teammate within 3, drop
+     re-eaten within 3 rounds. 26 more of theirs died running into their own bodies (crowding).
+  5. Their queen was a plain length 2-4 dragon wandering (median 14 cells from her start).
+
+WHERE WE LACKED
+  A. Trades we could not afford. 13 of our dragons died, all head-on. 7 of them were our own attacks
+     (5 snipe, 1 hunt, 1 regicide) and 6 of those 7 were made while they already had more dragons
+     (fleet 7/10, 6/11, 5/10, 4/9, 3/20, 2/47). The snipes of length 2-4 at r46-r68 cut us from 7 to 4.
+  B. Economy. 20 pearls in 298 rounds vs 349. Our dragons were near pearls (100% within 1 of a spawn
+     tile — all tiles spawn here) but 27 pearls were taken by them although we were nearer; in those
+     races our nearest dragon was busy with snipe 5, hunt-queen 2, regicide 2 or just lost the race.
+     Pearls per dragon-turn: 2.3% (us) vs 4.1% (them) in rounds 1-50.
+  C. The death of their queen was invisible: the only dragon of ours that saw her (the striker #18)
+     died in the same head-on, so no bunker, no change of plan.
+  D. The lone queen. From round 190 our queen (length 2) was alone. She stayed on "pearl" (100% of
+     her status texts after r200) but ate almost nothing; enemy heads were within 3 of her in 77
+     rounds; she never stopped to hide. Being length 2 she could not split to rebuild.
+
+WHAT WOULD HAVE CHANGED THE RESULT
+  - No snipes/hunts while outnumbered -> keep the fleet (we had 8 at r25, equal to theirs).
+  - Treat a regicide strike as "their queen is probably dead": we only had to survive 225 more rounds.
+  - A survival mode for a tiny fleet: queen + last dragons avoid every enemy head, never trade.

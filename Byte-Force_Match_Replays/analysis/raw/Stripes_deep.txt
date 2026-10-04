@@ -1,0 +1,32 @@
+====================================================================================================
+DEEP  Byte-Force / Stripes   result: REASON FOR LOSS : Elimination of all our dragons
+
+1. ENEMY QUEEN
+   survived
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+       9  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       4  ('opp', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+       2  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       1  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   1 deaths; median age 88 rounds; died within 10 rounds of birth: 0; head on a corridor/dead-end cell (<=2 open sides): 1
+   activity in the turns before (role/mode words): [('war', 6)]
+   r88   #0     hit a body           L2   age 88   open 2  last: ['QUEEN cmb war pearl L2 s2', 'QUEEN cmb war pearl L2 s2', 'QUEEN cmb war explore L2 s2']
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      1  ('intercept', 'head-on collision')
+   attacks made while the opponent already had more dragons: 1/1
+   r39   intercept  L2   head-on collision    fleet 2/6
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 0 pearls / 89 dragon-turns = 0.0%;  after: 0 / 37 = 0.0%
+   opp: rounds<=50: 28 pearls / 159 dragon-turns = 17.6%;  after: 48 / 394 = 12.2%
+   races (who was nearer when the pearl appeared -> who ate it): {('we were nearer', 'taken by opp'): 14, ('they were nearer', 'taken by opp'): 56, ('tie', 'taken by opp'): 3}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+      1  ('opp', 2, 3)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 81%  (spawn tiles cover 70 of 288 cells)

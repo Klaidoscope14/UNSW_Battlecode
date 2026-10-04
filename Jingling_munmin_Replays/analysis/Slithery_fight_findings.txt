@@ -1,0 +1,42 @@
+SLITHERY FIGHT vs Jingling_munmin  (v2.11.0)  -  WIN ("death of their queen") at round 500
+Map 63x27, twisty, 14 starting dragons (some long). Jingling_munmin started (we are team B).
+Raw numbers: analysis/raw/Slithery_fight_{metrics,deep,econ,profile}.txt
+
+HEADLINE
+  Their queen died at round 38: length 2, boxed in by her own dragons, hit a body. Our queen lived
+  to round 500 and was fed to length 25. The closest economic game: 2,329 pearls vs 3,092, both
+  fleets at 50-64 for most of the game.
+
+TIMELINE (us / them)
+  round   dragons   queen   longest   pearls eaten
+    50     35/33      2/0      7/23     100/225
+   100     42/58      3/0      5/22     269/563
+   200     58/63      3/0      8/27     683/1230
+   300     56/64      9/0      9/27    1192/1842
+   400     53/51     15/0     15/31    1768/2489
+   500     50/18     25/0     25/31    2329/3092
+
+WHAT JINGLING_MUNMIN DOES
+  - 319 "split off 1 cell" self-destructs (259 at length 2), 292 chosen with a teammate near and
+    re-eaten. 1,058 dragons ever; median lifespan 10 rounds.
+  - Paid steps: 457, 142 of them landing on a pearl — they pay length to reach pearls first.
+  - Opening: 225 pearls by round 50 (21.9% per dragon-turn) vs our 100 (10.0%).
+  - Endgame consolidation: 64 -> 16 dragons in the last 100 rounds, 44% L6-9 and 25% L10+.
+  - Their start included a length-19-25 dragon (longest 19-31 all game).
+
+WHERE WE LACKED (even in the win)
+  A. Own goals on a twisty map: 561 of our deaths were non-combat. 265 hit a wall while "doomed",
+     126 hit a body while "doomed", 141 times our head hit OUR OWN body. Median age at death 8 rounds;
+     314 died within 10 rounds of birth; 366 had their head on a corridor/dead-end cell. Most were
+     on "pearl" in the turns before; 71 after a "save-split". The fleet churned like theirs, but
+     involuntarily — far fewer of our drops were re-used (we re-ate 605 of ours vs their 751).
+  B. 27 snipes, 32 of 36 attack deaths while outnumbered; 735 hunt turns although their queen died at
+     round 38.
+  C. Pearls next to a head: we ate 1,435 of 2,417 one-step pearls (59%); 599 misses were on "pearl"
+     with no enemy near.
+  D. Our queen spent 55% of rounds inside some enemy's strike reach and still survived — luck as much
+     as rules; the opponent rarely went for her (2 rounds with 3+ enemy heads near).
+
+V2.11 FEATURES
+  screens 883 turns, defenders 419, recycle 126, feed 226 / feed-leader 24, camp 30, lane-split 3,
+  escape 301, doomed 490.

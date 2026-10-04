@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Byte-Force / Stripes
+  us: dragon-turns 127; head within 1 of a spawn tile 89%; a pearl within 3: 86%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 36/36
+  opp: dragon-turns 587; head within 1 of a spawn tile 84%; a pearl within 3: 85%; nearest pearl 10+ away: 0%; pearl adjacent at round start but not eaten by the side that round: 112/154
+  our status words, rounds 1-50: [('pearl', 69), ('guard', 6), ('hunt', 6), ('intercept', 5), ('', 2), ('explore', 2)]
+  races lost while our head was nearer: 14; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r1->r11 (20, 11) #0 3 vs 7  ""
+     r1->r12 (21, 11) #0 2 vs 6  ""
+     r1->r13 (21, 10) #0 3 vs 5  ""
+     r22->r25 (20, 11) #2 1 vs 2  "cmb war guard L2 s2 GRD"
+     r23->r26 (21, 11) #2 3 vs 4  "cmb war guard L2 s2 GRD"
+     r1->r29 (16, 10) #0 8 vs 10  ""
+     r1->r30 (17, 10) #0 7 vs 9  ""
+     r3->r35 (12, 1) #0 7 vs 11  "QUEEN cmb nrm pearl L2 s2"
+     r1->r37 (11, 1) #0 10 vs 12  ""
+     r32->r37 (17, 10) #2 2 vs 3  "cmb war pearl L2 s2 GRD"
+  what our nearest dragon was doing in those lost races: [('', 6), ('pearl', 3), ('intercept', 3), ('guard', 2)]

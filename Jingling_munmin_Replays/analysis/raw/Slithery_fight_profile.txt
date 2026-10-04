@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE Jingling_munmin / Slithery_fight
+  us: dragons ever 842, born by split 835, died 792, median lifespan 11.0 rounds
+     length mix: r50: n35 {'L2': 69, 'L3': 11, 'L4-5': 14, 'L6-9': 6}  r100: n42 {'L2': 64, 'L3': 29, 'L4-5': 7}  r200: n58 {'L2': 59, 'L3': 22, 'L4-5': 10, 'L6-9': 9}  r300: n56 {'L2': 52, 'L3': 16, 'L4-5': 20, 'L6-9': 12}  r400: n53 {'L2': 40, 'L3': 25, 'L4-5': 17, 'L6-9': 15, 'L10+': 4}  r499: n51 {'L2': 41, 'L3': 22, 'L4-5': 20, 'L6-9': 8, 'L10+': 10}
+  opp: dragons ever 1058, born by split 1051, died 1040, median lifespan 10.0 rounds
+     length mix: r50: n33 {'L2': 67, 'L3': 18, 'L4-5': 12, 'L10+': 3}  r100: n58 {'L2': 69, 'L3': 24, 'L4-5': 5, 'L10+': 2}  r200: n63 {'L2': 76, 'L3': 21, 'L4-5': 2, 'L10+': 2}  r300: n64 {'L2': 73, 'L3': 19, 'L4-5': 6, 'L10+': 2}  r400: n51 {'L2': 51, 'L3': 29, 'L4-5': 14, 'L6-9': 4, 'L10+': 2}  r499: n16 {'L2': 12, 'L3': 12, 'L4-5': 6, 'L6-9': 44, 'L10+': 25}
+  us queen: rounds 501; length at r50/100/200/300/400: 2/3/3/9/15; max 25; stays inside a 4-cell spread over 10 rounds 22% of the time; enemy heads within 3 of her: 0:486 1:8 2:5 3+:2
+  opp queen: rounds 38; length at r50/100/200/300/400: -/-/-/-/-; max 25; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:38 1:0 2:0 3+:0
+  us paid steps: {'paid step': 44, 'ate a pearl on the paid step': 3}
+  opp paid steps: {'ate a pearl on the paid step': 142, 'paid step': 315, 'died the same turn (head-on collision)': 6}

@@ -1,0 +1,43 @@
+AUSTRALIA vs Jingling_munmin  (v2.11.0)  -  WIN ("opponent's queen died") at round 500
+Map 64x64, open. We started (team A).
+Raw numbers: analysis/raw/Australia_{metrics,deep,econ,profile}.txt
+
+HEADLINE
+  Their queen died at round 40: she stepped through a portal into one of her OWN dragons coming the
+  other way (the portal right-of-way bug, our item 20). After that our queen (max length 13) only had
+  to live, and she did. The economy itself was a rout: 271 pearls for us, 1,959 for them.
+
+TIMELINE (us / them)
+  round   dragons   pearls eaten
+    50     14/17       11/81
+   100     21/26       31/223
+   150     24/64       55/454
+   200     26/64       95/703
+   300     23/64      149/1151
+   400     15/58      210/1629
+   500     11/21      271/1959
+
+WHAT JINGLING_MUNMIN DOES
+  1. Self-destruct by an invalid action: every one of their 167 "gave no valid action" deaths was a
+     request to split off 1 cell. 147 of them had a free cell and a teammate within 3, drop re-eaten
+     within 3 rounds = deliberate recycling. Total own drops re-eaten within 3 rounds: 481.
+  2. Split 4 -> 2+2 mostly (404 of 460 splits had a child of 2); 64 dragons by round 150.
+  3. Aggressive opening raid: 52 pearls by round 40, 35 of them on OUR half (median 49 cells from
+     their queen's start). The cluster at (7-9, 23-25) near our side was theirs by rounds 12-18 while
+     our two nearest dragons (11-17 cells away) were "explore"-ing elsewhere.
+  4. Many multi-step moves (12.5%) and paid steps (143), 24 paid steps ended on a pearl.
+  5. Endgame consolidation: 64 dragons -> 21 by round 500, 48% of them length 10+.
+  6. Their queen: tiny (max 4) and unprotected; died to friendly fire at round 40.
+
+WHERE WE LACKED
+  A. Opening: rounds 1-50 we ate 1.8% pearls per dragon-turn vs their 12.7%. 51% of our opening turns
+     were "explore". In 46 races we were nearer and lost (explore 17, pearl 16, snipe 9).
+  B. Our dragons sat far from pearls: nearest pearl 10+ cells away in 49% of our dragon-turns (26% for
+     them); a pearl within 3 cells in only 14% of our turns (27% for them).
+  C. Attacks while outnumbered: 37 attack deaths (snipe 29, attack 7, hunt 1), 36 of them while they
+     had more dragons. 322 "hunt" turns although their queen died at round 40.
+  D. Fleet never above 30 (they had 64 from round 150).
+
+V2.11 FEATURES
+  screens 128 turns, defenders 166 turns ("defend"), feed 118 / feed-leader 5, recycle 3, camp 1,
+  lane-split 1, bunker 0 (her death was unseen).

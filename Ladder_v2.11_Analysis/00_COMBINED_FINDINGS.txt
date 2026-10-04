@@ -1,0 +1,214 @@
+COMBINED FINDINGS - v2.11.0 vs Byte_Force and Jingling_munmin (10 games)
+Observations only; no code was changed.
+
+Per-map write-ups:  Byte-Force_Match_Replays/analysis/<Map>_findings.txt
+                    Jingling_munmin_Replays/analysis/<Map>_findings.txt
+Raw measurements:   <folder>/analysis/raw/<Map>_{metrics,deep,econ,profile}.txt
+Pipeline:           tools/replay_analysis/ (README.md, run_all.sh) - rerun on any new batch.
+
+=====================================================================================================
+0. SCOREBOARD
+=====================================================================================================
+  Byte_Force       W 1  L 4   Australia L (longest dragon 35-74), Default L (elim r298),
+                              Queen of Spades W (elim of theirs r348), Stripes L (elim r88),
+                              WeakHold L (elim r396)
+  Jingling_munmin  W 2  L 3   Australia W (their queen died r40), Devil L (elim r132),
+                              Prisoners Dilemma L (elim r137), Slithery W (their queen died r38),
+                              Trophy L (elim r107)
+  Pearls eaten over all 10 games: us 3,532, them 8,236.
+
+THE ONE THING TO TAKE AWAY
+  In 5 of our 7 losses THEIR QUEEN WAS ALREADY DEAD when we lost:
+      Default (their queen died r73), Prisoners Dilemma (r34), Devil (r60), Trophy (r72),
+      Australia-BF (r271).
+  With their queen dead, our queen alive at round 500 wins (and any dragon alive avoids elimination).
+  We lost all five by being wiped out or by losing our queen. Surviving alone would have made the
+  batch 8-2. Neither opponent needs its queen to keep playing: their swarm keeps producing.
+  Their queens are weak (section 1.8); ours only has to outlast them.
+
+=====================================================================================================
+1. THE OPPONENTS' PLAYBOOK (reverse engineered; both bots play the same core game)
+=====================================================================================================
+  1.1 Churn economy. Split 4 -> 2+2 almost always (BF 132/132 on Default, JM 404/460 on Australia);
+      fleets are 50-90% length 2 until the late game. Dragons are disposable: median lifespan
+      9-55 rounds, deaths ~= births.
+  1.2 Deliberate recycling. A dragon that has eaten what it can (often inside a pocket or a pearl box)
+      kills itself next to a teammate, who eats the drop.
+        Byte_Force:      by running into its own neck ("hit itself"; e.g. 161 of 184 on WeakHold
+                         had a free cell - chosen, not forced).
+        Jingling_munmin: by sending the invalid action "split off 1 cell" (all 537 of its
+                         "gave no valid action" deaths were split-1 requests).
+      Own drops re-eaten within 3 rounds: BF 51 / 87 / 262 (Default / WeakHold / Australia),
+      JM 92 / 481 / 751 (Devil / Australia / Slithery).
+  1.3 Pocket and box mining. On WeakHold, Prisoners Dilemma, Stripes and Queen of Spades they enter
+      dead ends, portal boxes and 1-wide cells, eat, split, and the stub recycles. We refuse those
+      cells (sections 2.4, 2.6).
+  1.4 Fast, pearl-first opening. Pearls per dragon-turn in rounds 1-50:
+            map              us     them
+            Stripes          0.0%   17.6%   (BF)
+            Prisoners D.     5.2%   18.0%   (JM)
+            Slithery        10.0%   21.9%   (JM)
+            WeakHold         5.3%   13.8%   (BF)
+            Devil            4.2%   13.8%   (JM)
+            Trophy           5.3%   13.5%   (JM)
+            Australia-JM     1.8%   12.7%
+            Queen of Spades  1.7%    5.0%   (BF)
+            Australia-BF     1.4%    4.9%
+            Default          2.3%    4.1%   (BF)
+      After round 50 the per-dragon rates are often close (Devil 12.4 vs 13.7, Australia-BF 5.5 vs
+      6.4); the gap is the opening, which then compounds into fleet size (they hold 64 for hundreds
+      of rounds; we peak at 5-42 except on Slithery).
+      Jingling_munmin also raids: on Australia 35 of its first 52 pearls came from OUR half.
+  1.5 Spawn proximity. Median distance from their nearest head to a new pearl: 2-4 cells
+      (ours 8-16 in the losses). A dragon of theirs is next to 12-37% of all new pearls.
+  1.6 Sprint strikes with length 3. One free plus one paid step gives a length-3 dragon 2 cells of
+      reach. Head-ons that came right after a 2-step move: BF 24 at length 3 on Australia; in our
+      trades they were the sprinter 36 times on Australia-BF. Multi-step moves: 12-12.5% of their
+      turns on Australia (ours 0.9-1.9%). Jingling_munmin also pays length to reach pearls (Slithery:
+      457 paid steps, 142 landing on a pearl).
+  1.7 Endgame consolidation. Last ~100 rounds: 64 dragons -> 13-23, length 10+ dragons appear
+      (Australia-BF longest 15 -> 42 -> 74; Australia-JM 48% of the final fleet is 10+). Byte_Force won
+      Australia on exactly this (longest dragon 74 vs our 35).
+  1.8 Weak queens. Their queens stay at length 2-4, are never fed, and die by their own hand:
+        Devil r60, Trophy r72  - she sent "split off 1 cell" (their recycle action) when boxed in
+        Australia-JM r40       - stepped through a portal into her own dragon coming the other way
+        Slithery r38           - boxed in by her own swarm, hit a body
+        Australia-BF r271      - boxed in by her own swarm at (36,2), hit herself
+      Our regicides killed the other three (Default r73, Queen of Spades r77, Prisoners D. r34).
+      Jingling_munmin's queen was dead by round 72 in all 5 games; Byte_Force's in 3 of 5.
+  1.9 Differences. Jingling_munmin's openings are stronger and it uses paid steps a lot; its queen
+      is the weaker of the two. Byte_Force builds a giant at the end; it did badly on Queen of Spades
+      (56 pearls all game, fleet max 8), so corridor/portal maps hurt its plain swarm.
+  Neither bot prints status text, so all of the above is inferred from moves.
+
+=====================================================================================================
+2. WHERE WE LACKED (ranked by how many games it decided)
+=====================================================================================================
+  2.1 Our own attacks while outnumbered (decided Default, Devil, Prisoners D., Trophy; hurt everywhere).
+      122 of our dragons died in SNIPES (v2.7 feature, never benchmarked). 151 of our 164 attack
+      deaths (snipe / hunt / attack / regicide / intercept) happened while they already had more
+      dragons. A 1-for-1 trade only pays if we out-produce them; we never did. Examples:
+        Prisoners D. r7-r26: 5 snipes take the fleet 6/6 -> 3/7; the queen ends up alone.
+        Devil: 12 snipes, all while outnumbered; after r86 every death of ours was a snipe or a
+               pearl head-on.
+        Default: snipes at r46-r68 take us 7 -> 4; the fleet never recovers.
+      Hunters also wasted the economy: "hunt" turns 642 (Australia-BF), 735 (Slithery), 322
+      (Australia-JM) - mostly after their queen was dead.
+  2.2 No survival mode once a game is "won" or the fleet is tiny.
+      - We never knew their queen was dead: our queen showed "bunker" 0 times in 10 games.
+        In 3 regicides the striker was the only witness and died in the trade; the other 5 deaths
+        happened out of sight. The strict death detection (v2.6) cannot fire in these cases.
+      - With 1-3 dragons left, they kept hunting, sniping and pearl-chasing in war mode.
+  2.3 The queen's deaths (7 of 10 games):
+        Trophy r53        L3, "war pearl" for her last 8 rounds, 2-4 enemy heads (and their
+                          queen); a sprinting L3-5 hit her.
+        Devil r86         L2, inside a 1-wide corridor; one of OUR dragons came down the same
+                          corridor from the far end -> boxed in, hit a wall. The exit guard only
+                          checks teammates within 2 cells of her.
+        Stripes r88       L2, starved (0 pearls), boxed in by their swarm.
+        Prisoners D. r137 L3, starved alone (0 pearls in 87 turns), hit by a sprinter.
+        Default r298      L2, alone for 100+ rounds among 64 enemies, rammed.
+        WeakHold r396     L3, alone, starved, hit by a sprinter.
+        Australia-BF r490 L24, fed big, "farm pearl", moved 3 cells in one turn toward a pearl;
+                          an L6 enemy 5 cells away (outside her 7x7 view) struck. Their queen had
+                          been dead since r271 - 10 more rounds would have won.
+  2.4 Queen-safety rules starve a small fleet (decided Stripes, Prisoners D.; hurt WeakHold).
+      - Portal avoidance (v2.7) is absolute: on Stripes every pearl box is entered through a portal;
+        we ate 0 pearls in 88 rounds.
+      - The loop rule (a queen of length <= 3 must always reach a free 2x2) keeps her out of 1-wide
+        cells; on Prisoners D. the lone queen ate 0 pearls in 87 turns.
+      - At length 2-3 the queen cannot split, so a starving queen can never rebuild a fleet.
+      - With a fleet of 2 the other dragon was a GUARD (Stripes): nobody collected at all.
+  2.5 Opening (all 10 games, section 1.4). "explore" was 51-63% of our turns in rounds 1-50 on the big
+      maps; in races where our head was nearer when the pearl appeared they still won 146
+      (Australia-BF), 46 (Australia-JM), 27 of 41 (Default), 14 of 14 (Stripes). On Australia-JM their
+      dragons came 37-44 cells for pearls that our explorers 11-17 cells away ignored.
+  2.6 Own goals in corridors and pockets.
+      - Queen of Spades: 60 non-combat deaths, median age 12 rounds, 28 within 10 rounds of birth,
+        55 on corridor/dead-end cells. Pattern: "pearl" -> walks into a pocket -> "save-split" -> the
+        2-cell head stub dies.
+      - Slithery: 561 non-combat deaths (median age 8, 314 within 10 rounds of birth); 141 times our
+        head hit OUR OWN body.
+      - WeakHold: all 7 wall deaths on corridor/dead-end cells, some 9-12 rounds after birth.
+      - One-step pearls eaten on pocket maps: 28% (WeakHold) and 44% (Queen of Spades) vs their 55%;
+        the misses had no enemy near - our survival check refuses the pocket.
+  2.7 The endgame giant (Australia-BF): our longest 35 vs 74. Feeding was split between the queen and
+      the giant, and the queen's 24 segments were lost with her.
+
+=====================================================================================================
+3. WHAT WORKED
+=====================================================================================================
+  - Short regicides: 3 enemy queens killed by our length-3/4 strikers (Default, Queen of Spades,
+    Prisoners D.).
+  - When our queen simply survived (Australia-JM, Slithery, Queen of Spades) we won all three.
+  - Feeding grew our queen to 13-25 on open maps; screens and defenders were active on open maps.
+  - Slithery: economic near-parity (2,329 vs 3,092) with a 50-64 dragon fleet.
+
+=====================================================================================================
+4. v2.8 - v2.11 FEATURES IN THESE GAMES (turns with that status, summed)
+=====================================================================================================
+  snipe (v2.7)        122 deaths            harmful against swarms (2.1)
+  hunt               ~2,000 turns           mostly after their queen was dead
+  screen (v2.8)       1,612 turns           active on open maps; no visible effect on queen deaths
+  tie bunker (v2.8)   0                     never triggered
+  bunker (v2.6)       0                     enemy queen death never detected
+  defend (v2.11)      585 turns             only on Australia-JM / Slithery
+  recycle (v2.11)     155 turns             fires only when boxed in; opponents recycle far more freely
+  camp (v2.9)         37 turns              rarely fires (only when nothing unseen is left)
+  lane-split (v2.9)   14                    rare
+  feed / feed-leader  435 / 37              grew queens to 13-25; the 24-length queen then died r490
+  portal (v2.9 scouts) 326 turns            Stripes: none of it helped the queen into the boxes
+  feeder trail (v2.11) -                    their queens died early, so never relevant
+
+=====================================================================================================
+5. WHAT TO INTEGRATE / CHANGE / REMOVE (proposals, for your decision; nothing implemented)
+=====================================================================================================
+  REMOVE / RESTRICT
+  R1. Snipes: switch off, or allow only when we have clearly more dragons than they do and the target
+      is long. (122 deaths, 151/164 attacks while outnumbered.)
+  R2. Hunting: stop when the enemy queen has not been seen for a while or right after one of our
+      regicide strikes; never hunt while outnumbered; never hunt with the last few dragons.
+  R3. Guards when the fleet is 1-3 dragons: everyone collects instead.
+
+  CHANGE
+  C1. Survival mode. Trigger: fleet <= 3, or fleet < 1/4 of theirs, or "their queen is probably dead"
+      (one of ours executed a strike on her head - announce it the turn before striking, since the
+      striker's own sonar dies with it), or the last ~40 rounds. In survival mode: the queen hides in a
+      safe area away from enemy heads and portals' far ends, no trades of any kind, no multi-step
+      charges, no pearl chasing near enemies. Five of our seven losses were games already won.
+  C2. Late-game queen (last ~30-50 rounds): no pearl chasing at all, no 2-3 step moves into unseen
+      space, stay inside a small known-safe area. Australia-BF was lost at r490 on a pearl charge.
+  C3. Starving queen. If the queen is the only eater (or the fleet is tiny) and has not eaten for
+      ~20 rounds, relax the portal and loop rules for targets that look safe (no enemy in view,
+      short dead end). Stripes and Prisoners D. were lost to zero income.
+  C4. Corridor rule for teammates: never enter a 1-wide corridor the queen is in (or heading into),
+      from either end. (Devil queen death.)
+  C5. Opening: pearl first, explore last. Send each starting dragon to the nearest known pearl or
+      spawn cluster; explore only if nothing is known. Do not hunt or snipe in the opening.
+  C6. Splits near pockets: no growth split when the child would be born inside a dead end (Queen of
+      Spades / WeakHold newborn deaths).
+
+  INTEGRATE (their methods)
+  I1. Pocket mining with recycling: allow entering a dead end with pearls when a teammate waits at
+      the mouth to eat the drop (or accept the stub's death as recycling). This is how both bots
+      out-ate us on WeakHold, Stripes and Prisoners D.
+  I2. Free recycling: let a short dragon with nothing reachable to eat self-destruct next to a
+      teammate (theirs do it hundreds of times per game; ours only when boxed in).
+  I3. Paid steps to win pearl races (Jingling_munmin: 142 pearls on paid steps on Slithery).
+  I4. Endgame giant via consolidation - already in v2.10/2.11; feed the giant harder once the queen
+      is in survival mode (Australia-BF lost on longest dragon).
+
+  EXPLOIT
+  E1. Their queens kill themselves when crowded (5 of 10 games). We do not need to hunt them: survive,
+      keep our fleet, and let their swarm box their queen in.
+  E2. Their sprinters have 2 cells of reach at length 3: keep our queen and small fleet 3+ cells from
+      any unseen-but-reported head; do not walk into lines of their L3s.
+
+=====================================================================================================
+6. WHAT TO MEASURE IN THE NEXT BATCH (all produced by tools/replay_analysis/run_all.sh)
+=====================================================================================================
+  - games where their queen died first and we still lost (target: 0)
+  - attack deaths while outnumbered (target: near 0)
+  - pearls per dragon-turn in rounds 1-50 (target: within 1.5x of theirs)
+  - our queen's death cause and round; rounds in survival mode
+  - non-combat deaths within 10 rounds of birth

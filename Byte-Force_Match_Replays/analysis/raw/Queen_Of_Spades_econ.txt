@@ -1,0 +1,10 @@
+====================================================================================================
+ECON  Byte-Force / Queen_Of_Spades
+  us: dragon-turns 3999; head within 1 of a spawn tile 64%; a pearl within 3: 63%; nearest pearl 10+ away: 1%; pearl adjacent at round start but not eaten by the side that round: 508/689
+  opp: dragon-turns 1204; head within 1 of a spawn tile 76%; a pearl within 3: 59%; nearest pearl 10+ away: 4%; pearl adjacent at round start but not eaten by the side that round: 132/173
+  our status words, rounds 1-50: [('pearl', 80), ('explore', 24), ('hunt', 5), ('', 4), ('guard', 3), ('grow-fleet', 1), ('queen-split', 1), ('portal', 1)]
+  races lost while our head was nearer: 3; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r45->r68 (6, 33) #7 2 vs 4  "cmb nrm pearl L2 s2"
+     r40->r131 (19, 9) #1 17 vs 18  "QUEEN prt nrm pearl L3 s2"
+     r193->r207 (16, 1) #46 2 vs 4  "cmb war pearl L3 GRD"
+  what our nearest dragon was doing in those lost races: [('pearl', 3)]

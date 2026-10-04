@@ -1,0 +1,38 @@
+WEAKHOLD vs Byte_Force  (v2.11.0)  -  LOSS by elimination at round 396
+Map 40x15, many dead-end pockets ("holds") with pearls. Byte_Force started (we are team B).
+Raw numbers: analysis/raw/WeakHold_{metrics,deep,econ,profile}.txt
+
+HEADLINE
+  We ate 17 pearls in 396 rounds; they ate 587. Our fleet never passed 5 dragons. Their queen was
+  never even approached (0 rounds with one of our heads within 3 of her). The last of ours, our queen
+  (length 3), died to a sprinting length-3+ dragon at round 396.
+
+TIMELINE (us / them)
+  round   dragons   pearls eaten
+    30      4/7         6/18
+    75      3/17       13/77
+   150      3/29       17/169
+   250      2/36       17/315
+   350      1/33       17/508
+
+WHAT BYTE_FORCE DOES HERE: POCKET MINING
+  - 242 splits (197 of them 4 -> 2+2). 184 of their dragons died "hit itself": dive into a pocket,
+    eat, split, and the stub self-destructs (161 of the 184 had a free cell — chosen, not forced;
+    87 own drops re-eaten within 3 rounds). Median lifespan of their dragons: 14.5 rounds.
+  - Head within 1 of a spawn tile 51% of their turns; nearest head 2 cells from a new pearl (ours 16).
+  - Pearls per dragon-turn rounds 1-50: 13.8% (them) vs 5.3% (us); later 5.8% vs 1.0%.
+  - Their queen hid: in a 4-cell area 44% of the time, never near us.
+
+WHERE WE LACKED
+  A. We refuse pockets. One-step pearls eaten: 17 of 60 (28%) vs their 55%; 42 of our misses were
+     on "pearl" with no enemy near — the survival / dead-end check said no.
+  B. When we did go in, we died: 7 wall deaths, all on corridor/dead-end cells, 6 of them "doomed",
+     2 within 10 rounds of birth. The sequence: "grow-fleet" (split at the mouth of a pocket) or
+     "save-split" -> the 2-cell stub is trapped -> wall.
+  C. After round 150 we had 3 dragons and ate nothing more (17 pearls by r150, 17 at the end).
+     The queen alone (length 3) kept "pearl" 100% of the time and could not reach any.
+  D. One late "hunt" death (r285, fleet 2 vs 31).
+
+WHAT WOULD HAVE CHANGED THE RESULT
+  - Allow pocket mining when a teammate can collect the recycle drop (their exact method).
+  - Never split at the mouth of a dead end unless the child can get out.

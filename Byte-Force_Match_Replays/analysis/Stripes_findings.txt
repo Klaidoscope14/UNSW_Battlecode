@@ -1,0 +1,31 @@
+STRIPES vs Byte_Force  (v2.11.0)  -  LOSS by elimination at round 88
+Map 24x12. Horizontal kelp stripes; most pearls sit in 2x2 kelp boxes whose only entrances are
+PORTAL edges. 16 portal edges. We started (team A) with 2 dragons of length 2.
+Raw numbers: analysis/raw/Stripes_{metrics,deep,econ,profile}.txt
+
+HEADLINE
+  We ate ZERO pearls in 88 rounds. We never split (needs length 4), so the fleet stayed at 2 while
+  Byte_Force went 2 -> 17 and ate 76 pearls (62 of them on our half).
+
+WHY WE ATE NOTHING
+  1. The queen avoids portals (v2.7 rule: -1,000,000 for crossing a portal, -150,000 per portal edge
+     next to her destination) and unexplored areas. The pearl boxes can only be entered through
+     portals, so she never went in. Her status was "pearl" 86 of 88 rounds — she had targets, but
+     every path to them crossed a portal.
+  2. Our only other dragon (#2) was a GUARD: it stayed near the queen ("guard", "intercept") and never
+     went into a box either. It died at round 39 in an intercept head-on.
+  3. Kelp-aware check: our heads never had a reachable (one-step) pearl in the whole game. The 36 times
+     a pearl looked adjacent it was across kelp.
+  4. In 14 pearl races our head was nearer when it appeared; they won all 14 (via portals).
+
+WHAT BYTE_FORCE DID
+  - 38 portal jumps; entered the boxes, ate, split 4 -> 2+2 (25) or 5 -> 2+3 (8), and the stubs died
+    inside by hitting themselves (19 "hit itself", 6 by round 49) — boxes mined and recycled.
+  - Their head was 3 cells from a new pearl (median) vs 8 for us; adjacent to 12% of spawns.
+  - Their swarm then hunted us: by r80-87 four of their heads were within 1-4 cells of our queen; she
+     died "doomed" (boxed in, hit a body) at round 88.
+
+WHERE WE LACKED
+  A. A queen-safety rule (avoid portals) that is absolute even when the team has no other eater.
+  B. A guard role assigned when the fleet is only 2 dragons — nobody was collecting.
+  C. No "economic emergency": length 2, no pearls, fleet of 2 for 40+ rounds should change behaviour.
