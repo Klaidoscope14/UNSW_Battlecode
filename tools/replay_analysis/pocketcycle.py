@@ -6,7 +6,7 @@ import sys, os, collections
 from ladderlog import Game, MAPS, MAPDIR
 g = Game(sys.argv[1])
 fast = set()
-for l in open(os.path.join(MAPDIR, MAPS[g.name.lower()] + '.map')):
+for l in open(os.path.join(MAPDIR, MAPS.get(g.name.lower(), g.name.lower()) + '.map')):
     p = l.split()
     if p and p[0] == 'TILE' and p[1] != 'COUNT' and p[3] != '0' and int(p[4]) <= 5:
         fast.add((int(p[1]), int(p[2])))

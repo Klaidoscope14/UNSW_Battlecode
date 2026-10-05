@@ -42,3 +42,22 @@ bash tools/replay_analysis/tactics.sh Stochastic_Parrot_Replays     # -> analysi
 | `snap.py LOG R [X Y RAD]` | the board at the start of round R (whole map or a window) + our dragons |
 | `track.py LOG ID [FROM TO]` | one dragon round by round (head, length, ask, status, split, death) |
 | `local2ladder.py IN OUT MAP` | convert a local `tools/replay_to_txt.mjs` log into this format (put it in a folder as `<Map>.txt`) |
+
+## Scorecards (per game, against fixed targets)
+
+`run_all.sh` also writes `analysis/raw/<Map>_scorecard.txt` (one page per game) and `analysis/SCORECARD.txt`
+(one line per game, PASS/FAIL per target). By hand: `python3 scorecard.py <logs...>` or `--summary-only`.
+
+| target | check |
+|---|---|
+| T1 | their queen died first and we still lost: must not happen |
+| T2 | our optional attack deaths while they really had more dragons: <= 2 |
+| T3 | pearls per dragon-turn in rounds 1-50: >= theirs / 1.5 |
+| T4 | nearest of our heads when a pearl spawns (median): <= 3 cells |
+| T5 | one of our heads next to the tile when a pearl spawns: >= 20% |
+| T6 | rounds our queen spends inside an enemy's strike reach: <= 10% |
+| T7 | idle circling - non-queen dragon-turns looping one 2x2 without eating for 8+ rounds (posts, bunkers, rest, guard excluded): <= 10% |
+| T8 | our queen alive at the end (or outliving theirs) |
+
+Local games: `bash tools/replay_analysis/local_scorecard.sh <replays...>` (our bot = team A; converts with
+`tools/replay_to_txt.mjs` + `local2ladder.py`, output in `$OUT`, default `/tmp/local_scorecards`).

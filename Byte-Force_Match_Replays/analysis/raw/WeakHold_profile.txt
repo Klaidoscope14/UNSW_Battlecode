@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE Byte-Force / WeakHold
-  us: dragons ever 10, born by split 8, died 10, median lifespan 27.5 rounds
-     length mix: r50: n3 {'L2': 67, 'L3': 33}  r100: n3 {'L2': 67, 'L3': 33}  r200: n2 {'L2': 50, 'L3': 50}  r300: n1 {'L3': 100}
-  opp: dragons ever 244, born by split 242, died 223, median lifespan 14.5 rounds
-     length mix: r50: n9 {'L2': 56, 'L3': 22, 'L4-5': 22}  r100: n23 {'L2': 74, 'L3': 26}  r200: n29 {'L2': 48, 'L3': 52}  r300: n36 {'L2': 53, 'L3': 44, 'L4-5': 3}
-  us queen: rounds 396; length at r50/100/200/300/400: 3/3/3/3/-; max 4; stays inside a 4-cell spread over 10 rounds 54% of the time; enemy heads within 3 of her: 0:389 1:7 2:0 3+:0
-  opp queen: rounds 397; length at r50/100/200/300/400: 2/2/3/3/-; max 4; stays inside a 4-cell spread over 10 rounds 44% of the time; enemy heads within 3 of her: 0:397 1:0 2:0 3+:0
-  opp paid steps: {'ate a pearl on the paid step': 11, 'paid step': 28, 'died the same turn (head-on collision)': 1}

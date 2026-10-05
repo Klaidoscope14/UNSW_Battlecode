@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE Stochastic_Parrot / Prisoners_Dilemma
-  us: dragons ever 14, born by split 9, died 14, median lifespan 8.5 rounds
-     length mix: r50: n3 {'L2': 67, 'L3': 33}  r100: n1 {'L3': 100}  r200: n1 {'L3': 100}
-  opp: dragons ever 96, born by split 91, died 59, median lifespan 45.5 rounds
-     length mix: r50: n12 {'L2': 50, 'L3': 50}  r100: n18 {'L2': 56, 'L3': 44}  r200: n33 {'L2': 52, 'L3': 45, 'L4-5': 3}
-  us queen: rounds 257; length at r50/100/200/300/400: 3/3/3/-/-; max 3; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:172 1:81 2:3 3+:1
-  opp queen: rounds 258; length at r50/100/200/300/400: 3/3/3/-/-; max 3; stays inside a 4-cell spread over 10 rounds 6% of the time; enemy heads within 3 of her: 0:256 1:2 2:0 3+:0
-  opp paid steps: {'paid step': 1}

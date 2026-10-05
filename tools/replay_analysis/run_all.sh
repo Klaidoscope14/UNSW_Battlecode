@@ -12,4 +12,12 @@ for d in "$@"; do
   done
 done
 wait
+# one-page scorecards: per game, and a summary for the whole folder
+for d in "$@"; do
+  for f in "$d"/*.txt; do
+    n=$(basename "$f" .txt)
+    (cd "$HERE" && python3 scorecard.py "$OLDPWD/$f" > "$OLDPWD/$d/analysis/raw/${n}_scorecard.txt" 2>&1)
+  done
+  (cd "$HERE" && python3 scorecard.py --summary-only $(for f in "$OLDPWD/$d"/*.txt; do printf '%q ' "$f"; done) > "$OLDPWD/$d/analysis/SCORECARD.txt" 2>&1)
+done
 echo "done: $(ls "$@" 2>/dev/null | wc -l) entries; see <folder>/analysis/raw/"

@@ -93,7 +93,7 @@ class Game:
         s.result_line = lines[1].strip()
         s.won = lines[1].startswith('REASON FOR WIN')
         s.reason = lines[1].split(':', 1)[1].strip()
-        s.map = Map(MAPS[s.name.lower()])
+        s.map = Map(MAPS.get(s.name.lower(), s.name.lower()))  # local logs use the map file name
         s.US = 0 if s.starter_us else 1      # map team index of our team
         s.OPP = 1 - s.US
         s.team = {}; s.body = {}; s.born = {}; s.died = {}; s.deathwhy = {}; s.parent = {}; s.queen_ids = {0, 1}

@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE Jingling_munmin / Devil
-  us: dragons ever 20, born by split 17, died 20, median lifespan 13.0 rounds
-     length mix: r50: n6 {'L2': 100}  r100: n3 {'L2': 33, 'L3': 33, 'L4-5': 33}
-  opp: dragons ever 135, born by split 132, died 95, median lifespan 12 rounds
-     length mix: r50: n18 {'L2': 56, 'L3': 33, 'L4-5': 11}  r100: n29 {'L2': 76, 'L3': 17, 'L4-5': 7}
-  us queen: rounds 86; length at r50/100/200/300/400: 2/-/-/-/-; max 4; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:81 1:5 2:0 3+:0
-  opp queen: rounds 60; length at r50/100/200/300/400: 4/-/-/-/-; max 5; stays inside a 4-cell spread over 10 rounds 12% of the time; enemy heads within 3 of her: 0:60 1:0 2:0 3+:0
-  opp paid steps: {'ate a pearl on the paid step': 6, 'paid step': 41}

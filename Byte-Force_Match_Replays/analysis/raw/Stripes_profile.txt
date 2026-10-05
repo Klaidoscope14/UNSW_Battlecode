@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE Byte-Force / Stripes
-  us: dragons ever 2, born by split 0, died 2, median lifespan 63.5 rounds
-     length mix: r50: n1 {'L2': 100}
-  opp: dragons ever 35, born by split 33, died 20, median lifespan 11 rounds
-     length mix: r50: n7 {'L2': 57, 'L3': 43}
-  us queen: rounds 88; length at r50/100/200/300/400: 2/-/-/-/-; max 2; stays inside a 4-cell spread over 10 rounds 37% of the time; enemy heads within 3 of her: 0:64 1:15 2:7 3+:2
-  opp queen: rounds 89; length at r50/100/200/300/400: 2/-/-/-/-; max 4; stays inside a 4-cell spread over 10 rounds 25% of the time; enemy heads within 3 of her: 0:87 1:2 2:0 3+:0
-  opp paid steps: {'paid step': 2}
