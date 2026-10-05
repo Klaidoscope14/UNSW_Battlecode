@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE Akatsuki.txt / Elo-1582
+  us: dragons ever 340, born by split 335, died 298, median lifespan 24.0 rounds
+     length mix: r50: n13 {'L2': 62, 'L3': 15, 'L4-5': 23}  r100: n27 {'L2': 52, 'L3': 26, 'L4-5': 19, 'L6-9': 4}  r200: n39 {'L2': 54, 'L3': 38, 'L4-5': 3, 'L6-9': 3, 'L10+': 3}  r300: n25 {'L2': 48, 'L3': 32, 'L4-5': 20}  r400: n23 {'L2': 17, 'L3': 17, 'L4-5': 48, 'L6-9': 13, 'L10+': 4}  r499: n43 {'L2': 33, 'L3': 14, 'L4-5': 21, 'L6-9': 30, 'L10+': 2}
+  opp: dragons ever 290, born by split 285, died 277, median lifespan 50.5 rounds
+     length mix: r50: n32 {'L2': 56, 'L3': 41, 'L4-5': 3}  r100: n64 {'L2': 66, 'L3': 30, 'L4-5': 5}  r200: n55 {'L2': 55, 'L3': 29, 'L4-5': 7, 'L6-9': 7, 'L10+': 2}  r300: n64 {'L2': 53, 'L3': 30, 'L4-5': 3, 'L6-9': 9, 'L10+': 5}  r400: n26 {'L2': 12, 'L3': 23, 'L4-5': 15, 'L6-9': 12, 'L10+': 38}  r499: n12 {'L2': 17, 'L10+': 83}
+  us queen: rounds 284; length at r50/100/200/300/400: 4/4/22/-/-; max 34; stays inside a 4-cell spread over 10 rounds 1% of the time; enemy heads within 3 of her: 0:263 1:21 2:0 3+:0
+  opp queen: rounds 222; length at r50/100/200/300/400: 3/3/5/-/-; max 6; stays inside a 4-cell spread over 10 rounds 8% of the time; enemy heads within 3 of her: 0:209 1:11 2:2 3+:0
+  us paid steps: {'ate a pearl on the paid step': 12, 'paid step': 13, 'died the same turn (head-on collision)': 4}
+  opp paid steps: {'paid step': 1, 'died the same turn (head-on collision)': 1}

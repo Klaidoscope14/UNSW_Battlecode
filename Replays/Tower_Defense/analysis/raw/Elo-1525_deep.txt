@@ -1,0 +1,62 @@
+====================================================================================================
+DEEP  Quantify / Elo-1525   result: REASON FOR LOSS : Elimination of all our dragons
+
+1. ENEMY QUEEN
+   died round 74: hit itself at length 2 at (9, 11); our dragons with her in their 7x7 view at that moment: 0 []
+                               
+        6 E . . . .|.|.|. .|* .
+                               
+        7 e . e E .|.|.|. . . .
+                               
+        8 . . . . .|.|.|. . . .
+          - - - - -            
+        9 . . . . . .|.|. .|* .
+            - - - - -          
+       10 . . . . . . .|. .|* *
+          - - - - - - -     - -
+       11 .|. . . .|K k|. .|* *
+            -   -   -          
+       12 . .|.|.|. .|.|. .|. *
+                  -         -  
+       13 . . .|. . E e|. . . *
+              - - - - -        
+       14 . . . . . . . . .|* .
+                            - -
+       15 . . . . . . . . . . .
+          - - - - - - -        
+        0 .|. . .|. .|.|. . . .
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+      55  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+      19  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       8  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       5  ('opp', 'hit itself', 'forced', 'mate<=3', 'not re-eaten')
+       2  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 'not re-eaten')
+       1  ('us', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       1  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+       1  ('us', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       1  ('opp', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   6 deaths; median age 31.0 rounds; died within 10 rounds of birth: 2; head on a corridor/dead-end cell (<=2 open sides): 6
+   activity in the turns before (role/mode words): [('pearl', 26), ('save-split', 4), ('camp', 2), ('explore', 1)]
+   r89   #3     hit a wall           L2   age 89   open 1  last: ['exp nrm pearl L2 s2', 'exp nrm pearl L3 s2', 'exp nrm save-split L4 s2']
+   r123  #8     hit itself           L3   age 35   open 2  last: ['prt war camp L3 s2', 'prt war pearl L3 s2', 'prt war pearl L3 s2']
+   r123  #25    hit a wall           L2   age 6    open 2  last: ['col war pearl L3 s2', 'col war pearl L3 s2', 'col war save-split L4 s2']
+   r127  #34    hit a body           L2   age 5    open 2  last: ['cmb war pearl L3 s2', 'cmb war pearl L3 s2', 'cmb war save-split L4 s2']
+   r153  #37    hit a wall           L2   age 27   open 1  last: ['col war pearl L3 s2', 'col war pearl L4 s2', 'col war save-split L5 s2']
+   r240  #94    hit itself           L2   age 35   open 2  last: ['col war pearl L2 s2', 'col war pearl L2 s2', 'col war explore L2 s2']
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+   attacks made while the opponent already had more dragons: 0/0
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 3 pearls / 106 dragon-turns = 2.8%;  after: 54 / 840 = 6.4%
+   opp: rounds<=50: 3 pearls / 115 dragon-turns = 2.6%;  after: 447 / 9373 = 4.8%
+   races (who was nearer when the pearl appeared -> who ate it): {('they were nearer', 'taken by opp'): 343, ('we were nearer', 'taken by us'): 30, ('we were nearer', 'taken by opp'): 14, ('they were nearer', 'taken by us'): 11, ('tie', 'taken by opp'): 7, ('tie', 'taken by us'): 3}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+      5  ('opp', 2, 3)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 80%  (spawn tiles cover 150 of 512 cells)

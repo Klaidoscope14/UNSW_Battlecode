@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  ? / Elo-1499
+  us: dragon-turns 1354; head within 1 of a spawn tile 75%; a pearl within 3: 34%; nearest pearl 10+ away: 12%; pearl adjacent at round start but not eaten by the side that round: 74/153
+  opp: dragon-turns 12059; head within 1 of a spawn tile 64%; a pearl within 3: 47%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 939/1491
+  our status words, rounds 1-50: [('pearl', 67), ('explore', 12), ('rest', 11), ('camp', 10), ('', 2)]
+  races lost while our head was nearer: 20; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r22->r73 (18, 2) #2 13 vs 14  "cmb nrm pearl L2 s2"
+     r88->r91 (13, 9) #6 3 vs 4  "cmb nrm unwind-split L8 s2"
+     r44->r94 (13, 6) #0 7 vs 16  "QUEEN cmb nrm pearl L2 s2"
+     r47->r95 (14, 5) #0 6 vs 11  "QUEEN cmb nrm pearl L2 s2"
+     r70->r95 (13, 10) #6 9 vs 12  "cmb nrm pearl L2"
+     r58->r96 (14, 10) #2 7 vs 12  "cmb nrm pearl L2 s2"
+     r32->r99 (15, 4) #0 11 vs 13  "QUEEN cmb nrm pearl L2 s2"
+     r23->r100 (15, 3) #2 12 vs 17  "cmb nrm pearl L2 s2"
+     r60->r100 (15, 12) #2 6 vs 10  "cmb nrm pearl L2 s2"
+     r83->r101 (15, 11) #6 3 vs 6  "cmb nrm pearl L3 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 17), ('unwind-split', 1), ('', 1), ('rest', 1)]

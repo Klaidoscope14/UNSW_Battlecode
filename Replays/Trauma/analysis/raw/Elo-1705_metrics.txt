@@ -1,0 +1,102 @@
+====================================================================================================
+GAME  Ciallo～(∠・ω< )⌒☆ / Elo-1705   map 48x24 sym xy   we moved second (team B)
+RESULT REASON FOR LOSS : Lost by Longest Queen   last round 500
+replay check: 11063 steps, 18 non-adjacent (= portal jumps or parser gaps)
+
+TIMELINE  (dragons / total length / queen length / longest / pearls eaten so far)
+round |                  US                  |                 OPP                 
+    1 |      3      8      4      4      0 |      4      8      2      2      0
+   10 |      3      8      4      4      0 |      4      8      2      2      0
+   20 |      3      9      4      4      1 |      4      9      2      3      1
+   30 |      3      9      4      4      1 |      4      9      2      3      1
+   50 |      3      9      4      4      1 |      4      9      2      3      1
+   75 |      2      7      4      4      1 |      4     10      3      3      2
+  100 |      3      9      5      5      3 |      5     13      2      4      5
+  125 |      2      8      5      5      4 |      6     16      4      4      8
+  150 |      3     10      6      6      6 |      8     20      4      4     12
+  200 |      3     10      6      6     13 |      9     24      5      5     16
+  250 |      4     18      6      8     21 |      8     22      5      5     24
+  300 |     18     64      6      6     80 |      9     26      5      6     30
+  350 |     35     98      6      6    186 |      9     31      7      7     35
+  400 |     30     94      6      6    287 |      8     33     10     10     46
+  450 |     32    103      6      6    357 |      4     31     13     14     56
+  500 |     33    106      6      8    472 |      2     34     20     20     64
+max fleet: us 36  opp 11
+first round opp had 4+ more dragons than us: 104
+
+ECONOMY
+  pearls eaten: us 472  opp 64
+  eaten on OUR half / THEIR half:  us 253/213   opp 4/51
+  spawns 422; nearest head at spawn (median): us 3.0  opp 18.0; head adjacent at spawn: us 15%  opp 5%
+  spawn->eaten latency (median rounds): us 12.0  opp 1.0
+  death-drop pearls eaten: us {'own': 197}  opp {'own': 22, 'enemy': 1}
+  own drops re-eaten within 3 rounds (recycling): us 100  opp 18
+  queen length gains: us {'spawn': 2}  opp {'spawn': 13, 'drop': 7}
+
+SPLITS  (child size x parent length)
+  us: 178 splits; child sizes {2: 114, 3: 31, 4: 15, 5: 8, 6: 9, 10: 1}; parent lengths {4: 105, 5: 27, 6: 19, 7: 13, 8: 7, 9: 4, 10: 1, 11: 1, 12: 1}
+      by phase {'0-49': 1, '50-99': 1, '100-199': 4, '200-299': 19, '300-399': 82, '400-500': 71}
+  opp: 15 splits; child sizes {2: 15}; parent lengths {4: 15}
+      by phase {'0-49': 2, '50-99': 1, '100-199': 4, '200-299': 6, '300-399': 2}
+
+MOVEMENT
+  us: 7305 dragon-turns; multi-step 1.2%; paid steps 10; portal jumps 18
+  opp: 3448 dragon-turns; multi-step 5.1%; paid steps 0; portal jumps 0
+
+DEATHS by cause
+  us: {'hit a wall': 60, 'hit itself': 60, 'hit a body': 26, 'head-on collision': 1}   self-inflicted (hit itself / no valid action): 60
+  opp: {'gave no valid action': 7, 'hit itself': 3, 'hit a wall': 3, 'hit a body': 1, 'head-on collision': 1}   self-inflicted (hit itself / no valid action): 10
+  by phase:
+    us    50-99: {'hit a wall': 1}
+    us  100-199: {'hit a wall': 3, 'hit itself': 1}
+    us  200-299: {'hit a wall': 2, 'hit a body': 2, 'hit itself': 1}
+    us  300-399: {'hit a wall': 29, 'hit itself': 29, 'hit a body': 11}
+    us  400-500: {'hit a body': 13, 'hit a wall': 25, 'hit itself': 29, 'head-on collision': 1}
+    opp  200-299: {'hit itself': 3, 'hit a wall': 3}
+    opp  300-399: {'gave no valid action': 3}
+    opp  400-500: {'gave no valid action': 4, 'hit a body': 1, 'head-on collision': 1}
+  "hit a body": whose body: {('us', 'own'): 25, ('opp', 'own'): 1}
+  head-on pairs (us vs opp lengths, who sprinted):
+       1  ('trade', 'us:L2', 'opp:L2', 'opp-walked', 'us-walked')
+
+OUR DEATHS by what the dragon was doing (its last status text)
+      57  hit a wall             while "doomed"
+      27  hit itself             while "feed-leader"
+      24  hit a body             while "doomed"
+      22  hit itself             while "doomed"
+       6  hit itself             while ""
+       4  hit itself             while "recycle"
+       3  hit a wall             while ""
+       1  hit a body             while "pearl"
+       1  hit itself             while "pearl"
+       1  hit a body             while ""
+       1  head-on collision      while "pearl"
+
+QUEENS
+  us: alive 501 rounds; length max 6 end 6; inside an enemy strike reach 20% of rounds; corridor cells 0%; own dragons within 3 (median) 0; distance from start (median) 2
+  opp: alive 501 rounds; length max 20 end 20; inside an enemy strike reach 2% of rounds; corridor cells 1%; own dragons within 3 (median) 0; distance from start (median) 9
+
+OUR STATUS TEXTS by phase (top 8)
+      0-49: pearl 49%, explore 21%, rest 17%, camp 12%, grow-fleet 1%
+     50-99: pearl 57%, explore 21%, rest 20%, doomed 1%, grow-fleet 1%
+   100-199: pearl 38%, portal 31%, rest 17%, explore 12%, doomed 1%, grow-fleet 0%, save-split 0%
+   200-299: pearl 58%, portal 20%, explore 9%, rest 8%, unwind-split 1%, camp 1%, grow-fleet 1%, doomed 1%
+   300-399: pearl 77%, explore 8%, portal 4%, camp 3%, doomed 2%, rest 2%, trap-split 1%, escape 1%
+   400-500: pearl 79%, explore 7%, camp 4%, portal 3%, rest 2%, doomed 1%, trap-split 1%, hunt 1%
+
+OUR LAST 12 DEATHS (round, id, cause, length, queen?, status)
+    r484  #136   hit a wall             L2         "doomed"
+    r484  #179   hit a wall             L3         "doomed"
+    r485  #151   hit a body             L2         "doomed"
+    r487  #107   hit a body             L2         "doomed"
+    r489  #186   hit a wall             L2         "doomed"
+    r490  #164   hit itself             L2         "doomed"
+    r492  #189   hit itself             L3         "feed-leader"
+    r495  #152   hit a wall             L3         "doomed"
+    r495  #172   hit a body             L3         "doomed"
+    r497  #89    hit a wall             L2         "doomed"
+    r500  #167   hit itself             L3         "feed-leader"
+    r500  #177   hit itself             L3         "feed-leader"
+
+DRAGON COUNT every 25 rounds (us / opp)
+    r0:2/2  r25:3/4  r50:3/4  r75:2/4  r100:3/5  r125:2/6  r150:3/8  r175:3/9  r200:3/9  r225:3/10  r250:4/8  r275:7/8  r300:18/9  r325:29/9  r350:35/9  r375:35/11  r400:30/8  r425:33/7  r450:32/4  r475:32/4  r500:33/2

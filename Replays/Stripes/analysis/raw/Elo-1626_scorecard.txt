@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  Outsider Traders / Elo-1626   we moved second (B)   last round 193
+REASON FOR LOSS : Elimination of all our dragons
+--------------------------------------------------------------------------------------------
+  PASS  T1  their queen died first and we still lost       no
+  PASS  T2  optional attack deaths while outnumbered       0 (of 0 attacks)
+  PASS  T3  pearls / dragon-turn r1-50 (us vs them)        8.0% vs 10.4%
+  FAIL  T4  nearest head at spawn, median (us vs them)     9 vs 2
+  FAIL  T5  head next to the spawn tile (us vs them)       1% vs 21%
+  FAIL  T6  our queen inside enemy strike reach            19% of 187 rounds
+  PASS  T7  idle circling (us vs them)                     0.0% vs 10.8%
+  FAIL  T8  our queen alive at the end / outlived theirs   died r187 (head-on collision)
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   8 / 145
+        fountain pearls (us / them)                                3 / 53
+        their queen                                                alive
+        regicide strikes (our dragon died hitting their queen)     0
+        our deaths / non-combat deaths within 10 rounds of birth   5 / 1
+        rounds with 3 or fewer of our dragons                      193 of 193
+        our queen looping a 2x2 without eating (rounds)            0
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 4/8

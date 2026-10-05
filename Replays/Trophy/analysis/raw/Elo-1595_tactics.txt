@@ -1,0 +1,49 @@
+### fountain
+Elo-1595: 0 fast tiles; pearls eaten on them  us 0/433  opp 0/907
+  by 100-round phase: []
+  us: 0 distinct eaters; their fate {}
+  opp: 0 distinct eaters; their fate {}
+
+### pocketcycle
+us: no trips
+opp: no trips
+
+### queenstyle
+Elo-1595 US  queen #0: alive 45 rounds, died 45; length start 3 max 7 r100 5 r250 5 end 5; pearls eaten 5
+     distinct cells 33; 2x2-loop rounds 7%; dist from start median 3 max 11; own within 3 median 0; enemy heads within 4: mean 0.13, rounds with any 11%
+Elo-1595 OPP queen #1: alive 78 rounds, died 78; length start 3 max 5 r100 2 r250 2 end 2; pearls eaten 12
+     distinct cells 49; 2x2-loop rounds 9%; dist from start median 7 max 11; own within 3 median 0; enemy heads within 4: mean 0.14, rounds with any 14%
+
+### hunters
+Elo-1595: their queen died 78; mirror-spawn (20, 9)
+  r0    hunter-turns 0     mean hunter dist   0.0  closest head 3    queen from her start (max) 11
+  r50   hunter-turns 9     mean hunter dist   5.0  closest head 2    queen from her start (max) 10
+
+### approach
+Elo-1595
+  opp  vs dragon  d1    n=65    closer    0% (random  13%, lift 0.00)  farther  100%
+  opp  vs dragon  d2    n=424   closer   29% (random  28%, lift 1.01)  farther   71%
+  opp  vs dragon  d3-5  n=3735  closer   39% (random  41%, lift 0.95)  farther   61%
+  opp  vs queen   d3-5  n=16    closer   81% (random  45%, lift 1.79)  farther   19%
+  us   vs dragon  d1    n=74    closer    0% (random  12%, lift 0.00)  farther  100%
+  us   vs dragon  d2    n=440   closer   14% (random  29%, lift 0.47)  farther   86%
+  us   vs dragon  d3-5  n=2325  closer   43% (random  41%, lift 1.05)  farther   57%
+
+### infant
+Elo-1595 - children dead within 2 rounds of birth (side, parent status, cause): count / splits with that status
+     11 / 252  ('opp', '?', 'head-on collision')
+      9 / 252  ('opp', '?', 'hit itself')
+      4 / 89   ('us', 'grow-fleet', 'head-on collision')
+      2 / 11   ('us', '?', 'head-on collision')
+      1 / 8    ('us', 'trap-split', 'head-on collision')
+      1 / 1    ('us', 'unwind-split', 'head-on collision')
+      1 / 11   ('us', '?', 'hit itself')
+
+### trades
+Elo-1595 our attack-type head-on deaths: {('regicide', 'traded'): 1, ('snipe', 'traded'): 14, ('attack', 'traded'): 10, ('hunt', 'traded'): 2} | enemy lengths taken {2: 9, 3: 9, 4: 4, 5: 3, 10: 1, 13: 1} | enemy queens killed 1
+
+### escort (our queen)
+Elo-1595: us queen died 45 (head-on collision); escorts (enemy within 2 for 3+ rounds): 0
+
+### escort (their queen)
+Elo-1595: opp queen died 78 (head-on collision); escorts (enemy within 2 for 3+ rounds): 0

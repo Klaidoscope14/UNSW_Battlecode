@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  BitShift / Elo-1339   we moved second (B)   last round 500
+REASON FOR LOSS : Longest dragon
+--------------------------------------------------------------------------------------------
+  PASS  T1  their queen died first and we still lost       no
+  PASS  T2  optional attack deaths while outnumbered       0 (of 1 attacks)
+  PASS  T3  pearls / dragon-turn r1-50 (us vs them)        10.1% vs 5.5%
+  FAIL  T4  nearest head at spawn, median (us vs them)     4 vs 3
+  FAIL  T5  head next to the spawn tile (us vs them)       3% vs 10%
+  FAIL  T6  our queen inside enemy strike reach            49% of 94 rounds
+  PASS  T7  idle circling (us vs them)                     4.8% vs 0.3%
+  FAIL  T8  our queen alive at the end / outlived theirs   died r94 (head-on collision)
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   224 / 200
+        fountain pearls (us / them)                                144 / 64
+        their queen                                                died r133 (hit itself)
+        regicide strikes (our dragon died hitting their queen)     0
+        our deaths / non-combat deaths within 10 rounds of birth   91 / 45
+        rounds with 3 or fewer of our dragons                      336 of 500
+        our queen looping a 2x2 without eating (rounds)            1
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 4/8

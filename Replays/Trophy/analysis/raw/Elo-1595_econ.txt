@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  StarStruck / Elo-1595
+  us: dragon-turns 5150; head within 1 of a spawn tile 96%; a pearl within 3: 30%; nearest pearl 10+ away: 15%; pearl adjacent at round start but not eaten by the side that round: 150/446
+  opp: dragon-turns 11518; head within 1 of a spawn tile 99%; a pearl within 3: 41%; nearest pearl 10+ away: 5%; pearl adjacent at round start but not eaten by the side that round: 528/1230
+  our status words, rounds 1-50: [('pearl', 142), ('camp', 10), ('', 9), ('grow-fleet', 6), ('queen-split', 1)]
+  races lost while our head was nearer: 64; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r24->r27 (12, 19) #2 2 vs 4  "cmb war pearl L3 s0"
+     r3->r35 (9, 12) #0 8 vs 16  "QUEEN cmb nrm pearl L3"
+     r23->r39 (11, 10) #0 8 vs 9  "QUEEN cmb nrm pearl L4"
+     r8->r41 (10, 8) #0 6 vs 10  "QUEEN cmb nrm pearl L3"
+     r17->r44 (11, 5) #0 9 vs 12  "QUEEN cmb nrm pearl L3"
+     r22->r45 (8, 6) #0 8 vs 17  "QUEEN cmb nrm pearl L3"
+     r53->r63 (17, 11) #5 4 vs 5  "col war pearl L2 s0"
+     r59->r66 (18, 10) #21 3 vs 5  "cmb war pearl L2"
+     r27->r75 (12, 2) #2 6 vs 9  "cmb war pearl L2 s0"
+     r23->r77 (13, 3) #2 9 vs 11  "cmb war pearl L3 s0"
+  what our nearest dragon was doing in those lost races: [('pearl', 41), ('snipe', 7), ('hunt', 4), ('attack', 3), ('', 3), ('save-split', 2), ('regicide', 1), ('explore', 1)]

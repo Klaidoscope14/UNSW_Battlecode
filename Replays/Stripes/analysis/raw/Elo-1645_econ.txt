@@ -1,0 +1,11 @@
+====================================================================================================
+ECON  Ravenus / Elo-1645
+  us: dragon-turns 435; head within 1 of a spawn tile 42%; a pearl within 3: 63%; nearest pearl 10+ away: 0%; pearl adjacent at round start but not eaten by the side that round: 62/67
+  opp: dragon-turns 4264; head within 1 of a spawn tile 65%; a pearl within 3: 81%; nearest pearl 10+ away: 0%; pearl adjacent at round start but not eaten by the side that round: 855/966
+  our status words, rounds 1-50: [('pearl', 71), ('camp', 10), ('portal', 7), ('rest', 6), ('', 4), ('explore', 4), ('save-split', 2)]
+  races lost while our head was nearer: 4; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r1->r112 (12, 10) #1 10 vs 12  ""
+     r32->r123 (7, 11) #1 3 vs 5  "QUEEN prt nrm pearl L2 s2"
+     r5->r196 (3, 1) #1 4 vs 10  "QUEEN prt nrm rest L2 s2"
+     r23->r266 (6, 1) #1 4 vs 5  "QUEEN prt nrm pearl L2 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 2), ('', 1), ('rest', 1)]

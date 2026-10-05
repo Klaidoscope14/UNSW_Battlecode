@@ -1,0 +1,25 @@
+TOWER DEFENSE - 13 losses (12 unique: 1705 and 1705-Ciallo are the same file), fleet-v2.14.0
+Loss types: elimination 5, longest dragon 5, longer queen 2.
+Raw: Tower_Defense/analysis/raw/*, master table: analysis/master.csv
+
+WHAT HAPPENS
+  Both sides start with 2 dragons of length 2 and almost no pearls until the centre starts spawning
+  around round 100. Up to r100 it is level (3 vs 3 dragons). From r100 to r150 they go 6 -> 29
+  dragons and eat 105 pearls; we go 3 -> 4 and eat 24 (game 1525). Medians over the 12 games:
+  dragons at r100 3 vs 9.5, at r300 4 vs 32; pearls 65 vs 516.
+
+ROOT CAUSE (proved by local ablation, same seeds and opponents)
+  v2.14's "no optional split when every move looks like a trap" rule (part of FOUNTAINS: calm =
+  !inDeadEnd, inDeadEnd = !anySafe) fires all over Tower Defense's corridor maze, so our dragons stop
+  splitting exactly when the centre opens.
+    v2.13.2            our pearls by r150 137, dragons at r150 30.5
+    v2.14.0            our pearls by r150  15.5, dragons at r150 5
+    v2.14.0 without that one rule        101.5 pearls, 23.5 dragons
+  (Weakhold mining does not need the rule: without it Weakhold is unchanged.)
+
+QUEENS
+  Their queen died first in 9 of 12 games (median r122, mostly self-inflicted); ours died later in 10
+  (median r367, length 2 after survival splits). A queen that simply survived would have won 9 games
+  on the queen rule. 2 losses on queen length (ours 12 vs 14 and 12 vs 20).
+
+OPPONENTS: miga bot, Quantify, Akatsuki, StarStruck, Ciallo, Machli and 5 unnamed - swarm (2+2 splits).

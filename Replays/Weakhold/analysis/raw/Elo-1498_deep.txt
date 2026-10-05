@@ -1,0 +1,86 @@
+====================================================================================================
+DEEP  Niuniu Lai / Elo-1498   result: REASON FOR LOSS : Lost by Longest dragon
+
+1. ENEMY QUEEN
+   died round 191: gave no valid action at length 15 at (26, 12); our dragons with her in their 7x7 view at that moment: 1 [75]
+                            -  
+        7 E e . . . . . .|. .|.
+                          -    
+        8 . . . . . . . .|. .|*
+              -   - - - -   -  
+        9 .|e e|*|. . . . .|.|*
+          -     -   - - - -   -
+       10 . .|E . .|k k k|. . .
+          - - - - -   -     - -
+       11 k k k k k k|k k .|. .
+          - - - - -     - -    
+       12 . . . . .|K|k|. . .|.
+                          - - -
+       13 . . . * .|k k *|u u u
+                    - - -      
+       14 . . . * *|* * U u . .
+          - - - - - - - - - - -
+        0|. . .|* * * . e e E .
+                - - - -        
+        1|. . . e e . .|. . . .
+                        - -    
+        2|. E . . E . .|. .|.|.
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+      90  ('opp', 'gave no valid action', 'had a free cell', 'mate<=3', 're-eaten')
+      35  ('opp', 'gave no valid action', 'had a free cell', 'mate<=3', 'not re-eaten')
+      31  ('us', 'hit a wall', 'had a free cell', 'alone', 'not re-eaten')
+      26  ('opp', 'gave no valid action', 'had a free cell', 'alone', 'not re-eaten')
+      13  ('us', 'hit a wall', 'had a free cell', 'alone', 're-eaten')
+      12  ('opp', 'gave no valid action', 'had a free cell', 'alone', 're-eaten')
+      10  ('opp', 'gave no valid action', 'forced', 'alone', 'not re-eaten')
+       5  ('opp', 'gave no valid action', 'forced', 'mate<=3', 'not re-eaten')
+       4  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+       3  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 'not re-eaten')
+       2  ('us', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       2  ('us', 'hit a wall', 'forced', 'mate<=3', 're-eaten')
+       2  ('us', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       1  ('opp', 'gave no valid action', 'forced', 'mate<=3', 're-eaten')
+       1  ('us', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+       1  ('opp', 'gave no valid action', 'forced', 'alone', 're-eaten')
+       1  ('us', 'hit a wall', 'forced', 'mate<=3', 'not re-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   62 deaths; median age 10.0 rounds; died within 10 rounds of birth: 31; head on a corridor/dead-end cell (<=2 open sides): 57
+   activity in the turns before (role/mode words): [('pearl', 174), ('war', 47), ('save-split', 33), ('keep', 16), ('explore', 12), ('hunt-queen', 6), ('farm', 5), ('grow-fleet', 2)]
+   r26   #3     hit a wall           L2   age 26   open 1  last: ['exp nrm pearl L2', 'exp nrm pearl L3', 'exp nrm save-split L4']
+   r59   #10    hit a wall           L2   age 34   open 1  last: ['col nrm pearl L2', 'col nrm pearl L3', 'col nrm save-split L4']
+   r92   #23    hit a wall           L2   age 34   open 1  last: ['exp nrm pearl L2', 'exp nrm pearl L3', 'exp nrm save-split L4']
+   r119  #5     hit a wall           L2   age 118  open 2  last: ['col war pearl L3', 'col war pearl L4', 'col war save-split L5']
+   r127  #41    hit a wall           L2   age 9    open 2  last: ['cmb war pearl L4', 'cmb war pearl L5', 'cmb war save-split L6']
+   r131  #45    hit a wall           L2   age 4    open 2  last: ['exp war pearl L3', 'exp war pearl L4', 'exp war save-split L5']
+   r141  #49    hit a wall           L2   age 11   open 2  last: ['cmb war pearl L4', 'cmb war pearl L5', 'cmb war save-split L6']
+   r149  #56    hit a wall           L2   age 6    open 2  last: ['cmb war pearl L3', 'cmb war pearl L4', 'cmb war save-split L5']
+   r159  #57    hit a wall           L2   age 11   open 2  last: ['col keep pearl L4', 'col keep pearl L5', 'col war save-split L6']
+   r163  #65    hit a wall           L2   age 4    open 2  last: ['exp keep pearl L3', 'exp keep pearl L4', 'exp war save-split L5']
+   r175  #67    hit a wall           L2   age 13   open 2  last: ['col farm pearl L4', 'col keep pearl L5', 'col war save-split L6 s0']
+   r179  #72    hit a wall           L2   age 4    open 2  last: ['col war pearl L3', 'col war pearl L4', 'col war save-split L5']
+   r187  #73    hit a wall           L2   age 9    open 2  last: ['prt war pearl L4', 'prt war pearl L5', 'prt war save-split L6']
+   r188  #52    hit a wall           L2   age 48   open 1  last: ['col war pearl L3', 'col war pearl L4', 'col war save-split L5']
+   r188  #71    hit itself           L2   age 14   open 4  last: ['col war pearl L2', 'col keep pearl L2', 'col keep pearl L2']
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      4  ('last-attack', 'head-on collision')
+      1  ('attack', 'head-on collision')
+   attacks made while the opponent already had more dragons: 5/5
+   r318  last-attack L3   head-on collision    fleet 8/25
+   r341  last-attack L2   head-on collision    fleet 9/24
+   r347  attack     L2   head-on collision    fleet 7/23
+   r409  last-attack L2   head-on collision    fleet 5/24
+   r482  last-attack L2   head-on collision    fleet 5/15
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 2 pearls / 149 dragon-turns = 1.3%;  after: 158 / 2286 = 6.9%
+   opp: rounds<=50: 30 pearls / 240 dragon-turns = 12.5%;  after: 542 / 8754 = 6.2%
+   races (who was nearer when the pearl appeared -> who ate it): {('they were nearer', 'taken by opp'): 362, ('we were nearer', 'taken by us'): 70, ('we were nearer', 'taken by opp'): 40, ('tie', 'taken by opp'): 13, ('they were nearer', 'taken by us'): 53, ('tie', 'taken by us'): 15}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+      1  ('opp', 2, 3)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 65%  (spawn tiles cover 76 of 600 cells)

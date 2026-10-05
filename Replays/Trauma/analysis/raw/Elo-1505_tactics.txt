@@ -1,0 +1,64 @@
+### fountain
+Elo-1505: 12 fast tiles; pearls eaten on them  us 14/511  opp 231/643
+  by 100-round phase: [(('opp', 0), 18), (('opp', 100), 9), (('opp', 200), 68), (('opp', 300), 94), (('opp', 400), 42), (('us', 200), 7), (('us', 400), 7)]
+  us: 4 distinct eaters; their fate {'hit a wall': 4}
+  opp: 101 distinct eaters; their fate {'hit itself': 83, 'hit a body': 9, 'gave no valid action': 6, 'head-on collision': 3}
+
+### pocketcycle
+us: 4 trips; entry length {2: 2, 3: 2}; pearls/trip 3.50; net length/trip +1.00 (total +4); ends {'hit a wall': 4}; dead stub length {2: 2, 3: 2}
+     split pattern in the pocket (child sizes): [((7,), 2), ((), 2)]
+opp: 103 trips; entry length {2: 100, 3: 3}; pearls/trip 2.28; net length/trip +1.13 (total +116); ends {'hit itself': 54, 'left': 46, 'hit a body': 2, 'gave no valid action': 1}; dead stub length {2: 52, 3: 5}
+     split pattern in the pocket (child sizes): [((2,), 85), ((), 9), ((2, 2, 2), 8), ((2, 2), 1)]
+
+### queenstyle
+Elo-1505 OPP queen #0: alive 501 rounds, died None; length start 4 max 15 r100 4 r250 4 end 11; pearls eaten 19
+     distinct cells 44; 2x2-loop rounds 0%; dist from start median 5 max 15; own within 3 median 0; enemy heads within 4: mean 0.01, rounds with any 1%
+Elo-1505 US  queen #1: alive 501 rounds, died None; length start 4 max 7 r100 4 r250 4 end 7; pearls eaten 3
+     distinct cells 50; 2x2-loop rounds 0%; dist from start median 2 max 7; own within 3 median 0; enemy heads within 4: mean 0.00, rounds with any 0%
+
+### hunters
+Elo-1505: their queen died None; mirror-spawn (4, 15)
+  r0    hunter-turns 0     mean hunter dist   0.0  closest head 10   queen from her start (max) 6
+  r50   hunter-turns 0     mean hunter dist   0.0  closest head 7    queen from her start (max) 6
+  r100  hunter-turns 1     mean hunter dist  14.0  closest head 9    queen from her start (max) 6
+  r150  hunter-turns 45    mean hunter dist  22.6  closest head 10   queen from her start (max) 6
+  r200  hunter-turns 65    mean hunter dist  20.7  closest head 8    queen from her start (max) 6
+  r250  hunter-turns 115   mean hunter dist  17.7  closest head 8    queen from her start (max) 6
+  r300  hunter-turns 40    mean hunter dist  20.1  closest head 9    queen from her start (max) 6
+  r350  hunter-turns 84    mean hunter dist  21.7  closest head 8    queen from her start (max) 7
+  r400  hunter-turns 123   mean hunter dist  20.6  closest head 6    queen from her start (max) 6
+  r450  hunter-turns 17    mean hunter dist  16.8  closest head 4    queen from her start (max) 15
+  r500  hunter-turns 0     mean hunter dist   0.0  closest head 12   queen from her start (max) 10
+
+### approach
+Elo-1505
+  opp  vs dragon  d1    n=83    closer    0% (random   8%, lift 0.00)  farther  100%
+  opp  vs dragon  d2    n=316   closer   27% (random  26%, lift 1.03)  farther   73%
+  opp  vs dragon  d3-5  n=1676  closer   39% (random  39%, lift 1.00)  farther   61%
+  us   vs dragon  d1    n=86    closer    1% (random  11%, lift 0.10)  farther   99%
+  us   vs dragon  d2    n=344   closer   19% (random  30%, lift 0.62)  farther   81%
+  us   vs dragon  d3-5  n=2099  closer   42% (random  42%, lift 1.00)  farther   58%
+
+### infant
+Elo-1505 - children dead within 2 rounds of birth (side, parent status, cause): count / splits with that status
+      9 / 270  ('opp', '?', 'gave no valid action')
+      6 / 270  ('opp', '?', 'head-on collision')
+      6 / 270  ('opp', '?', 'hit itself')
+      5 / 270  ('opp', '?', 'hit a body')
+      4 / 45   ('us', 'save-split', 'hit a wall')
+      3 / 16   ('us', 'unwind-split', 'hit itself')
+      3 / 78   ('us', 'trap-split', 'hit itself')
+      2 / 13   ('us', '?', 'hit itself')
+      2 / 78   ('us', 'trap-split', 'hit a wall')
+      1 / 44   ('us', 'grow-fleet', 'hit a wall')
+      1 / 44   ('us', 'grow-fleet', 'head-on collision')
+      1 / 13   ('us', '?', 'hit a body')
+
+### trades
+Elo-1505 our attack-type head-on deaths: {('hunt', 'traded'): 8, ('snipe', 'traded'): 13, ('hunt', 'died alone'): 1} | enemy lengths taken {2: 11, 3: 9, 5: 1} | enemy queens killed 0
+
+### escort (our queen)
+Elo-1505: us queen died None (); escorts (enemy within 2 for 3+ rounds): 0
+
+### escort (their queen)
+Elo-1505: opp queen died None (); escorts (enemy within 2 for 3+ rounds): 0

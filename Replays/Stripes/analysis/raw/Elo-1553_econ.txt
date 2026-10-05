@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  gg frikin ez / Elo-1553
+  us: dragon-turns 288; head within 1 of a spawn tile 56%; a pearl within 3: 79%; nearest pearl 10+ away: 1%; pearl adjacent at round start but not eaten by the side that round: 71/82
+  opp: dragon-turns 938; head within 1 of a spawn tile 70%; a pearl within 3: 83%; nearest pearl 10+ away: 0%; pearl adjacent at round start but not eaten by the side that round: 187/237
+  our status words, rounds 1-50: [('pearl', 62), ('rest', 18), ('explore', 12), ('', 5), ('camp', 5), ('save-split', 3)]
+  races lost while our head was nearer: 10; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r1->r27 (12, 10) #1 10 vs 12  ""
+     r32->r37 (12, 10) #5 6 vs 8  "col nrm pearl L2"
+     r35->r40 (14, 0) #5 5 vs 7  "col nrm pearl L2"
+     r73->r82 (12, 10) #10 5 vs 11  "col nrm save-split L6"
+     r116->r126 (14, 10) #23 1 vs 2  "exp war last-attack L3 s2"
+     r110->r129 (20, 11) #21 2 vs 3  "cmb war save-split L5 s2"
+     r97->r137 (17, 0) #1 5 vs 8  "QUEEN prt nrm pearl L2 s2"
+     r95->r138 (17, 1) #1 4 vs 10  "QUEEN prt war pearl L2 s2"
+     r83->r141 (19, 1) #1 8 vs 10  "QUEEN prt nrm rest L2 s2"
+     r5->r150 (3, 1) #1 4 vs 10  "QUEEN prt nrm rest L2 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 4), ('save-split', 2), ('rest', 2), ('', 1), ('last-attack', 1)]

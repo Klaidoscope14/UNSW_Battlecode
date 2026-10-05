@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE ? / Elo-1499
+  us: dragons ever 32, born by split 30, died 32, median lifespan 17.5 rounds
+     length mix: r50: n2 {'L2': 50, 'L3': 50}  r100: n6 {'L2': 50, 'L3': 33, 'L4-5': 17}  r200: n2 {'L3': 50, 'L6-9': 50}  r300: n6 {'L2': 50, 'L3': 33, 'L4-5': 17}  r400: n1 {'L10+': 100}
+  opp: dragons ever 273, born by split 271, died 226, median lifespan 32 rounds
+     length mix: r50: n2 {'L2': 50, 'L3': 50}  r100: n14 {'L2': 64, 'L3': 29, 'L4-5': 7}  r200: n37 {'L2': 65, 'L3': 30, 'L4-5': 5}  r300: n39 {'L2': 54, 'L3': 41, 'L4-5': 5}  r400: n48 {'L2': 46, 'L3': 54}
+  us queen: rounds 406; length at r50/100/200/300/400: 3/5/6/4/10; max 10; stays inside a 4-cell spread over 10 rounds 19% of the time; enemy heads within 3 of her: 0:380 1:23 2:3 3+:0
+  opp queen: rounds 140; length at r50/100/200/300/400: 3/3/-/-/-; max 4; stays inside a 4-cell spread over 10 rounds 7% of the time; enemy heads within 3 of her: 0:140 1:0 2:0 3+:0
+  us paid steps: {'paid step': 1, 'ate a pearl on the paid step': 1}
+  opp paid steps: {'paid step': 1}

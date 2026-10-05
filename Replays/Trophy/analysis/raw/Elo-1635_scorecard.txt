@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  ? / Elo-1635   we moved first (A)   last round 335
+REASON FOR LOSS : Elimination of all our dragons
+--------------------------------------------------------------------------------------------
+  PASS  T1  their queen died first and we still lost       no
+  FAIL  T2  optional attack deaths while outnumbered       7 (of 7 attacks)
+  FAIL  T3  pearls / dragon-turn r1-50 (us vs them)        2.3% vs 18.4%
+  FAIL  T4  nearest head at spawn, median (us vs them)     7 vs 2
+  FAIL  T5  head next to the spawn tile (us vs them)       5% vs 40%
+  FAIL  T6  our queen inside enemy strike reach            71% of 115 rounds
+  PASS  T7  idle circling (us vs them)                     0.1% vs 0.4%
+  FAIL  T8  our queen alive at the end / outlived theirs   died r115 (head-on collision)
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   84 / 713
+        fountain pearls (us / them)                                map has no fountains
+        their queen                                                died r128 (hit a body)
+        regicide strikes (our dragon died hitting their queen)     0
+        our deaths / non-combat deaths within 10 rounds of birth   26 / 0
+        rounds with 3 or fewer of our dragons                      126 of 335
+        our queen looping a 2x2 without eating (rounds)            6
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 2/8

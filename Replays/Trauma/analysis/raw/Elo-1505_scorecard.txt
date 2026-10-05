@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  Quantify / Elo-1505   we moved second (B)   last round 500
+REASON FOR LOSS : Longer queen
+--------------------------------------------------------------------------------------------
+  PASS  T1  their queen died first and we still lost       no
+  FAIL  T2  optional attack deaths while outnumbered       14 (of 22 attacks)
+  FAIL  T3  pearls / dragon-turn r1-50 (us vs them)        0.7% vs 9.5%
+  FAIL  T4  nearest head at spawn, median (us vs them)     6 vs 4
+  FAIL  T5  head next to the spawn tile (us vs them)       9% vs 13%
+  PASS  T6  our queen inside enemy strike reach            2% of 501 rounds
+  PASS  T7  idle circling (us vs them)                     5.7% vs 2.5%
+  PASS  T8  our queen alive at the end / outlived theirs   alive
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   511 / 643
+        fountain pearls (us / them)                                14 / 231
+        their queen                                                alive
+        regicide strikes (our dragon died hitting their queen)     0
+        our deaths / non-combat deaths within 10 rounds of birth   162 / 38
+        rounds with 3 or fewer of our dragons                      51 of 500
+        our queen looping a 2x2 without eating (rounds)            0
+        intentional loops (post / bunker / rest / guard) dragon-turns 1
+  targets met: 4/8

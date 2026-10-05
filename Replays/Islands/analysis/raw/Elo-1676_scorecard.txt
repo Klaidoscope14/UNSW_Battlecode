@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  Ciallo / Elo-1676   we moved second (B)   last round 500
+REASON FOR LOSS : Lost by Longest dragon
+--------------------------------------------------------------------------------------------
+  PASS  T1  their queen died first and we still lost       no
+  FAIL  T2  optional attack deaths while outnumbered       62 (of 62 attacks)
+  PASS  T3  pearls / dragon-turn r1-50 (us vs them)        11.7% vs 10.5%
+  FAIL  T4  nearest head at spawn, median (us vs them)     7 vs 2
+  FAIL  T5  head next to the spawn tile (us vs them)       6% vs 27%
+  PASS  T6  our queen inside enemy strike reach            4% of 96 rounds
+  PASS  T7  idle circling (us vs them)                     1.6% vs 7.0%
+  FAIL  T8  our queen alive at the end / outlived theirs   died r96 (head-on collision)
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   665 / 1832
+        fountain pearls (us / them)                                309 / 580
+        their queen                                                died r185 (head-on collision)
+        regicide strikes (our dragon died hitting their queen)     1
+        our deaths / non-combat deaths within 10 rounds of birth   196 / 28
+        rounds with 3 or fewer of our dragons                      0 of 500
+        our queen looping a 2x2 without eating (rounds)            0
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 4/8

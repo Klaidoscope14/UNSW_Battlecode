@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  gg frikin ez / Elo-1553
+  us: dragon-turns 4441; head within 1 of a spawn tile 97%; a pearl within 3: 24%; nearest pearl 10+ away: 20%; pearl adjacent at round start but not eaten by the side that round: 112/289
+  opp: dragon-turns 17167; head within 1 of a spawn tile 98%; a pearl within 3: 22%; nearest pearl 10+ away: 21%; pearl adjacent at round start but not eaten by the side that round: 454/1010
+  our status words, rounds 1-50: [('pearl', 137), ('camp', 13), ('', 6), ('hunt-queen', 6), ('hunt', 5), ('grow-fleet', 4), ('rest', 1)]
+  races lost while our head was nearer: 57; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r8->r28 (14, 18) #1 10 vs 12  "QUEEN prt nrm pearl L3"
+     r11->r43 (13, 9) #1 7 vs 11  "QUEEN prt nrm pearl L3"
+     r15->r44 (13, 8) #5 9 vs 12  "col nrm pearl L2 s0"
+     r14->r44 (17, 10) #1 3 vs 13  "QUEEN prt nrm pearl L3"
+     r12->r45 (17, 9) #1 4 vs 14  "QUEEN prt nrm pearl L3"
+     r32->r47 (17, 8) #1 7 vs 8  "QUEEN prt nrm pearl L5"
+     r11->r48 (17, 7) #1 5 vs 13  "QUEEN prt nrm pearl L3"
+     r36->r48 (17, 13) #1 2 vs 4  "QUEEN prt nrm pearl L5"
+     r24->r49 (18, 10) #1 4 vs 12  "QUEEN prt nrm pearl L3"
+     r2->r51 (18, 8) #1 2 vs 13  "QUEEN prt nrm pearl L3"
+  what our nearest dragon was doing in those lost races: [('pearl', 40), ('last-attack', 9), ('snipe', 3), ('attack', 3), ('regicide', 1), ('', 1)]

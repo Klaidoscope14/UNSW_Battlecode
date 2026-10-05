@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Ciallo / Elo-1676
+  us: dragon-turns 1154; head within 1 of a spawn tile 64%; a pearl within 3: 14%; nearest pearl 10+ away: 20%; pearl adjacent at round start but not eaten by the side that round: 21/49
+  opp: dragon-turns 9505; head within 1 of a spawn tile 64%; a pearl within 3: 48%; nearest pearl 10+ away: 8%; pearl adjacent at round start but not eaten by the side that round: 912/1318
+  our status words, rounds 1-50: [('pearl', 88), ('camp', 7), ('', 3), ('explore', 2), ('rest', 2), ('queen-stall', 1)]
+  races lost while our head was nearer: 12; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r18->r101 (17, 13) #3 9 vs 18  "exp nrm pearl L2 s2"
+     r49->r102 (18, 13) #3 11 vs 12  "exp nrm pearl L2 s2"
+     r6->r103 (18, 14) #1 14 vs 17  "QUEEN prt nrm pearl L2"
+     r49->r103 (17, 3) #3 12 vs 14  "exp nrm pearl L2 s2"
+     r28->r105 (18, 12) #3 9 vs 17  "exp nrm pearl L2 s2"
+     r51->r106 (18, 4) #3 10 vs 15  "exp nrm pearl L3 s2"
+     r73->r107 (18, 3) #4 10 vs 11  "cmb nrm pearl L2 s2"
+     r30->r109 (16, 12) #3 11 vs 13  "exp nrm pearl L2 s2"
+     r94->r114 (5, 2) #6 9 vs 10  "cmb nrm pearl L2 s2"
+     r194->r213 (29, 9) #62 3 vs 4  "col war pearl L3 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 11), ('', 1)]

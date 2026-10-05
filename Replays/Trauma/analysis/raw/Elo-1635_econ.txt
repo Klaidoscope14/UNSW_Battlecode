@@ -1,0 +1,10 @@
+====================================================================================================
+ECON  Verity / Elo-1635
+  us: dragon-turns 12795; head within 1 of a spawn tile 50%; a pearl within 3: 45%; nearest pearl 10+ away: 6%; pearl adjacent at round start but not eaten by the side that round: 887/1436
+  opp: dragon-turns 3188; head within 1 of a spawn tile 16%; a pearl within 3: 16%; nearest pearl 10+ away: 27%; pearl adjacent at round start but not eaten by the side that round: 108/154
+  our status words, rounds 1-50: [('pearl', 49), ('camp', 48), ('explore', 26), ('rest', 25), ('', 3), ('grow-fleet', 1)]
+  races lost while our head was nearer: 3; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r234->r262 (0, 23) #6 5 vs 10  "cmb keep pearl L3 s2"
+     r455->r456 (0, 0) #10 1 vs 3  "LEAD col keep pearl L9 s2"
+     r495->r499 (0, 23) #267 3 vs 4  "col war explore L2 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 2), ('explore', 1)]

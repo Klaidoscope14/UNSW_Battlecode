@@ -20,7 +20,7 @@ MAPS = {'around_unsw': 'unsw', 'australia': 'australia', 'autarky': 'autarky', '
         'stripes': 'stripes', 'tower_defense': 'tower_defense', 'trauma': 'trauma', 'trophy': 'trophy',
         'weakhold': 'weakhold', 'stronghold': 'stronghold', 'big_empty': 'big_empty'}
 DIRS = {'N': (0, -1), 'E': (1, 0), 'S': (0, 1), 'W': (-1, 0)}
-OURS = ('Us', 'Low Cortisol', 'Low_Cortisol')
+OURS = ('Us', 'Low Cortisol', 'Low_Cortisol')  # compared case-insensitively
 
 
 class Map:
@@ -86,14 +86,36 @@ class Game:
     def __init__(s, path):
         s.path = path
         s.name = os.path.basename(path)[:-4]
-        s.opp_name = os.path.basename(os.path.dirname(os.path.abspath(path))).replace('_Match_Replays', '').replace('_Replays', '')
+        folder = os.path.basename(os.path.dirname(os.path.abspath(path)))
+        s.opp_name = folder.replace('_Match_Replays', '').replace('_Replays', '')
         lines = open(path).read().split('\n')
         starter = lines[0].split(':', 1)[1].strip()
-        s.starter_us = any(o == starter for o in OURS)
+        s.starter_us = any(o.lower() == starter.lower() for o in OURS)
         s.result_line = lines[1].strip()
         s.won = lines[1].startswith('REASON FOR WIN')
         s.reason = lines[1].split(':', 1)[1].strip()
-        s.map = Map(MAPS.get(s.name.lower(), s.name.lower()))  # local logs use the map file name
+        # Map: the file name (ladder exports <Map>.txt), else the folder (<Map>/Elo-1707.txt).
+        key = MAPS.get(s.name.lower(), s.name.lower())
+        if not os.path.exists(os.path.join(MAPDIR, key + '.map')):
+            key = MAPS.get(folder.lower(), folder.lower())
+            # <Map>/Elo-<rating>[-<team>].txt: rating and team from the file name, team from the header
+            m = re.match(r'Elo-(\d+)(?:-(.*))?$', s.name)
+            s.opp_elo = int(m.group(1)) if m else None
+            s.opp_name = (m.group(2) if m and m.group(2) else (starter if not s.starter_us else '?'))
+        # Our bot writes 'QUEEN ...' status texts: trust those over a hand-written header.
+        s.header_fixed = False
+        for l in lines[3:400]:
+            mm = re.match(r'\d+\tdragon ([01]): QUEEN ', l)
+            if mm:
+                us_first = mm.group(1) == '0'
+                if us_first != s.starter_us:
+                    s.starter_us = us_first
+                    s.header_fixed = True
+                    if not us_first and s.opp_name == '?':
+                        s.opp_name = starter if starter.lower() not in ('us',) else '?'
+                break
+        s.mapkey = key
+        s.map = Map(key)
         s.US = 0 if s.starter_us else 1      # map team index of our team
         s.OPP = 1 - s.US
         s.team = {}; s.body = {}; s.born = {}; s.died = {}; s.deathwhy = {}; s.parent = {}; s.queen_ids = {0, 1}

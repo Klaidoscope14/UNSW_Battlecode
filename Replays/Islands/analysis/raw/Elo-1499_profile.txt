@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE Quantify / Elo-1499
+  us: dragons ever 351, born by split 346, died 325, median lifespan 24 rounds
+     length mix: r50: n15 {'L2': 60, 'L3': 33, 'L10+': 7}  r100: n17 {'L2': 53, 'L3': 18, 'L4-5': 24, 'L10+': 6}  r200: n38 {'L2': 55, 'L3': 37, 'L4-5': 5, 'L6-9': 3}  r300: n37 {'L2': 41, 'L3': 22, 'L4-5': 16, 'L6-9': 22}  r400: n36 {'L2': 39, 'L3': 19, 'L4-5': 19, 'L6-9': 17, 'L10+': 6}  r499: n25 {'L2': 16, 'L3': 16, 'L4-5': 20, 'L6-9': 28, 'L10+': 20}
+  opp: dragons ever 490, born by split 485, died 472, median lifespan 25.0 rounds
+     length mix: r50: n22 {'L2': 59, 'L3': 36, 'L4-5': 5}  r100: n49 {'L2': 53, 'L3': 22, 'L4-5': 20, 'L6-9': 4}  r200: n49 {'L2': 45, 'L3': 35, 'L4-5': 14, 'L6-9': 4, 'L10+': 2}  r300: n51 {'L2': 49, 'L3': 37, 'L4-5': 14}  r400: n49 {'L2': 59, 'L3': 22, 'L4-5': 10, 'L6-9': 6, 'L10+': 2}  r499: n18 {'L2': 17, 'L3': 17, 'L6-9': 33, 'L10+': 33}
+  us queen: rounds 119; length at r50/100/200/300/400: 12/20/-/-/-; max 21; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:117 1:2 2:0 3+:0
+  opp queen: rounds 501; length at r50/100/200/300/400: 3/3/3/3/3; max 8; stays inside a 4-cell spread over 10 rounds 61% of the time; enemy heads within 3 of her: 0:426 1:70 2:5 3+:0
+  us paid steps: {'ate a pearl on the paid step': 3, 'paid step': 15, 'died the same turn (head-on collision)': 4}
+  opp paid steps: {'paid step': 29, 'died the same turn (head-on collision)': 18, 'ate a pearl on the paid step': 2}

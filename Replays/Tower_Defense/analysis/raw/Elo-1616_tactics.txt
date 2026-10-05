@@ -1,0 +1,50 @@
+### fountain
+Elo-1616: 4 fast tiles; pearls eaten on them  us 4/76  opp 82/869
+  by 100-round phase: [(('opp', 100), 14), (('opp', 200), 30), (('opp', 300), 24), (('opp', 400), 14), (('us', 0), 2), (('us', 400), 2)]
+  us: 2 distinct eaters; their fate {'hit a wall': 2}
+  opp: 41 distinct eaters; their fate {'hit a wall': 41}
+
+### pocketcycle
+us: 2 trips; entry length {2: 2}; pearls/trip 2.00; net length/trip +0.00 (total +0); ends {'hit a wall': 2}; dead stub length {2: 2}
+     split pattern in the pocket (child sizes): [((2,), 2)]
+opp: 41 trips; entry length {2: 14, 3: 15, 4: 9, 5: 2, 6: 1}; pearls/trip 2.00; net length/trip -0.90 (total -37); ends {'hit a wall': 41}; dead stub length {2: 20, 3: 14, 4: 3, 5: 1, 6: 1, 7: 2}
+     split pattern in the pocket (child sizes): [((2,), 25), ((2, 2), 8), ((), 7), ((6,), 1)]
+
+### queenstyle
+Elo-1616 US  queen #0: alive 188 rounds, died 188; length start 2 max 7 r100 4 r250 2 end 2; pearls eaten 5
+     distinct cells 38; 2x2-loop rounds 3%; dist from start median 3 max 7; own within 3 median 0; enemy heads within 4: mean 0.03, rounds with any 3%
+Elo-1616 OPP queen #1: alive 104 rounds, died 104; length start 2 max 5 r100 3 r250 3 end 3; pearls eaten 5
+     distinct cells 65; 2x2-loop rounds 8%; dist from start median 13 max 18; own within 3 median 0; enemy heads within 4: mean 0.04, rounds with any 4%
+
+### hunters
+Elo-1616: their queen died 104; mirror-spawn (26, 11)
+  r0    hunter-turns 0     mean hunter dist   0.0  closest head 8    queen from her start (max) 17
+  r50   hunter-turns 0     mean hunter dist   0.0  closest head 4    queen from her start (max) 18
+  r100  hunter-turns 0     mean hunter dist   0.0  closest head 3    queen from her start (max) 15
+
+### approach
+Elo-1616
+  opp  vs dragon  d1    n=18    closer    0% (random  20%, lift 0.00)  farther  100%
+  opp  vs dragon  d2    n=89    closer   27% (random  29%, lift 0.93)  farther   73%
+  opp  vs dragon  d3-5  n=794   closer   40% (random  40%, lift 1.01)  farther   60%
+  us   vs dragon  d1    n=18    closer    0% (random  18%, lift 0.00)  farther  100%
+  us   vs dragon  d2    n=78    closer   14% (random  28%, lift 0.50)  farther   86%
+  us   vs dragon  d3-5  n=598   closer   40% (random  38%, lift 1.06)  farther   60%
+
+### infant
+Elo-1616 - children dead within 2 rounds of birth (side, parent status, cause): count / splits with that status
+     18 / 321  ('opp', '?', 'hit a wall')
+     14 / 321  ('opp', '?', 'hit itself')
+      8 / 321  ('opp', '?', 'hit a body')
+      2 / 321  ('opp', '?', 'gave no valid action')
+      1 / 9    ('us', 'trap-split', 'hit a wall')
+      1 / 9    ('us', 'trap-split', 'hit itself')
+
+### trades
+Elo-1616 our attack-type head-on deaths: {('regicide', 'traded'): 1, ('attack', 'traded'): 1} | enemy lengths taken {3: 1, 5: 1} | enemy queens killed 1
+
+### escort (our queen)
+Elo-1616: us queen died 188 (hit a body); escorts (enemy within 2 for 3+ rounds): 0
+
+### escort (their queen)
+Elo-1616: opp queen died 104 (head-on collision); escorts (enemy within 2 for 3+ rounds): 0

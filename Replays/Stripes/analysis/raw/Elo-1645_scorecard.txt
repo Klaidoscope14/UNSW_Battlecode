@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  Ravenus / Elo-1645   we moved second (B)   last round 267
+REASON FOR LOSS : Lost by elimination of all our dragons
+--------------------------------------------------------------------------------------------
+  FAIL  T1  their queen died first and we still lost       YES
+  PASS  T2  optional attack deaths while outnumbered       0 (of 0 attacks)
+  PASS  T3  pearls / dragon-turn r1-50 (us vs them)        7.1% vs 5.6%
+  FAIL  T4  nearest head at spawn, median (us vs them)     9 vs 2
+  FAIL  T5  head next to the spawn tile (us vs them)       0% vs 21%
+  FAIL  T6  our queen inside enemy strike reach            17% of 267 rounds
+  PASS  T7  idle circling (us vs them)                     10.0% vs 29.3%
+  PASS  T8  our queen alive at the end / outlived theirs   died r267 (hit a body) after theirs
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   10 / 151
+        fountain pearls (us / them)                                5 / 55
+        their queen                                                died r214 (head-on collision)
+        regicide strikes (our dragon died hitting their queen)     1
+        our deaths / non-combat deaths within 10 rounds of birth   6 / 1
+        rounds with 3 or fewer of our dragons                      267 of 267
+        our queen looping a 2x2 without eating (rounds)            3
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 4/8

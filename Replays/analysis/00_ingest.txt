@@ -1,0 +1,57 @@
+file                              map             elo team              first loss type      end state       rnd  us them  qU qT  lU  lT nonadj wall?
+Islands/Elo-1440.txt              islands        1440 ?                 us    longest dragon longest dragon  500  46   12   0  0  14  16      0     0
+Islands/Elo-1493.txt              islands        1493 miga bot          us    longest dragon longest dragon  500  18   64   0  0   9  17      0     0  (header starter corrected from our QUEEN status)
+Islands/Elo-1494-migabot.txt      islands        1494 miga bot          us    longest dragon longest dragon  500  28   64   0  0  16  18      0     0
+Islands/Elo-1499.txt              islands        1499 quantify          them  longer queen   longer queen    500  26   18   0  8  29  14      0     0
+Islands/Elo-1541.txt              islands        1541 neungzai          them  longest dragon longest dragon  500  25   59   0  0   8  18      0     0
+Islands/Elo-1582.txt              islands        1582 akatsuki          them  longest dragon longest dragon  500  42   13   0  0  11  32      0     0
+Islands/Elo-1635.txt              islands        1635 ?                 us    longest dragon longest dragon  500  40   17   0  0  18  36      0     0
+Islands/Elo-1676.txt              islands        1676 ciallo            them  longest dragon longest dragon  500   7   44   0  0  15  28      0     0
+Islands/Elo-1707.txt              islands        1707 ?                 us    longest dragon longest dragon  500  12   15   0  0  14  24      0     0
+Stripes/Elo-1339.txt              stripes        1339 bitshift          them  longest dragon longest dragon  500   9    8   0  0   5  12      0     0
+Stripes/Elo-1485.txt              stripes        1485 quantify          them  elimination    elimination     157   0   19   0  0   0   4      0     0
+Stripes/Elo-1499.txt              stripes        1499 quantify          them  elimination    elimination     177   0   17   0  0   0   3      0     0
+Stripes/Elo-1505.txt              stripes        1505 ?                 us    elimination    elimination     175   0   19   0  0   0   4      0     0
+Stripes/Elo-1553.txt              stripes        1553 gg frikin ez      them  elimination    elimination     162   0   14   0  0   0   3      0     0
+Stripes/Elo-1626.txt              stripes        1626 outsider traders  them  elimination    elimination     193   0   19   0  3   0   5      0     0
+Stripes/Elo-1635.txt              stripes        1635 ?                 them  elimination    elimination     434   0   11   0  0   0  13      0     0  (header starter corrected from our QUEEN status)
+Stripes/Elo-1645.txt              stripes        1645 ravenus           them  elimination    elimination     267   0   28   0  0   0   5      0     0
+Stripes/Elo-1707.txt              stripes        1707 jingling munmin   them  elimination    elimination     201   0   18   0  2   0   3      0     0
+Stripes/Elo-1708.txt              stripes        1708 manny             them  elimination    elimination     171   0   13   0  3   0   3      0     0
+Tower_Defense/Elo-1472.txt        tower_defense  1472 machli            them  longer queen   longer queen    500  25    3  12 14  12  14      0     0
+Tower_Defense/Elo-1493.txt        tower_defense  1493 miga bot          them  elimination    elimination     494   0   46   0  0   0   5      0     1
+Tower_Defense/Elo-1499.txt        tower_defense  1499 ?                 us    elimination    elimination     427   0   47   0  0   0   6      0     0
+Tower_Defense/Elo-1525.txt        tower_defense  1525 quantify          them  elimination    elimination     350   0   48   0  0   0   4      0     0
+Tower_Defense/Elo-1541.txt        tower_defense  1541 ?                 us    elimination    elimination     395   0   40   0  0   0  10      0     0
+Tower_Defense/Elo-1582.txt        tower_defense  1582 akatsuki          them  longest dragon longest dragon  500  27    3   0  0  10  30      0     0
+Tower_Defense/Elo-1597.txt        tower_defense  1597 starstruck        them  longer queen   longer queen    500   4    9  12 20  12  23      0     0
+Tower_Defense/Elo-1616.txt        tower_defense  1616 ?                 us    longest dragon longest dragon  500   9    9   0  0   4  17      0     0
+Tower_Defense/Elo-1635.txt        tower_defense  1635 ?                 us    longest dragon longest dragon  500   6   18   0  0  12  23      0     0
+Tower_Defense/Elo-1660.txt        tower_defense  1660 ?                 us    longest dragon longest dragon  500   4    6   0  0  11  38      0     1
+Tower_Defense/Elo-1676.txt        tower_defense  1676 ciallo            them  elimination    elimination     368   0   38   0  0   0  18      0     0
+Tower_Defense/Elo-1705-Ciallo.txt tower_defense  1705 ciallo            us    longest dragon longest dragon  500   3   22   0  0  11  16      0     0
+Trauma/Elo-1505.txt               trauma         1505 quantify          them  longer queen   longer queen    500  36    4   7 11   8  11      0     0
+Trauma/Elo-1541.txt               trauma         1541 ?                 us    longer queen   longer queen    500  34   13   6 14  11  14      0     0
+Trauma/Elo-1607.txt               trauma         1607 hydra             them  longest dragon longest dragon  500   2   18   0  0  10  11      0     0
+Trauma/Elo-1635.txt               trauma         1635 verity            them  longer queen   longer queen    500  43    4   6 28   8  28      0     1
+Trauma/Elo-1705.txt               trauma         1705 ciallo            them  longer queen   longer queen    500  33    2   6 20   8  20      0     0
+Trauma/Elo-1707.txt               trauma         1707 jingling munmin   them  longer queen   longer queen    500  26    5  10 15  10  15      0     0
+Trophy/Elo-1485.txt               trophy         1485 ?                 us    elimination    elimination     248   0   48   0  0   0   6      0     0
+Trophy/Elo-1553.txt               trophy         1553 gg frikin ez      them  longest dragon longest dragon  500   4   24   0  0   4  17      0     0
+Trophy/Elo-1582.txt               trophy         1582 akatsuki          them  longest dragon longest dragon  500  10    6   0  0  15  29      0     0
+Trophy/Elo-1595.txt               trophy         1595 starstruck        us    longest dragon longest dragon  500  23    2   0  0  15  22      0     0  (header starter corrected from our QUEEN status)
+Trophy/Elo-1635.txt               trophy         1635 ?                 us    elimination    elimination     335   0   48   0  0   0  13      0     0
+Trophy/Elo-1660.txt               trophy         1660 cookagent         them  elimination    elimination     184   0   48   0  8   0   8      0     0
+Trophy/Elo-1707.txt               trophy         1707 ?                 us    elimination    elimination     162   0   63   0  4   0   5      0     0
+Weakhold/Elo-1498.txt             weakhold       1498 niuniu lai        them  longest dragon longest dragon  500   5   14   0  0   5  19      0     0
+Weakhold/Elo-1560.txt             weakhold       1560 jet2holiday       them  elimination    elimination     253   0   16   0  2   0   7      0     0
+Weakhold/Elo-1582.txt             weakhold       1582 ?                 us    longest dragon longest dragon  500   7    4   0  0   4  34      0     1
+Weakhold/Elo-1603.txt             weakhold       1603 ?                 us    elimination    elimination     359   0   15   0  0   0   4      0     0
+Weakhold/Elo-1635.txt             weakhold       1635 verity            them  elimination    longest dragon  500   6    5   0  0   3  29      0     0  <-- reason vs end state
+
+usable logs: 49   unusable: 3
+  UNUSABLE Islands/Elo-1494.txt: duplicate of Islands/Elo-1494-migabot.txt
+  UNUSABLE Tower_Defense/Elo-1705.txt: duplicate of Tower_Defense/Elo-1705-Ciallo.txt
+  UNUSABLE Trophy/Elo-1626.txt: 2 lines: no game events
+loss types (from the header): {'longest dragon': 20, 'longer queen': 8, 'elimination': 21}
+loss types (from the end state): {'longest dragon': 21, 'longer queen': 8, 'elimination': 20}

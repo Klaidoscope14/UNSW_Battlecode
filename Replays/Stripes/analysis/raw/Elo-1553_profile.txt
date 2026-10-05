@@ -1,0 +1,8 @@
+====================================================================================================
+PROFILE gg frikin ez / Elo-1553
+  us: dragons ever 15, born by split 13, died 15, median lifespan 8 rounds
+     length mix: r50: n2 {'L2': 50, 'L3': 50}  r100: n2 {'L2': 50, 'L3': 50}
+  opp: dragons ever 30, born by split 28, died 16, median lifespan 19.0 rounds
+     length mix: r50: n2 {'L2': 50, 'L10+': 50}  r100: n8 {'L2': 62, 'L3': 38}
+  us queen: rounds 104; length at r50/100/200/300/400: 2/2/-/-/-; max 2; stays inside a 4-cell spread over 10 rounds 61% of the time; enemy heads within 3 of her: 0:95 1:9 2:0 3+:0
+  opp queen: rounds 79; length at r50/100/200/300/400: 17/-/-/-/-; max 21; stays inside a 4-cell spread over 10 rounds 7% of the time; enemy heads within 3 of her: 0:78 1:1 2:0 3+:0

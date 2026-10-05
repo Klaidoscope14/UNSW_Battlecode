@@ -61,3 +61,18 @@ bash tools/replay_analysis/tactics.sh Stochastic_Parrot_Replays     # -> analysi
 
 Local games: `bash tools/replay_analysis/local_scorecard.sh <replays...>` (our bot = team A; converts with
 `tools/replay_to_txt.mjs` + `local2ladder.py`, output in `$OUT`, default `/tmp/local_scorecards`).
+
+## Many-game folders (`<Map>/Elo-<rating>[-<team>].txt`)
+
+The parser reads the map from the folder, the opponent rating and team from the file name, and finds
+our side from our own `QUEEN ...` status lines (headers can be wrong). Duplicates (same bytes) and
+header-only files are skipped.
+
+| script | output |
+|---|---|
+| `ingest.py ROOT` | one line per game: map, rating, team, loss type (header vs end state), replay checks |
+| `master.py ROOT` | `ROOT/analysis/master.csv`: one row per game, ~95 columns (queens, fleets over time, pearls, deaths, aggression, portals, status shares) |
+| `queen_deaths.py ROOT` | every death of our queen: killer, sprint, stalking time, what she was doing, their queen's state |
+| `queen_lastmove.py ROOT` | her options in the fatal round and the round before (inside an enemy's reach or not, exits) |
+| `opening_econ.py ROOT` | first 150 rounds: pearls, queen pearls, splits, dragons, queen status mix (works on local A/B folders too) |
+| `doubledeath.py ROOT` | survival splits where parent and child both die, by split reason, portal and fountain |

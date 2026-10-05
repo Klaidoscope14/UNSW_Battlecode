@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  ? / Elo-1705   we moved first (A)   last round 500
+REASON FOR LOSS : Lost by Longest dragon
+--------------------------------------------------------------------------------------------
+  FAIL  T1  their queen died first and we still lost       YES
+  PASS  T2  optional attack deaths while outnumbered       1 (of 1 attacks)
+  FAIL  T3  pearls / dragon-turn r1-50 (us vs them)        1.0% vs 3.7%
+  FAIL  T4  nearest head at spawn, median (us vs them)     12 vs 2
+  FAIL  T5  head next to the spawn tile (us vs them)       1% vs 34%
+  PASS  T6  our queen inside enemy strike reach            4% of 224 rounds
+  PASS  T7  idle circling (us vs them)                     0.4% vs 6.3%
+  PASS  T8  our queen alive at the end / outlived theirs   died r224 (head-on collision) after theirs
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   71 / 786
+        fountain pearls (us / them)                                4 / 20
+        their queen                                                died r100 (hit a body)
+        regicide strikes (our dragon died hitting their queen)     0
+        our deaths / non-combat deaths within 10 rounds of birth   17 / 1
+        rounds with 3 or fewer of our dragons                      208 of 500
+        our queen looping a 2x2 without eating (rounds)            5
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 4/8

@@ -1,0 +1,36 @@
+====================================================================================================
+DEEP  Outsider Traders / Elo-1626   result: REASON FOR LOSS : Elimination of all our dragons
+
+1. ENEMY QUEEN
+   survived
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+      27  ('opp', 'gave no valid action', 'had a free cell', 'mate<=3', 're-eaten')
+      10  ('opp', 'gave no valid action', 'had a free cell', 'mate<=3', 'not re-eaten')
+       2  ('opp', 'gave no valid action', 'forced', 'mate<=3', 're-eaten')
+       1  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 'not re-eaten')
+       1  ('us', 'hit a wall', 'had a free cell', 'alone', 'not re-eaten')
+       1  ('opp', 'gave no valid action', 'had a free cell', 'alone', 're-eaten')
+       1  ('opp', 'gave no valid action', 'forced', 'mate<=3', 'not re-eaten')
+       1  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   2 deaths; median age 18.5 rounds; died within 10 rounds of birth: 1; head on a corridor/dead-end cell (<=2 open sides): 2
+   activity in the turns before (role/mode words): [('pearl', 7), ('save-split', 2), ('hunt-queen', 1)]
+   r32   #3     hit a wall           L2   age 32   open 1  last: ['exp war pearl L3 s2', 'exp war pearl L3 s2', 'exp war save-split L4 s2']
+   r36   #7     hit a wall           L2   age 5    open 1  last: ['cmb nrm pearl L3', 'cmb war pearl L4 s2', 'cmb war save-split L5 s2']
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      1  ('last-attack', 'head-on collision')
+   attacks made while the opponent already had more dragons: 1/1
+   r38   last-attack L3   head-on collision    fleet 2/7
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 7 pearls / 87 dragon-turns = 8.0%;  after: 1 / 142 = 0.7%
+   opp: rounds<=50: 20 pearls / 192 dragon-turns = 10.4%;  after: 125 / 2035 = 6.1%
+   races (who was nearer when the pearl appeared -> who ate it): {('we were nearer', 'taken by us'): 3, ('they were nearer', 'taken by opp'): 101, ('we were nearer', 'taken by opp'): 12, ('they were nearer', 'taken by us'): 5, ('tie', 'taken by opp'): 1}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 85%  (spawn tiles cover 70 of 288 cells)

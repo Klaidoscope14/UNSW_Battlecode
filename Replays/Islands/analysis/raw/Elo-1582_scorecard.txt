@@ -1,0 +1,22 @@
+============================================================================================
+SCORECARD  Akatsuki.txt / Elo-1582   we moved second (B)   last round 500
+REASON FOR LOSS : Longest dragon
+--------------------------------------------------------------------------------------------
+  FAIL  T1  their queen died first and we still lost       YES
+  FAIL  T2  optional attack deaths while outnumbered       87 (of 90 attacks)
+  FAIL  T3  pearls / dragon-turn r1-50 (us vs them)        7.2% vs 11.0%
+  FAIL  T4  nearest head at spawn, median (us vs them)     4 vs 4
+  FAIL  T5  head next to the spawn tile (us vs them)       11% vs 8%
+  FAIL  T6  our queen inside enemy strike reach            20% of 284 rounds
+  PASS  T7  idle circling (us vs them)                     2.8% vs 1.2%
+  PASS  T8  our queen alive at the end / outlived theirs   died r284 (head-on collision) after theirs
+--------------------------------------------------------------------------------------------
+        pearls eaten (us / them)                                   1054 / 1112
+        fountain pearls (us / them)                                431 / 389
+        their queen                                                died r222 (head-on collision)
+        regicide strikes (our dragon died hitting their queen)     1
+        our deaths / non-combat deaths within 10 rounds of birth   298 / 58
+        rounds with 3 or fewer of our dragons                      0 of 500
+        our queen looping a 2x2 without eating (rounds)            0
+        intentional loops (post / bunker / rest / guard) dragon-turns 0
+  targets met: 2/8

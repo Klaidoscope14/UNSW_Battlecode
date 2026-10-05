@@ -1,0 +1,16 @@
+============================================================================================
+SUMMARY    T1   T2   T3   T4   T5   T6   T7   T8   result
+Elo-1472   ok   ok   ok   ok   ok   X    ok   ok   LOSS Lost by longer queen
+Elo-1493   X    ok   X    X    X    X    ok   ok   LOSS Elimination of all our dragons
+Elo-1499   X    ok   ok   X    X    ok   ok   ok   LOSS Elimination of all our dragons
+Elo-1525   X    ok   ok   X    X    X    ok   ok   LOSS Elimination of all our dragons
+Elo-1541   X    ok   ok   X    X    X    ok   ok   LOSS Elimination of all our dragons.
+Elo-1582   X    ok   ok   X    X    X    ok   ok   LOSS Lost by Longest dragon
+Elo-1597   ok   ok   X    X    X    X    ok   ok   LOSS Longer Queen
+Elo-1616   X    ok   X    X    X    ok   ok   ok   LOSS Lost by Longest dragon
+Elo-1635   X    ok   X    X    X    X    ok   ok   LOSS Longest dragon
+Elo-1660   X    X    ok   X    X    X    ok   ok   LOSS Lost by Longest dragon
+Elo-1676   ok   X    ok   X    X    ok   ok   X    LOSS Elimination of our dragons
+Elo-1705-  X    ok   X    X    X    ok   ok   ok   LOSS Lost by Longest dragon
+Elo-1705   X    ok   X    X    X    ok   ok   ok   LOSS Lost by Longest dragon
+met       3/13  11/13  7/13  1/13  1/13  5/13  13/13  12/13

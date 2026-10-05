@@ -37,7 +37,7 @@ def status_word(text):
 
 def fast_tiles(g):
     out = set()
-    for l in open(os.path.join(MAPDIR, MAPS.get(g.name.lower(), g.name.lower()) + '.map')):
+    for l in open(os.path.join(MAPDIR, g.mapkey + '.map')):
         p = l.split()
         if p and p[0] == 'TILE' and p[1] != 'COUNT' and p[3] != '0' and int(p[4]) <= 5:
             out.add((int(p[1]), int(p[2])))

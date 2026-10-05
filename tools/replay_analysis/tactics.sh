@@ -6,6 +6,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 for d in "$@"; do
   mkdir -p "$d/analysis/raw"
   for f in "$d"/*.txt; do
+    [ "$(wc -l < "$f")" -lt 5 ] && continue   # header only, no game
     n=$(basename "$f" .txt); F=$(cd "$(dirname "$f")" && pwd)/$(basename "$f")
     out="$(cd "$d" && pwd)/analysis/raw/${n}_tactics.txt"
     (cd "$HERE" && {

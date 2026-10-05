@@ -1,0 +1,16 @@
+====================================================================================================
+ECON  Quantify / Elo-1485
+  us: dragon-turns 291; head within 1 of a spawn tile 47%; a pearl within 3: 76%; nearest pearl 10+ away: 1%; pearl adjacent at round start but not eaten by the side that round: 54/60
+  opp: dragon-turns 1644; head within 1 of a spawn tile 71%; a pearl within 3: 74%; nearest pearl 10+ away: 0%; pearl adjacent at round start but not eaten by the side that round: 278/349
+  our status words, rounds 1-50: [('pearl', 56), ('rest', 27), ('explore', 9), ('', 5), ('camp', 5), ('save-split', 3)]
+  races lost while our head was nearer: 9; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r3->r30 (11, 10) #1 9 vs 11  "QUEEN prt nrm rest L2 s2"
+     r1->r31 (12, 10) #1 10 vs 12  ""
+     r57->r67 (6, 9) #1 3 vs 5  "QUEEN prt nrm explore L2 s2"
+     r1->r85 (3, 0) #1 3 vs 7  ""
+     r1->r86 (2, 0) #1 2 vs 6  ""
+     r1->r88 (2, 1) #1 3 vs 5  ""
+     r2->r133 (7, 2) #1 8 vs 12  "QUEEN prt nrm explore L2 s2"
+     r1->r135 (7, 1) #1 8 vs 10  ""
+     r1->r136 (6, 1) #1 7 vs 9  ""
+  what our nearest dragon was doing in those lost races: [('', 6), ('explore', 2), ('rest', 1)]

@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE StarStruck / Elo-1595
+  us: dragons ever 115, born by split 113, died 92, median lifespan 20 rounds
+     length mix: r50: n6 {'L2': 83, 'L3': 17}  r100: n11 {'L2': 82, 'L3': 18}  r200: n10 {'L2': 50, 'L3': 40, 'L4-5': 10}  r300: n23 {'L2': 65, 'L3': 30, 'L4-5': 4}  r400: n3 {'L6-9': 100}  r499: n23 {'L2': 9, 'L3': 22, 'L4-5': 30, 'L6-9': 30, 'L10+': 9}
+  opp: dragons ever 254, born by split 252, died 252, median lifespan 35.0 rounds
+     length mix: r50: n12 {'L2': 42, 'L3': 42, 'L4-5': 17}  r100: n28 {'L2': 64, 'L3': 36}  r200: n36 {'L2': 47, 'L3': 39, 'L4-5': 8, 'L6-9': 6}  r300: n27 {'L2': 48, 'L3': 48, 'L4-5': 4}  r400: n33 {'L2': 52, 'L3': 33, 'L4-5': 12, 'L6-9': 3}  r499: n2 {'L6-9': 50, 'L10+': 50}
+  us queen: rounds 45; length at r50/100/200/300/400: -/-/-/-/-; max 7; stays inside a 4-cell spread over 10 rounds 23% of the time; enemy heads within 3 of her: 0:44 1:1 2:0 3+:0
+  opp queen: rounds 78; length at r50/100/200/300/400: 5/-/-/-/-; max 5; stays inside a 4-cell spread over 10 rounds 6% of the time; enemy heads within 3 of her: 0:75 1:3 2:0 3+:0
+  us paid steps: {'paid step': 5, 'died the same turn (head-on collision)': 6, 'ate a pearl on the paid step': 19}
+  opp paid steps: {'ate a pearl on the paid step': 1, 'paid step': 13}

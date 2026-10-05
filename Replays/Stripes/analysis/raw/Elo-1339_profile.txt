@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE BitShift / Elo-1339
+  us: dragons ever 100, born by split 98, died 91, median lifespan 9.0 rounds
+     length mix: r50: n2 {'L3': 100}  r100: n1 {'L2': 100}  r200: n2 {'L2': 100}  r300: n4 {'L2': 25, 'L3': 50, 'L4-5': 25}  r400: n4 {'L2': 50, 'L3': 25, 'L4-5': 25}  r499: n9 {'L2': 33, 'L3': 22, 'L4-5': 44}
+  opp: dragons ever 63, born by split 61, died 55, median lifespan 35 rounds
+     length mix: r50: n3 {'L2': 67, 'L6-9': 33}  r100: n6 {'L2': 17, 'L3': 33, 'L4-5': 33, 'L6-9': 17}  r200: n13 {'L2': 62, 'L4-5': 31, 'L6-9': 8}  r300: n8 {'L2': 12, 'L3': 25, 'L4-5': 12, 'L6-9': 38, 'L10+': 12}  r400: n6 {'L2': 17, 'L4-5': 33, 'L6-9': 17, 'L10+': 33}  r499: n8 {'L2': 12, 'L3': 25, 'L4-5': 12, 'L6-9': 38, 'L10+': 12}
+  us queen: rounds 94; length at r50/100/200/300/400: 3/-/-/-/-; max 3; stays inside a 4-cell spread over 10 rounds 26% of the time; enemy heads within 3 of her: 0:91 1:3 2:0 3+:0
+  opp queen: rounds 133; length at r50/100/200/300/400: 6/8/-/-/-; max 19; stays inside a 4-cell spread over 10 rounds 1% of the time; enemy heads within 3 of her: 0:126 1:7 2:0 3+:0
+  us paid steps: {'paid step': 4, 'ate a pearl on the paid step': 1}
+  opp paid steps: {'paid step': 18, 'died the same turn (head-on collision)': 1, 'ate a pearl on the paid step': 2}

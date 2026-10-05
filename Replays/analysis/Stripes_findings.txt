@@ -1,0 +1,19 @@
+STRIPES - 10 losses, fleet-v2.14.0
+Loss types: elimination 9, longest dragon 1.
+
+WHAT HAPPENS
+  24x12. Each side starts with 2 dragons of length 2. Most pearls sit in 2x2 boxes reached through
+  portals, with fountain tiles (refill in 1 round). Our fleet never gets going: median dragons at r100
+  1 vs 13.5. Our queen rests at home 43% of the opening and cannot split (v2.14: never below length 4).
+
+POCKET TRIPS (the decisive difference)
+  Theirs: they enter a portal box at length 2-3, eat 1-2 pearls and LEAVE through the portal while still
+  short enough to turn in a 2x2 (75-90% of trips), net +0.9 to +1.3 length per trip, 9-88 trips a game.
+  Ours: we enter at length 3-4, eat to 5-6, cannot turn, survival-split, and the front 2 cells die
+  every time: net 0 per trip (6-19 trips).
+
+QUEENS
+  Ours died in all 10 (median r152, length 2-3, resting or pearl-hunting, 2-3 enemy heads within 6).
+  Their queen died first in 6 of them.
+
+ABLATION: without QUEEN_HOME our pearls by r150 rise 14.5 -> 42.

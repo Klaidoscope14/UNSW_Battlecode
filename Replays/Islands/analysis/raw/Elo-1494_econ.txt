@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  ? / Elo-1494
+  us: dragon-turns 17218; head within 1 of a spawn tile 46%; a pearl within 3: 43%; nearest pearl 10+ away: 8%; pearl adjacent at round start but not eaten by the side that round: 1215/2172
+  opp: dragon-turns 26744; head within 1 of a spawn tile 32%; a pearl within 3: 36%; nearest pearl 10+ away: 16%; pearl adjacent at round start but not eaten by the side that round: 1405/2613
+  our status words, rounds 1-50: [('pearl', 245), ('camp', 149), ('portal', 54), ('', 29), ('hunt', 23), ('grow-fleet', 15), ('explore', 8), ('rest', 8)]
+  races lost while our head was nearer: 31; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r21->r38 (42, 21) #4 3 vs 9  "cmb nrm camp L3"
+     r73->r86 (13, 21) #45 4 vs 8  "exp nrm explore L6"
+     r40->r89 (42, 21) #34 9 vs 13  "cmb nrm camp L3"
+     r95->r103 (38, 15) #126 3 vs 5  ""
+     r105->r111 (13, 21) #92 2 vs 3  "prt war portal L2"
+     r115->r123 (40, 14) #86 2 vs 8  "cmb war pearl L3 s0"
+     r129->r131 (38, 15) #146 2 vs 3  "col war pearl L3 s0 SCR"
+     r137->r145 (40, 14) #147 3 vs 4  "cmb war pearl L6 s0 SCR"
+     r183->r187 (53, 1) #198 2 vs 3  "LEAD col war pearl L8 s0"
+     r183->r189 (40, 14) #34 5 vs 6  "cmb war hunt L3 s0"
+  what our nearest dragon was doing in those lost races: [('pearl', 17), ('explore', 3), ('snipe', 3), ('camp', 2), ('hunt', 2), ('', 1), ('portal', 1), ('grow-fleet', 1)]

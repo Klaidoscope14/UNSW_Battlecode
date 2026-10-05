@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  CookAgent / Elo-1660
+  us: dragon-turns 687; head within 1 of a spawn tile 98%; a pearl within 3: 21%; nearest pearl 10+ away: 33%; pearl adjacent at round start but not eaten by the side that round: 16/39
+  opp: dragon-turns 6244; head within 1 of a spawn tile 97%; a pearl within 3: 19%; nearest pearl 10+ away: 28%; pearl adjacent at round start but not eaten by the side that round: 77/336
+  our status words, rounds 1-50: [('pearl', 150), ('camp', 43), ('hunt-queen', 12), ('', 10), ('grow-fleet', 5), ('hunt', 3), ('rescue', 2), ('queen-split', 1)]
+  races lost while our head was nearer: 17; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r11->r27 (11, 10) #1 8 vs 10  "QUEEN prt nrm pearl L3"
+     r11->r28 (11, 9) #1 9 vs 11  "QUEEN prt nrm pearl L3"
+     r12->r30 (20, 6) #1 4 vs 8  "QUEEN prt nrm pearl L3"
+     r11->r31 (13, 9) #1 7 vs 13  "QUEEN prt nrm pearl L3"
+     r14->r32 (11, 8) #1 11 vs 12  "QUEEN prt nrm pearl L3"
+     r14->r33 (13, 8) #1 9 vs 14  "QUEEN prt nrm pearl L3"
+     r14->r33 (12, 7) #1 11 vs 14  "QUEEN prt nrm pearl L3"
+     r11->r33 (13, 10) #1 6 vs 12  "QUEEN prt nrm pearl L3"
+     r33->r35 (16, 15) #15 1 vs 2  "col war attack L2"
+     r11->r38 (17, 14) #1 6 vs 12  "QUEEN prt nrm pearl L3"
+  what our nearest dragon was doing in those lost races: [('pearl', 14), ('attack', 1), ('hunt-queen', 1), ('last-attack', 1)]

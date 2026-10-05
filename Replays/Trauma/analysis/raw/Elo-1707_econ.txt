@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Jingling Munmin / Elo-1707
+  us: dragon-turns 8367; head within 1 of a spawn tile 44%; a pearl within 3: 40%; nearest pearl 10+ away: 12%; pearl adjacent at round start but not eaten by the side that round: 489/825
+  opp: dragon-turns 6238; head within 1 of a spawn tile 44%; a pearl within 3: 42%; nearest pearl 10+ away: 15%; pearl adjacent at round start but not eaten by the side that round: 480/722
+  our status words, rounds 1-50: [('pearl', 101), ('explore', 25), ('rest', 25), ('', 4), ('camp', 3), ('grow-fleet', 2), ('hunt-queen', 2), ('portal', 1)]
+  races lost while our head was nearer: 15; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r23->r27 (0, 23) #6 2 vs 5  "cmb nrm pearl L2 s2"
+     r176->r193 (1, 23) #19 5 vs 6  "cmb keep pearl L2 s2"
+     r199->r204 (18, 15) #44 1 vs 3  "cmb war snipe L3 s2"
+     r77->r220 (23, 17) #6 12 vs 15  "cmb nrm pearl L2 s2"
+     r180->r229 (18, 23) #14 6 vs 7  "cmb keep portal L3 s2"
+     r174->r236 (23, 22) #14 4 vs 9  "cmb keep portal L2 s2"
+     r187->r237 (23, 23) #23 5 vs 7  "exp keep pearl L3 s2"
+     r162->r277 (26, 19) #27 7 vs 11  "col keep pearl L2 s2"
+     r34->r279 (26, 20) #3 20 vs 25  "exp nrm pearl L2 s2"
+     r200->r280 (25, 20) #23 8 vs 11  "exp keep pearl L2 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 12), ('portal', 2), ('snipe', 1)]

@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  ? / Elo-1582
+  us: dragon-turns 1378; head within 1 of a spawn tile 11%; a pearl within 3: 49%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 140/182
+  opp: dragon-turns 7471; head within 1 of a spawn tile 37%; a pearl within 3: 41%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 647/915
+  our status words, rounds 1-50: [('pearl', 44), ('explore', 43), ('rest', 37), ('camp', 24), ('', 3), ('grow-fleet', 1)]
+  races lost while our head was nearer: 29; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r30->r85 (19, 13) #5 9 vs 20  "col nrm camp L2"
+     r30->r88 (20, 1) #5 11 vs 18  "col nrm camp L2"
+     r66->r92 (18, 0) #5 8 vs 13  "col nrm explore L2"
+     r36->r95 (16, 0) #5 8 vs 20  "col nrm camp L2"
+     r51->r95 (20, 14) #5 10 vs 13  "col nrm pearl L2"
+     r48->r96 (15, 0) #5 7 vs 10  "col nrm pearl L2"
+     r32->r96 (25, 13) #5 15 vs 16  "col nrm camp L2"
+     r51->r96 (19, 0) #5 10 vs 13  "col nrm pearl L2"
+     r54->r96 (19, 14) #5 8 vs 11  "col nrm pearl L2"
+     r54->r97 (20, 0) #5 10 vs 11  "col nrm pearl L2"
+  what our nearest dragon was doing in those lost races: [('', 11), ('pearl', 10), ('camp', 5), ('explore', 2), ('save-split', 1)]

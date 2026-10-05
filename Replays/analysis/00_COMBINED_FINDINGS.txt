@@ -1,0 +1,143 @@
+COMBINED FINDINGS - 52 ladder losses of fleet-v2.14.0 on Trophy, Stripes, Islands, Trauma,
+Tower Defense and Weakhold. Observations and proposals only: nothing has been merged into the bot.
+
+Per-map files: Replays/analysis/<Map>_findings.txt
+Data: Replays/analysis/master.csv (one row per game, 95 columns), 00_ingest.txt (checks),
+      02_queen_deaths.txt (every queen death), 03_queen_lastmove.txt (her options before each head-on),
+      Replays/<Map>/analysis/raw/* and SCORECARD.txt (per game, from run_all.sh + tactics.sh)
+
+=====================================================================================================
+0. DATA
+=====================================================================================================
+  52 files -> 49 unique games. Elo-1626 (Trophy) has only its header; Islands 1494 = 1494-migabot and
+  Tower Defense 1705 = 1705-Ciallo are byte-identical. Three headers named the wrong starter (Islands
+  1493, Trophy 1595, Stripes 1635); the parser now finds our side from our own "QUEEN" status lines.
+  Every game replays cleanly (no impossible moves; wall deaths sit on real kelp).
+  How we lost (from the end state):
+    longest dragon 21 (both queens dead), elimination 20, longer queen 8 (both alive, ours shorter).
+
+=====================================================================================================
+1. THE FIVE CAUSES (ranked by losses explained)
+=====================================================================================================
+  C1. OUR QUEEN DOES NOT SURVIVE - 42 of 49 games; decisive in 29.
+      Their queen died FIRST in 29 games (median r81-122; 11 killed by our dragons, the rest by their own
+      mistakes). Ours was alive then and died later (median r170-230). The rule is "longer living queen
+      wins", so a queen that only survived would have won all 29. The bot cannot know their queen is
+      dead (no such API, and detection needs a witness), so the queen must be safe all game.
+      How she dies (42 deaths): 33 head-ons, 9 boxed in. Of the 33 head-ons:
+        -  9: a move outside every enemy's reach AND with 2+ exits existed in the fatal round;
+        - 22: none that round, but one existed the round before (a two-move lookahead would have
+              saved her);
+        -  6: trapped two rounds earlier.
+      Killers: ordinary L2-L5 enemy dragons 2-3 cells away for 1-5 rounds, half of them sprinting
+      (free + paid steps). She was alone (no teammate within 3) in most cases. Status at death: pearl 15,
+      rest 11 (the v2.14 resting spot), boxed 9, insurance split 4, bunker 1.
+      Gap in v2.14's pursuit rule: "all exits within an enemy's next two steps" uses free steps only;
+      the killers use paid steps.
+
+  C2. THE OPENING IS TOO SLOW - decides the 20 eliminations; feeds the rest.
+      Pearls by r100 (median): Stripes 11 vs 41, Tower Defense 4.5 vs 23.5, Trophy 31 vs 141, Weakhold
+      6 vs 51. Dragons at r100: Stripes 1 vs 13.5, Tower Defense 3 vs 9.5, Trophy 10 vs 32, Weakhold 3 vs 14.
+      Local A/B with the same seeds and opponents shows this is a v2.14 REGRESSION, not the opponents:
+                           our pearls by r100        dragons at r150
+                           v2.13.2   v2.14.0         v2.13.2  v2.14.0
+        Tower Defense        42        8.5             30.5      5
+        Trophy              126       55.5
+        Islands             198      151.5
+        Stripes              17       10
+      Switch ablation (v2.14.0 with one switch off):
+        - Tower Defense: the "no optional split when every move looks like a trap" rule (part of
+          FOUNTAINS) stops all splitting in its corridor maze. Without that one rule: 101.5 pearls by
+          r150 (was 15.5). Weakhold mining does not need it.
+        - QUEEN_HOME (leash 7, resting spot, no queen split below length 8): without it, our pearls by
+          r150 rise on every weak map: Islands 302->353, Stripes 14.5->42, Trauma 7->25.5, Weakhold
+          20->49, Trophy (by r100) 55->109. On 2-dragon starts (Stripes, Tower Defense) the queen is
+          half our fleet and she was resting 17-63% of the opening.
+        - PURSUIT_SAFE: halves the Trophy opening (55 -> 100 without it); little effect elsewhere.
+
+  C3. OUR QUEEN IS TOO SHORT WHEN BOTH SURVIVE - 8 games (Trauma 5, Tower Defense 2, Islands 1).
+      Their queens reached 11-28 (they roam and eat 19-36 pearls); ours 6-12. On Trauma we won the
+      economy outright (e.g. 642 pearls vs 72) but our queen ate 1-6 pearls in 500 rounds. She was never
+      threatened (enemies within 4 in 0-3% of rounds): the leash starved her. v2.14 assumed enemy queens
+      stay at 2-3 (true for Stripes-type swarms, false for Verity, StarStruck, Machli, NeungzAI, BitShift).
+      Feeding is broken: 0 feeding sacrifices in all 49 games; "walking to feed" 0.09% of dragon-turns,
+      almost all after r450.
+
+  C4. NO GIANT FOR THE LONGEST-DRAGON TIEBREAK - 21 games.
+      When both queens are dead the longest dragon wins. Their longest at the end: median 22 (up to 38),
+      first 5+ longer than ours around r225; ours median 11. On Islands our queen WAS our longest dragon
+      (13-34 at death), so her death also lost us the longest-dragon tiebreak.
+
+  C5. POCKET TRIPS INTO PORTAL BOXES LOSE EVERYTHING (Stripes).
+      Theirs: enter a 2x2 portal box at length 2-3, eat 1-2, walk back out through the portal while still
+      short enough to turn (75-90% of trips), +0.9 to +1.3 length per trip. Ours: enter at 3-4, eat to
+      5-6, get stuck, survival split, the front 2 cells die: net 0 per trip. (Weakhold-style 1-wide
+      fountain pockets are fine: there we now match them at +0.9 per trip.)
+
+=====================================================================================================
+2. THE OPPONENTS
+=====================================================================================================
+  None of them hunt our ordinary dragons (approach lift ~1.0); most drift toward our queen (1.0-1.6).
+  A. Swarm, disposable queen (Quantify, miga bot, Ravenus, Manny, Outsider Traders, Jet2Holiday, Hydra):
+     2+2 splits from round ~13, 10-47 dragons by r100, queen ~4 long and often dead by r100, heavy
+     pocket mining, win by elimination or a late giant.
+  B. Queen growers (Verity, StarStruck, Machli, NeungzAI, BitShift, Niuniu Lai): queen roams, eats and
+     reaches 14-28; they win on queen length.
+  C. Giant builders (Akatsuki 30, Ciallo 19, Verity): one long dragon late in the game.
+
+=====================================================================================================
+3. WHAT V2.14 DID (verdict per switch, from these games + the local ablation)
+=====================================================================================================
+  FOUNTAINS - dive counts fountains   HELPED (Weakhold mining now equals theirs). Keep.
+  FOUNTAINS - no split in "dead end"  HURT badly (Tower Defense collapse). Remove or restrict to real
+                                      1-wide dead ends.
+  QUEEN_HOME                          HURT the opening on every weak map and starved the queen on
+                                      Trauma; did NOT keep her alive (11 deaths while resting).
+  PURSUIT_SAFE                        Mixed: hurts the Trophy opening; its two-step rule misses paid steps.
+  ENEMY_EST / TRADE_UP                Neutral-to-good (few attack deaths except Islands/Trophy, where
+                                      the adaptive "not outnumbered" lets even trades through).
+  ANTI_ESCORT                         Never fired (stalker strike 0, rescue 0.01%). Harmless.
+  LEAD_SAFE / bunker                  Bunker reached in 1 game of 49; late-safe in 8.
+  LOOP_STALL, SURV_ECON, OPEN_FARM    No measurable effect here.
+
+=====================================================================================================
+4. PROPOSALS (for your decision; each behind its own switch, nothing keyed to map names)
+=====================================================================================================
+  P1. Remove the "no optional split when !anySafe" rule, or apply it only when every legal move leads
+      into a real 1-wide dead end. Keep the fountain dive.            [C2: Tower Defense]
+  P2. Make the home queen adaptive instead of fixed:
+        - opening: the queen splits and eats like before (back to v2.13.2 behaviour until the fleet is
+          established, e.g. 6+ dragons);
+        - leash grows when no enemy head has been seen or reported near her for a while, and shrinks
+          to home when enemies appear;
+        - no idle "rest" while nothing threatens her.                [C2, C3]
+  P3. Queen two-move safety: score each move by the margin to every enemy's reach over two turns,
+      counting paid steps (free + L-2), and prefer moves after which a safe, open continuation exists.
+      A reachable cell is never taken over a safe one with 2+ exits; corner penalties never outweigh
+      being inside an enemy's reach.                                  [C1: 31 of 33 head-on deaths]
+  P4. Queen length: grow her toward their known/estimated queen length + margin when she is safe
+      (she eats herself inside her safe area), and repair feeding so sacrifices actually happen next to
+      her (they never did in 49 games).                                [C3]
+  P5. Giant insurance: from ~r200, keep one long non-queen dragon (the heir) safe and growing so that
+      if both queens die we still win the longest-dragon tiebreak; never let the queen be our only long
+      dragon.                                                          [C4]
+  P6. Portal-box pockets: enter only at length <= 3 and leave through the portal before reaching 4,
+      instead of eating to the bottom.                                 [C5]
+
+=====================================================================================================
+5. REGRESSION RISK (maps we win: Maze, Slithery Fight, Default, Australia, Portals, Around UNSW, Autarky)
+=====================================================================================================
+  P1  low    - only changes behaviour where every move looks like a trap; the A/B shows no loss on Weakhold.
+  P2  MEDIUM - QUEEN_HOME was built from the Stochastic Parrot losses (Australia/Autarky queen deaths);
+               the adaptive version must keep the queen home whenever enemies are near. Will be tested
+               on Australia, Autarky and Default first.
+  P3  low-medium - affects only queen moves near enemies; more cautious queens eat less (Trauma-type
+               starvation must not come back - P2/P4 cover it).
+  P4  medium - feeding changes move many dragons late; keep the existing safety rules (exit guard,
+               crowd limit) and the cap at their length + margin.
+  P5  low    - existing GIANT/HEIR logic, extended earlier and to all maps.
+  P6  low    - only applies to portal boxes.
+  Acceptance before shipping: the usual 84-game regression + the protected maps on both sides against
+  all three sparring bots; reject any change that loses more than one game on a protected map or
+  raises queen deaths. Plus the opening A/B above (our pearls by r100/r150 on all six weak maps must
+  be at least v2.13.2's level).

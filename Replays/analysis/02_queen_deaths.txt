@@ -1,0 +1,130 @@
+Islands/Elo-1440               r437  L2   hit a wall         doing "doomed"  their queen dead since r36  open 1 home-dist 7
+      no killer (self/wall/body); enemy heads within 6 0; teammates within 3: 2; statuses ['explore', 'explore', 'explore', 'explore', 'save-split', 'doomed']
+      her length last rounds [30, 30, 30, 30, 31, 31, 32, 2]; nearest enemies at r-1 [(10, 3, 827), (11, 5, 848), (12, 3, 893)]
+Islands/Elo-1493               r192  L3   hit a body         doing "doomed"  their queen dead since r42  open 2 home-dist 10
+      killer #352 L2 walk; within 4 of her for 0 rounds before; enemy heads within 6 (max, last 5r) 0; teammates within 3: 2; statuses ['explore', 'explore', 'explore', 'unwind-split', 'queen-stall', 'doomed']
+      her length last rounds [25, 25, 25, 25, 25, 25, 5, 3]; nearest enemies at r-1 [(14, 2, 129), (15, 2, 307), (19, 2, 101)]
+Islands/Elo-1494-migabot       r249  L24  head-on collision  doing "pearl"  their queen dead since r75  open 4 home-dist 9
+      killer #313 L3 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 1; teammates within 3: 1; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [24, 24, 24, 24, 24, 24, 24, 24]; nearest enemies at r-1 [(3, 3, 313), (8, 5, 261), (11, 2, 413)]
+Islands/Elo-1499               r119  L21  head-on collision  doing "pearl"  their queen alive  open 4 home-dist 17
+      killer #131 L5 SPRINT; within 4 of her for 0 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [21, 21, 21, 21, 21, 21, 21, 21]; nearest enemies at r-1 [(3, 3, 116), (4, 2, 82), (6, 2, 87)]
+Islands/Elo-1541               r339  L3   head-on collision  doing "bunker"  their queen dead since r87  open 4 home-dist 8
+      killer #549 L2 walk; within 4 of her for 0 rounds before; enemy heads within 6 (max, last 5r) 1; teammates within 3: 0; statuses ['bunker-trim', 'bunker', 'bunker', 'bunker', 'bunker', 'bunker']
+      her length last rounds [3, 3, 4, 2, 2, 3, 3, 3]; nearest enemies at r-1 [(4, 7, 363), (11, 2, 549), (11, 2, 605)]
+Islands/Elo-1582               r284  L34  head-on collision  doing "rest"  their queen dead since r222  open 3 home-dist 3
+      killer #302 L4 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 1; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'rest']
+      her length last rounds [33, 33, 33, 33, 33, 33, 34, 34]; nearest enemies at r-1 [(3, 4, 302), (5, 2, 450), (6, 4, 66)]
+Islands/Elo-1635               r80   L14  head-on collision  doing "pearl"  their queen dead since r64  open 4 home-dist 3
+      no killer (self/wall/body); enemy heads within 6 0; teammates within 3: 1; statuses ['explore', 'pearl', 'pearl', 'rest', 'pearl', 'pearl']
+      her length last rounds [13, 13, 13, 13, 14, 14, 14, 14]; nearest enemies at r-1 [(11, 2, 9), (15, 2, 36), (16, 2, 5)]
+Islands/Elo-1676               r96   L13  head-on collision  doing "pearl"  their queen alive  open 4 home-dist 8
+      killer #24 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 1; statuses ['rest', 'pearl', 'rest', 'escape', 'pearl', 'pearl']
+      her length last rounds [13, 13, 13, 13, 13, 13, 13, 13]; nearest enemies at r-1 [(2, 2, 24), (3, 2, 112), (4, 3, 102)]
+Islands/Elo-1707               r210  L12  head-on collision  doing "pearl"  their queen alive  open 2 home-dist 42
+      killer #205 L3 SPRINT; within 4 of her for 3 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [12, 12, 12, 12, 12, 12, 12, 12]; nearest enemies at r-1 [(3, 3, 205), (4, 3, 316), (6, 3, 1)]
+Stripes/Elo-1339               r94   L3   head-on collision  doing "rest"  their queen alive  open 3 home-dist 6
+      killer #11 L5 SPRINT; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 1; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'rest', 'rest']
+      her length last rounds [3, 3, 3, 3, 3, 3, 3, 3]; nearest enemies at r-1 [(3, 6, 11), (11, 4, 2), (12, 8, 0)]
+Stripes/Elo-1485               r157  L2   head-on collision  doing "pearl"  their queen dead since r24  open 4 home-dist 13
+      killer #30 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(2, 2, 30), (3, 2, 25), (5, 2, 43)]
+Stripes/Elo-1499               r177  L3   head-on collision  doing "rest"  their queen dead since r35  open 3 home-dist 6
+      killer #48 L3 SPRINT; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['rest', 'rest', 'pearl', 'pearl', 'rest', 'rest']
+      her length last rounds [3, 3, 3, 3, 3, 3, 3, 3]; nearest enemies at r-1 [(2, 2, 50), (3, 3, 48), (4, 3, 38)]
+Stripes/Elo-1505               r82   L2   head-on collision  doing "rest"  their queen dead since r15  open 3 home-dist 12
+      killer #16 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['rest', 'rest', 'pearl', 'pearl', 'rest', 'rest']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(2, 2, 16), (2, 3, 4), (5, 3, 14)]
+Stripes/Elo-1553               r104  L2   head-on collision  doing "pearl"  their queen dead since r79  open 4 home-dist 12
+      killer #19 L3 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 2; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(3, 3, 19), (6, 3, 16), (9, 2, 20)]
+Stripes/Elo-1626               r187  L2   head-on collision  doing "insure-split"  their queen alive  open 4 home-dist 2
+      killer #60 L2 walk; within 4 of her for 7 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'rest', 'rest', 'insure-split']
+      her length last rounds [5, 5, 5, 5, 5, 5, 5, 5]; nearest enemies at r-1 [(1, 2, 60), (4, 2, 46), (4, 3, 41)]
+Stripes/Elo-1635               r77   L2   head-on collision  doing "rest"  their queen dead since r70  open 4 home-dist 5
+      killer #8 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['explore', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(2, 2, 8), (2, 3, 5), (5, 3, 10)]
+Stripes/Elo-1645               r267  L2   hit a body         doing "doomed"  their queen dead since r214  open 2 home-dist 7
+      no killer (self/wall/body); enemy heads within 6 3; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'rest', 'explore', 'doomed']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(2, 2, 42), (3, 2, 17), (3, 2, 54)]
+Stripes/Elo-1707               r201  L3   head-on collision  doing "pearl"  their queen alive  open 4 home-dist 11
+      killer #13 L3 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [3, 3, 3, 3, 3, 3, 3, 3]; nearest enemies at r-1 [(3, 3, 13), (7, 2, 46), (7, 2, 47)]
+Stripes/Elo-1708               r148  L6   head-on collision  doing "rest"  their queen alive  open 4 home-dist 2
+      killer #17 L3 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [6, 6, 6, 6, 6, 6, 6, 6]; nearest enemies at r-1 [(3, 3, 17), (5, 2, 26), (8, 2, 0)]
+Tower_Defense/Elo-1493         r494  L4   head-on collision  doing "rest"  their queen dead since r174  open 3 home-dist 8
+      killer #124 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 4]; nearest enemies at r-1 [(2, 2, 90), (2, 2, 124), (3, 2, 83)]
+Tower_Defense/Elo-1499         r406  L2   head-on collision  doing "pearl"  their queen dead since r140  open 4 home-dist 1
+      killer #264 L2 walk; within 4 of her for 3 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 2; statuses ['rest', 'rest', 'insure-split', 'rest', 'rest', 'pearl']
+      her length last rounds [10, 10, 10, 10, 10, 2, 2, 2]; nearest enemies at r-1 [(2, 2, 264), (2, 3, 177), (4, 2, 261)]
+Tower_Defense/Elo-1525         r219  L3   head-on collision  doing "explore"  their queen dead since r74  open 3 home-dist 7
+      killer #57 L2 walk; within 4 of her for 3 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'rest', 'explore']
+      her length last rounds [3, 3, 3, 3, 3, 3, 3, 3]; nearest enemies at r-1 [(2, 2, 57), (3, 2, 81), (5, 2, 103)]
+Tower_Defense/Elo-1541         r367  L13  head-on collision  doing "rest"  their queen dead since r255  open 4 home-dist 3
+      killer #29 L5 SPRINT; within 4 of her for 0 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['late-safe', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [12, 12, 12, 13, 13, 13, 13, 13]; nearest enemies at r-1 [(3, 2, 72), (5, 2, 53), (5, 2, 60)]
+Tower_Defense/Elo-1582         r377  L2   hit a wall         doing "doomed"  their queen dead since r177  open 2 home-dist 16
+      no killer (self/wall/body); enemy heads within 6 2; teammates within 3: 1; statuses ['pearl', 'explore', 'explore', 'explore', 'save-split', 'doomed']
+      her length last rounds [2, 3, 3, 4, 5, 6, 7, 2]; nearest enemies at r-1 [(5, 13, 37), (7, 3, 161), (8, 6, 59)]
+Tower_Defense/Elo-1616         r188  L2   hit a body         doing "doomed"  their queen dead since r104  open 2 home-dist 7
+      no killer (self/wall/body); enemy heads within 6 3; teammates within 3: 1; statuses ['pearl', 'explore', 'explore', 'explore', 'queen-stall', 'doomed']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 2]; nearest enemies at r-1 [(4, 2, 82), (5, 2, 68), (6, 2, 79)]
+Tower_Defense/Elo-1635         r368  L2   head-on collision  doing "insure-split"  their queen dead since r213  open 3 home-dist 5
+      killer #56 L3 SPRINT; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 2; teammates within 3: 2; statuses ['rest', 'rest', 'rest', 'rest', 'rest', 'insure-split']
+      her length last rounds [10, 10, 10, 10, 10, 10, 10, 10]; nearest enemies at r-1 [(2, 3, 56), (5, 2, 92), (11, 2, 13)]
+Tower_Defense/Elo-1660         r421  L2   hit a body         doing "doomed"  their queen dead since r87  open 3 home-dist 10
+      killer #190 L3 walk; within 4 of her for 4 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 1; statuses ['rest', 'rest', 'explore', 'pearl', 'queen-stall', 'doomed']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 2]; nearest enemies at r-1 [(1, 2, 65), (3, 3, 230), (4, 3, 190)]
+Tower_Defense/Elo-1676         r43   L2   hit a wall         doing "doomed"  their queen alive  open 2 home-dist 7
+      no killer (self/wall/body); enemy heads within 6 1; teammates within 3: 1; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'queen-stall', 'doomed']
+      her length last rounds [3, 3, 3, 3, 3, 3, 4, 2]; nearest enemies at r-1 [(11, 3, 0), (16, 2, 2)]
+Tower_Defense/Elo-1705-Ciallo  r224  L2   head-on collision  doing "pearl"  their queen dead since r100  open 3 home-dist 5
+      killer #7 L3 SPRINT; within 4 of her for 3 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 2; statuses ['rest', 'rest', 'rest', 'explore', 'rest', 'pearl']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(3, 2, 60), (3, 3, 7), (4, 2, 102)]
+Trauma/Elo-1607                r492  L2   hit a wall         doing "doomed"  their queen dead since r235  open 3 home-dist 12
+      no killer (self/wall/body); enemy heads within 6 3; teammates within 3: 1; statuses ['rest', 'rest', 'rest', 'rest', 'queen-stall', 'doomed']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 2]; nearest enemies at r-1 [(5, 2, 347), (6, 2, 238), (7, 4, 294)]
+Trophy/Elo-1485                r154  L2   head-on collision  doing "pearl"  their queen dead since r53  open 3 home-dist 3
+      killer #138 L3 SPRINT; within 4 of her for 3 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 1; statuses ['rest', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(3, 2, 16), (3, 3, 138), (7, 2, 121)]
+Trophy/Elo-1553                r110  L2   head-on collision  doing "insure-split"  their queen dead since r63  open 3 home-dist 2
+      killer #51 L2 walk; within 4 of her for 4 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'escape', 'rest', 'insure-split']
+      her length last rounds [7, 7, 7, 7, 7, 7, 6, 6]; nearest enemies at r-1 [(1, 2, 51), (2, 2, 24), (3, 2, 27)]
+Trophy/Elo-1582                r138  L12  head-on collision  doing "pearl"  their queen dead since r101  open 4 home-dist 11
+      killer #13 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 1; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [11, 11, 12, 12, 12, 12, 12, 12]; nearest enemies at r-1 [(2, 2, 13), (2, 2, 21), (5, 2, 54)]
+Trophy/Elo-1595                r45   L5   head-on collision  doing "pearl"  their queen alive  open 4 home-dist 9
+      killer #7 L4 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [4, 4, 4, 4, 4, 5, 5, 5]; nearest enemies at r-1 [(3, 4, 7), (4, 3, 6), (6, 2, 17)]
+Trophy/Elo-1635                r115  L2   head-on collision  doing "insure-split"  their queen alive  open 3 home-dist 1
+      killer #35 L3 SPRINT; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'insure-split']
+      her length last rounds [8, 8, 8, 8, 8, 8, 9, 9]; nearest enemies at r-1 [(2, 3, 35), (4, 2, 24), (4, 2, 30)]
+Trophy/Elo-1660                r83   L2   head-on collision  doing "last-attack"  their queen alive  open 2 home-dist 12
+      killer #35 L4 walk; within 4 of her for 3 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'last-attack']
+      her length last rounds [2, 2, 2, 2, 2, 2, 2, 2]; nearest enemies at r-1 [(1, 4, 35), (2, 2, 38), (4, 2, 32)]
+Trophy/Elo-1707                r162  L3   head-on collision  doing "rest"  their queen alive  open 4 home-dist 2
+      killer #94 L3 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 3; teammates within 3: 0; statuses ['explore', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [3, 3, 3, 3, 3, 3, 3, 3]; nearest enemies at r-1 [(3, 3, 94), (4, 3, 67), (6, 3, 97)]
+Weakhold/Elo-1498              r231  L4   head-on collision  doing "rest"  their queen dead since r191  open 4 home-dist 1
+      killer #86 L3 SPRINT; within 4 of her for 1 rounds before; enemy heads within 6 (max, last 5r) 2; teammates within 3: 1; statuses ['rest', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 4]; nearest enemies at r-1 [(3, 3, 86), (6, 3, 77), (8, 2, 91)]
+Weakhold/Elo-1560              r253  L4   head-on collision  doing "pearl"  their queen alive  open 4 home-dist 8
+      killer #70 L12 SPRINT; within 4 of her for 0 rounds before; enemy heads within 6 (max, last 5r) 1; teammates within 3: 0; statuses ['pearl', 'pearl', 'pearl', 'pearl', 'pearl', 'pearl']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 4]; nearest enemies at r-1 [(7, 13, 70), (11, 2, 44), (12, 3, 67)]
+Weakhold/Elo-1582              r338  L2   hit a body         doing "doomed"  their queen dead since r49  open 2 home-dist 6
+      no killer (self/wall/body); enemy heads within 6 3; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'explore', 'queen-stall', 'doomed']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 2]; nearest enemies at r-1 [(3, 3, 66), (4, 8, 76), (6, 4, 77)]
+Weakhold/Elo-1603              r359  L4   head-on collision  doing "pearl"  their queen dead since r84  open 3 home-dist 3
+      killer #61 L3 walk; within 4 of her for 5 rounds before; enemy heads within 6 (max, last 5r) 1; teammates within 3: 0; statuses ['pearl', 'rest', 'rest', 'pearl', 'rest', 'pearl']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 4]; nearest enemies at r-1 [(2, 3, 61), (14, 2, 99), (15, 2, 108)]
+Weakhold/Elo-1635              r301  L4   head-on collision  doing "rest"  their queen dead since r126  open 4 home-dist 6
+      killer #127 L2 walk; within 4 of her for 2 rounds before; enemy heads within 6 (max, last 5r) 2; teammates within 3: 0; statuses ['rest', 'rest', 'rest', 'rest', 'rest', 'rest']
+      her length last rounds [4, 4, 4, 4, 4, 4, 4, 4]; nearest enemies at r-1 [(2, 2, 127), (6, 3, 135), (9, 2, 142)]
+
+PATTERNS {'self / boxed (wall, body, itself)': 9, 'sprint strike from range': 15, 'walk-in head-on, killer close < 3 rounds': 9, 'stalked: killer within 4 for 3+ rounds': 9}
+their queen already dead at the time: 29 of 42
+status at death: {'doomed': 9, 'pearl': 15, 'bunker': 1, 'rest': 11, 'insure-split': 4, 'explore': 1, 'last-attack': 1}

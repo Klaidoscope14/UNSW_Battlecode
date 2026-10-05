@@ -1,0 +1,46 @@
+### fountain
+Elo-1499: 12 fast tiles; pearls eaten on them  us 3/6  opp 33/120
+  by 100-round phase: [(('opp', 0), 18), (('opp', 100), 15), (('us', 0), 3)]
+  us: 1 distinct eaters; their fate {'hit a wall': 1}
+  opp: 14 distinct eaters; their fate {'head-on collision': 2, 'hit itself': 4, 'alive': 5, 'hit a body': 3}
+
+### pocketcycle
+us: 1 trips; entry length {2: 1}; pearls/trip 3.00; net length/trip +1.00 (total +1); ends {'hit a wall': 1}; dead stub length {2: 1}
+     split pattern in the pocket (child sizes): [((3,), 1)]
+opp: 30 trips; entry length {2: 10, 3: 20}; pearls/trip 1.27; net length/trip +0.93 (total +28); ends {'left': 26, 'hit itself': 1, 'hit a body': 3}; dead stub length {2: 2, 3: 2}
+     split pattern in the pocket (child sizes): [((2,), 23), ((), 7)]
+
+### queenstyle
+Elo-1499 OPP queen #0: alive 35 rounds, died 35; length start 2 max 4 r100 3 r250 3 end 3; pearls eaten 5
+     distinct cells 21; 2x2-loop rounds 0%; dist from start median 7 max 11; own within 3 median 0; enemy heads within 4: mean 0.20, rounds with any 20%
+Elo-1499 US  queen #1: alive 177 rounds, died 177; length start 2 max 5 r100 4 r250 3 end 3; pearls eaten 3
+     distinct cells 93; 2x2-loop rounds 3%; dist from start median 6 max 16; own within 3 median 0; enemy heads within 4: mean 1.31, rounds with any 67%
+
+### hunters
+Elo-1499: their queen died 35; mirror-spawn (21, 1)
+  r0    hunter-turns 8     mean hunter dist   3.0  closest head 1    queen from her start (max) 11
+
+### approach
+Elo-1499
+  opp  vs dragon  d3-5  n=27    closer   33% (random  41%, lift 0.81)  farther   63%
+  opp  vs queen   d2    n=38    closer   29% (random  23%, lift 1.26)  farther   71%
+  opp  vs queen   d3-5  n=279   closer   52% (random  42%, lift 1.23)  farther   48%
+  us   vs dragon  d2    n=36    closer    3% (random  30%, lift 0.09)  farther   97%
+  us   vs dragon  d3-5  n=99    closer   32% (random  45%, lift 0.71)  farther   68%
+
+### infant
+Elo-1499 - children dead within 2 rounds of birth (side, parent status, cause): count / splits with that status
+      1 / 49   ('opp', '?', 'hit itself')
+
+### trades
+Elo-1499 our attack-type head-on deaths: {('regicide', 'traded'): 1} | enemy lengths taken {3: 1} | enemy queens killed 1
+
+### escort (our queen)
+Elo-1499: us queen died 177 (head-on collision); escorts (enemy within 2 for 3+ rounds): 4
+  #4     r80-83 (4 rounds) dists 2222  -> enemy died r107
+  #20    r83-88 (6 rounds) dists 222222  -> enemy died r106
+  #33    r133-135 (3 rounds) dists 222  -> enemy alive
+  #50    r170-176 (7 rounds) dists 2222222  -> enemy alive
+
+### escort (their queen)
+Elo-1499: opp queen died 35 (head-on collision); escorts (enemy within 2 for 3+ rounds): 0

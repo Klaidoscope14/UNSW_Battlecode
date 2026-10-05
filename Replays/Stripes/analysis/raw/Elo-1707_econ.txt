@@ -1,0 +1,10 @@
+====================================================================================================
+ECON  Jingling Munmin / Elo-1707
+  us: dragon-turns 279; head within 1 of a spawn tile 41%; a pearl within 3: 71%; nearest pearl 10+ away: 1%; pearl adjacent at round start but not eaten by the side that round: 45/47
+  opp: dragon-turns 2421; head within 1 of a spawn tile 84%; a pearl within 3: 79%; nearest pearl 10+ away: 0%; pearl adjacent at round start but not eaten by the side that round: 330/447
+  our status words, rounds 1-50: [('pearl', 57), ('rest', 24), ('camp', 11), ('explore', 5), ('hunt-queen', 3), ('', 2)]
+  races lost while our head was nearer: 3; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r10->r38 (11, 10) #1 12 vs 13  "QUEEN prt nrm explore L2 s2"
+     r1->r40 (12, 10) #1 10 vs 12  ""
+     r21->r48 (8, 11) #1 7 vs 10  "QUEEN prt nrm rest L2 s2"
+  what our nearest dragon was doing in those lost races: [('explore', 1), ('', 1), ('rest', 1)]

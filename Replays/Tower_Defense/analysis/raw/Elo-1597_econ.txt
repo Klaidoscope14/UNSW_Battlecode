@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Starstruck / Elo-1597
+  us: dragon-turns 1707; head within 1 of a spawn tile 69%; a pearl within 3: 21%; nearest pearl 10+ away: 20%; pearl adjacent at round start but not eaten by the side that round: 35/83
+  opp: dragon-turns 11203; head within 1 of a spawn tile 62%; a pearl within 3: 61%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 1409/1884
+  our status words, rounds 1-50: [('pearl', 81), ('camp', 9), ('rest', 8), ('', 2), ('explore', 2)]
+  races lost while our head was nearer: 14; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r22->r45 (14, 11) #1 13 vs 18  "QUEEN prt nrm pearl L2 s2"
+     r2->r47 (13, 11) #1 12 vs 13  "QUEEN prt nrm explore L2"
+     r13->r59 (16, 14) #1 11 vs 13  "QUEEN prt nrm rest L2 s2"
+     r34->r69 (14, 10) #1 10 vs 13  "QUEEN prt nrm pearl L2 s2"
+     r32->r72 (17, 10) #1 7 vs 14  "QUEEN prt nrm pearl L2 s2"
+     r28->r78 (18, 6) #1 10 vs 16  "QUEEN prt nrm pearl L2 s2"
+     r34->r81 (17, 5) #1 12 vs 16  "QUEEN prt nrm pearl L2 s2"
+     r32->r84 (18, 2) #1 12 vs 18  "QUEEN prt nrm pearl L2 s2"
+     r2->r90 (18, 4) #3 11 vs 14  "exp nrm camp L2"
+     r27->r95 (16, 13) #1 14 vs 17  "QUEEN prt nrm pearl L2 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 11), ('explore', 1), ('rest', 1), ('camp', 1)]

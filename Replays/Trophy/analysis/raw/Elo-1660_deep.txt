@@ -1,0 +1,38 @@
+====================================================================================================
+DEEP  CookAgent / Elo-1660   result: REASON FOR LOSS : Lost by elimination of our dragons
+
+1. ENEMY QUEEN
+   survived
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+       6  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       6  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       6  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       4  ('opp', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+       1  ('opp', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+       1  ('opp', 'hit a wall', 'forced', 'mate<=3', 're-eaten')
+       1  ('us', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+       1  ('opp', 'hit itself', 'had a free cell', 'alone', 're-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   1 deaths; median age 25 rounds; died within 10 rounds of birth: 0; head on a corridor/dead-end cell (<=2 open sides): 0
+   activity in the turns before (role/mode words): [('pearl', 6)]
+   r94   #52    hit itself           L2   age 25   open 3  last: ['col war pearl L2 s0', 'col war pearl L2 s0', 'col war pearl L2 s0']
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      1  ('attack', 'head-on collision')
+      1  ('last-attack', 'head-on collision')
+   attacks made while the opponent already had more dragons: 2/2
+   r33   attack     L2   head-on collision    fleet 7/12
+   r83   last-attack L2   head-on collision    fleet 6/37
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 18 pearls / 219 dragon-turns = 8.2%;  after: 17 / 457 = 3.7%
+   opp: rounds<=50: 64 pearls / 443 dragon-turns = 14.4%;  after: 225 / 5709 = 3.9%
+   races (who was nearer when the pearl appeared -> who ate it): {('they were nearer', 'taken by opp'): 260, ('we were nearer', 'taken by us'): 29, ('they were nearer', 'taken by us'): 6, ('we were nearer', 'taken by opp'): 17, ('tie', 'taken by opp'): 12}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+      5  ('opp', 2, 3)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 95%  (spawn tiles cover 547 of 625 cells)

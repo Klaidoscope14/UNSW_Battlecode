@@ -1,0 +1,30 @@
+====================================================================================================
+DEEP  ? / Elo-1707   result: REASON FOR LOSS : Elimination of all our dragons
+
+1. ENEMY QUEEN
+   survived
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+       5  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       3  ('opp', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+       2  ('opp', 'hit a wall', 'forced', 'mate<=3', 're-eaten')
+       1  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       1  ('opp', 'gave no valid action', 'had a free cell', 'mate<=3', 're-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      1  ('last-attack', 'head-on collision')
+   attacks made while the opponent already had more dragons: 1/1
+   r102  last-attack L4   head-on collision    fleet 4/41
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 2 pearls / 125 dragon-turns = 1.6%;  after: 7 / 321 = 2.2%
+   opp: rounds<=50: 44 pearls / 427 dragon-turns = 10.3%;  after: 267 / 4930 = 5.4%
+   races (who was nearer when the pearl appeared -> who ate it): {('they were nearer', 'taken by opp'): 293, ('tie', 'taken by opp'): 7, ('we were nearer', 'taken by opp'): 11, ('we were nearer', 'taken by us'): 5, ('they were nearer', 'taken by us'): 2, ('tie', 'taken by us'): 2}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+      4  ('opp', 2, 3)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 94%  (spawn tiles cover 547 of 625 cells)
