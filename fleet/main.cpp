@@ -639,6 +639,9 @@ using namespace unswbc;
 #ifndef QUEEN_SPLIT_UNITS
 #define QUEEN_SPLIT_UNITS 8 // at home the queen splits only while the fleet is this small (her children crowd her)
 #endif
+#ifndef QUEEN_MIN_KEEP
+#define QUEEN_MIN_KEEP 4 // a home queen never splits below this (their hidden queens are 2-3 long: the tiebreak stays ours)
+#endif
 #ifndef QUEEN_PEARL_CLEAR
 #define QUEEN_PEARL_CLEAR 5 // no visible enemy head this close to a pearl she goes for
 #endif
@@ -2535,8 +2538,8 @@ std::vector<PearlCand> gather_pearls()
         {
             bool byQueen = false;
             for (auto const& h : heads)
-                if (h.mine && h.id == queenId && manhattan(h.cell, c) <= 2)
-                    byQueen = true;
+                if (h.mine && h.id == queenId && manhattan(h.cell, c) <= 3)
+                    byQueen = true; // feeders die within 3 of her: their drops are for her
             if (byQueen)
                 continue;
         }
@@ -4126,7 +4129,9 @@ void decide(Controller& ct)
     bool const evenTrades = !(EXPANSION && expansionPhase);
     // v2.14: their dragons rarely attack ours, so a 1-for-1 only helps a swarm
     // that out-produces us. Trade up only (or with a clear majority).
-    bool const tradeUp = !TRADE_UP || allIn || majorityHunt || attackLen >= TRADE_UP_RATIO * L;
+    // Not outnumbered (by the scaled count): even trades as before (an
+    // opponent that attacks our dragons must be answered).
+    bool const tradeUp = !TRADE_UP || allIn || majorityHunt || attackLen >= TRADE_UP_RATIO * L || (!outnumbered && !survivalMode);
     bool const wantAttack = attackAvail && !amQueen &&
                             ((queenAdjacent) || (stalkerDir >= 0 && !isLeader) ||
                              (!isLeader && tradeUp && (role == ROLE_COMBAT || mode == MODE_COMBAT || allIn) &&
@@ -4175,7 +4180,7 @@ void decide(Controller& ct)
     {
         std::vector<HeadInfo const*> targets;
         for (auto const& h : heads)
-            if (!h.mine && h.id != enemyQueenId && (majorityHunt || (TRADE_UP ? h.len >= TRADE_UP_RATIO * L : h.len >= L)))
+            if (!h.mine && h.id != enemyQueenId && (majorityHunt || (TRADE_UP && outnumbered ? h.len >= TRADE_UP_RATIO * L : h.len >= L)))
                 targets.push_back(&h);
         std::sort(targets.begin(), targets.end(), [](HeadInfo const* a, HeadInfo const* b) { return a->len > b->len; });
         int const reach = std::min(REGICIDE_MAX, free_steps() + std::max(0, L - 2));
@@ -4597,7 +4602,7 @@ void decide(Controller& ct)
         {
             if (R - e.round > 3)
                 continue;
-            if (!majHunter && (TRADE_UP ? e.len < std::max(6, TRADE_UP_RATIO * L) : (!(mode == MODE_COMBAT && role == ROLE_COMBAT) && e.len < 6)))
+            if (!majHunter && (TRADE_UP && outnumbered ? e.len < std::max(6, TRADE_UP_RATIO * L) : (!(mode == MODE_COMBAT && role == ROLE_COMBAT) && e.len < 6)))
                 continue;
             int dd = dist_to(distHead, e.cell);
             if (majHunter && dd < INF)
@@ -4660,7 +4665,9 @@ void decide(Controller& ct)
     // CONSOL_ROUND; behind on queen length we start earlier (sooner still on
     // open maps); otherwise only the last FEED_WINDOW rounds.
     TieState const ts = TIE_TRACK ? tie_state() : TieState{};
-    bool const behindQ = TIE_TRACK && !ourQueenDead && !enemyQueenDead && ts.ourQ >= 0 && ts.theirQ >= 0 && ts.ourQ <= ts.theirQ;
+    bool const behindQ = TIE_TRACK && !ourQueenDead && !enemyQueenDead &&
+                         ((ts.ourQ >= 0 && ts.theirQ >= 0 && ts.ourQ <= ts.theirQ) ||
+                          (QUEEN_HOME && R >= LEAD_ROUND && ts.ourQ <= 3)); // v2.14: a home queen eats little (unknown counts as short)
     int feedStart = consolidate ? (DYN_ALLOC ? switchRound : CONSOL_ROUND) : 500 - FEED_WINDOW;
     if (behindQ)
         feedStart = std::min(feedStart, openMap ? FEED_BEHIND_OPEN : FEED_BEHIND_CONGESTED);
@@ -4733,6 +4740,13 @@ void decide(Controller& ct)
                 feedLeader = h.cell;
                 feedId = h.id;
             }
+        // v2.14: she keeps to her home, so without a fresh report go there and
+        // look (the sacrifice itself waits until she is in view).
+        if (QUEEN_HOME && feedLeader < 0 && feedId < 0 && !ourQueenDead && !queenFull && ourQueenSpawn >= 0 && distHead[ourQueenSpawn] < INF)
+        {
+            feedLeader = ourQueenSpawn;
+            feedId = queenId;
+        }
         // Open map, nowhere to find her: the longest leader in view grows instead.
         if (consolidate && feedLeader < 0)
         {
@@ -5300,7 +5314,7 @@ void decide(Controller& ct)
                 if (n >= 0 && !(vis[n] && occId[n] >= 0) && !(QUEEN_HOME && n == nb(head, d) && pocket_ahead(head, n)))
                     realExits++;
             }
-            if (calm && !consolidate && queenSplits && anySafe && !crowded && L >= 4 && (!QUEEN_HOME || (realExits >= 2 && units < QUEEN_SPLIT_UNITS)) &&
+            if (calm && !consolidate && queenSplits && anySafe && !crowded && L >= 4 && (!QUEEN_HOME || (realExits >= 2 && units < QUEEN_SPLIT_UNITS && L - L / 2 >= QUEEN_MIN_KEEP)) &&
                 room_for_more() &&
                 split_allowed(ct, L / 2) && child_can_escape(L / 2, true) && split_keeps_loop(L / 2))
                 return act_split(ct, L / 2, "queen-split");
