@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Stochastic_Parrot / Autarky
+  us: dragon-turns 5818; head within 1 of a spawn tile 52%; a pearl within 3: 18%; nearest pearl 10+ away: 28%; pearl adjacent at round start but not eaten by the side that round: 112/297
+  opp: dragon-turns 16315; head within 1 of a spawn tile 54%; a pearl within 3: 15%; nearest pearl 10+ away: 28%; pearl adjacent at round start but not eaten by the side that round: 189/536
+  our status words, rounds 1-50: [('pearl', 310), ('camp', 38), ('', 25), ('explore', 23), ('grow-fleet', 15), ('guard', 13), ('screen', 10), ('hunt', 7)]
+  races lost while our head was nearer: 15; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r8->r50 (53, 17) #0 3 vs 15  "QUEEN cmb nrm pearl L3 s2"
+     r59->r83 (52, 2) #0 4 vs 8  "QUEEN cmb war pearl L3 s2"
+     r32->r85 (52, 1) #0 7 vs 11  "QUEEN cmb nrm pearl L3 s2"
+     r33->r86 (52, 0) #0 5 vs 11  "QUEEN cmb nrm pearl L3 s2"
+     r112->r115 (24, 8) #53 1 vs 3  "cmb war snipe L3 s2 SCR"
+     r142->r159 (18, 1) #54 1 vs 8  "col nrm pearl L3 s2"
+     r143->r160 (18, 0) #54 2 vs 7  "col nrm pearl L3 s2"
+     r142->r161 (19, 0) #54 3 vs 6  "col nrm pearl L3 s2"
+     r135->r182 (18, 16) #99 4 vs 5  "col war hunt L2"
+     r136->r183 (18, 17) #98 5 vs 10  "cmb farm pearl L2"
+  what our nearest dragon was doing in those lost races: [('pearl', 13), ('snipe', 1), ('hunt', 1)]

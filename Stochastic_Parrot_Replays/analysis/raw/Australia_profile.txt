@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE Stochastic_Parrot / Australia
+  us: dragons ever 254, born by split 245, died 225, median lifespan 23.0 rounds
+     length mix: r50: n17 {'L2': 71, 'L3': 18, 'L4-5': 6, 'L6-9': 6}  r100: n22 {'L2': 64, 'L3': 27, 'L4-5': 5, 'L6-9': 5}  r200: n38 {'L2': 63, 'L3': 24, 'L4-5': 8, 'L6-9': 5}  r300: n37 {'L2': 41, 'L3': 35, 'L4-5': 19, 'L6-9': 5}  r400: n21 {'L2': 10, 'L3': 33, 'L4-5': 19, 'L6-9': 29, 'L10+': 10}  r499: n28 {'L2': 32, 'L3': 18, 'L4-5': 29, 'L6-9': 7, 'L10+': 14}
+  opp: dragons ever 292, born by split 283, died 270, median lifespan 55.5 rounds
+     length mix: r50: n14 {'L2': 64, 'L3': 36}  r100: n33 {'L2': 58, 'L3': 42}  r200: n64 {'L2': 45, 'L3': 27, 'L4-5': 17, 'L6-9': 11}  r300: n64 {'L2': 48, 'L3': 31, 'L4-5': 14, 'L6-9': 3, 'L10+': 3}  r400: n64 {'L2': 45, 'L3': 30, 'L4-5': 14, 'L6-9': 9, 'L10+': 2}  r499: n21 {'L2': 5, 'L3': 19, 'L4-5': 10, 'L6-9': 14, 'L10+': 52}
+  us queen: rounds 374; length at r50/100/200/300/400: 3/2/2/3/-; max 7; stays inside a 4-cell spread over 10 rounds 11% of the time; enemy heads within 3 of her: 0:347 1:25 2:2 3+:0
+  opp queen: rounds 501; length at r50/100/200/300/400: 2/3/3/3/3; max 4; stays inside a 4-cell spread over 10 rounds 9% of the time; enemy heads within 3 of her: 0:501 1:0 2:0 3+:0
+  us paid steps: {'ate a pearl on the paid step': 8, 'paid step': 7, 'died the same turn (head-on collision)': 1}
+  opp paid steps: {'paid step': 9, 'died the same turn (head-on collision)': 2}

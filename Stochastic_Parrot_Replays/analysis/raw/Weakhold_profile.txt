@@ -1,0 +1,8 @@
+====================================================================================================
+PROFILE Stochastic_Parrot / Weakhold
+  us: dragons ever 20, born by split 18, died 20, median lifespan 19.5 rounds
+     length mix: r50: n4 {'L2': 100}  r100: n4 {'L2': 100}  r200: n4 {'L2': 100}  r300: n1 {'L2': 100}  r400: n1 {'L3': 100}
+  opp: dragons ever 314, born by split 312, died 286, median lifespan 11.0 rounds
+     length mix: r50: n6 {'L2': 67, 'L3': 17, 'L4-5': 17}  r100: n4 {'L2': 50, 'L3': 25, 'L4-5': 25}  r200: n25 {'L2': 68, 'L3': 28, 'L4-5': 4}  r300: n36 {'L2': 61, 'L3': 36, 'L4-5': 3}  r400: n42 {'L2': 60, 'L3': 36, 'L4-5': 5}
+  us queen: rounds 262; length at r50/100/200/300/400: 2/2/2/-/-; max 4; stays inside a 4-cell spread over 10 rounds 64% of the time; enemy heads within 3 of her: 0:257 1:5 2:0 3+:0
+  opp queen: rounds 444; length at r50/100/200/300/400: 2/2/2/2/2; max 4; stays inside a 4-cell spread over 10 rounds 14% of the time; enemy heads within 3 of her: 0:442 1:2 2:0 3+:0

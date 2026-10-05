@@ -1,0 +1,44 @@
+PRISONERS DILEMMA vs Stochastic Parrot  (fleet-v2.13.2)  -  LOSS by elimination at round 257
+Map 32x16. Each side starts with an L3 queen, an L11 dragon and small ones; the L11s start right on
+the centre fountain pockets (8 tiles that refill 1 round after being eaten: (14,0) (17,0) (14,1)
+(17,1) (14,14) (17,14) (14,15) (17,15)). They moved first (we are team B).
+Raw numbers: analysis/raw/Prisoners_Dilemma_{metrics,deep,econ,profile,tactics}.txt
+
+HEADLINE
+  Both sides lost 7 dragons in the first 11 rounds of centre fighting. They kept splitting and
+  rebuilt (10 dragons at r20, 41 at the peak); we never split again after r49. From r100 our queen
+  was our only dragon. An escort pinned her against a kelp wall for 14 rounds and boxed her into a
+  corner at r257.
+
+TIMELINE (us / them)
+  round   dragons   pearls eaten
+     1      7/6           0/0
+    10      5/7           7/10
+    30      3/10          8/15
+   100      1/18         15/70
+   250      1/40         15/203
+
+WHERE WE LACKED
+  A. Opening collapse (r3-r11): #14, #12, #16 and #22 died in head-ons, #7 too (length 1), and #3 and
+     #11 died in the fountain pockets (split 2+2 inside, then the stub hit itself / the wall).
+     Their losses in the same window were equal (7), but they kept a production base.
+  B. No regrowth. 9 splits, all before r50. After r50 we ate 2 pearls in 266 dragon-turns (0.8%);
+     their efficiency was 3.3%. With 3 or fewer dragons, survival mode + queen rules = no economy.
+     #28 even self-destructed ("recycle") at r37 when we had 3-4 dragons.
+  C. The queen (length 3 all game, 0 pearls eaten in 257 rounds) roamed: median 7 cells from start;
+     an enemy head within 4 cells in 42% of rounds.
+  D. How she died (simulated): from r243, enemy #65 (L2) ran north on x=30, exactly beside her head on
+     x=31, for 14 rounds. Kelp on her east side (x=31|32) and #65 on her west left her only "north"
+     each turn. At the top row (31,0) - kelp north and east, #65 west, own neck south - she had no
+     legal move, did "last-attack" into #65, and both died.
+     Her survival check treats the escort as a still obstacle, so going north always looked safe.
+
+WHAT STOCHASTIC PARROT DOES HERE
+  - Immediate centre fight with the long starting dragon, then 4 -> 2+2 split churn (82 of 91 splits).
+  - Head next to the spawn tile at 48% of spawns (us 7%).
+  - Fountain trips (17) even when they lose length on them (pockets here are only 2 deep).
+  - Pinning escort against walls (above). Hidden L3 queen, 0 pearls eaten, median 3 cells from spawn.
+
+TAKEAWAY FOR THIS MAP
+  Avoid the even centre brawl at the start, keep a minimum production fleet, and teach the queen to
+  break away from a wall when an enemy head runs beside her.

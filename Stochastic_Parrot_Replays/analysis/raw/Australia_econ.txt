@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Stochastic_Parrot / Australia
+  us: dragon-turns 12803; head within 1 of a spawn tile 41%; a pearl within 3: 23%; nearest pearl 10+ away: 41%; pearl adjacent at round start but not eaten by the side that round: 351/832
+  opp: dragon-turns 23910; head within 1 of a spawn tile 43%; a pearl within 3: 21%; nearest pearl 10+ away: 38%; pearl adjacent at round start but not eaten by the side that round: 654/1444
+  our status words, rounds 1-50: [('camp', 316), ('pearl', 128), ('explore', 83), ('portal', 35), ('screen', 29), ('hunt', 27), ('', 20), ('guard', 10)]
+  races lost while our head was nearer: 82; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r24->r31 (45, 30) #24 7 vs 8  "col nrm camp L2"
+     r1->r88 (55, 25) #17 28 vs 32  ""
+     r24->r91 (59, 27) #22 15 vs 17  "col nrm pearl L3"
+     r1->r95 (58, 30) #17 26 vs 34  ""
+     r2->r96 (53, 28) #17 24 vs 34  "col nrm camp L3"
+     r60->r97 (11, 47) #15 16 vs 18  "col nrm portal L2"
+     r42->r97 (57, 33) #13 17 vs 19  "col nrm pearl L3"
+     r40->r101 (54, 34) #13 13 vs 15  "col nrm pearl L3"
+     r1->r103 (53, 34) #17 17 vs 39  ""
+     r20->r124 (8, 35) #22 13 vs 15  "col nrm portal L2"
+  what our nearest dragon was doing in those lost races: [('pearl', 43), ('camp', 9), ('snipe', 8), ('', 6), ('hunt', 5), ('portal', 3), ('attack', 3), ('escape', 2)]

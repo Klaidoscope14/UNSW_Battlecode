@@ -1,0 +1,48 @@
+DEFAULT vs Stochastic Parrot  (fleet-v2.13.2)  -  LOSS by elimination at round 298
+Map 32x32, open with a block of portal boxes in the centre; every cell is a pearl tile but spawns are
+random and slow (about 2 per round, more in the corner boxes and the centre). Both sides start with
+4 length-4 dragons. We moved first (team A).
+Raw numbers: analysis/raw/Default_{metrics,deep,econ,profile,tactics}.txt
+
+HEADLINE
+  The only game where we killed their queen (r89: #9, length 4, "regicide" sprint; before that our
+  #4 had shadowed her 2 cells away for 14 rounds). Our queen had already died at r79. With both
+  queens dead, the game came down to survival and the longest dragon. They out-produced us 497
+  pearls to 56 and eliminated our fleet.
+
+TIMELINE (us / them)
+  round   dragons   pearls eaten
+     1      7/8          0/0
+    50      9/9         11/19
+    75      8/15        19/44
+   100      7/15        30/82
+   150      6/30        41/184
+   200      3/42        45/273
+   298      0/49        56/497
+
+WHERE WE LACKED
+  A. Opening economy with equal fleets. At r50 we had 9 dragons each, but they had eaten 19 pearls to
+     our 11. In r0-49 only 42% of our dragon-turns were "pearl"; the rest were hunt-queen 17%, guard 9%,
+     screen 9%, hunt 6%, guard-line 6%, portal 4%. Theirs all farm.
+     Pearl spawn races: nearest head at spawn, median 9 cells (us) vs 2 (them); head next to the spawn
+     at 5% (us) vs 27% (them). We lost 37 pearls we were nearer to (our nearest dragon was busy:
+     attack 9, hunt-queen 3, intercept 2, screen 2, ...).
+  B. Our queen (r79): length 2 (she split 4 -> 2+2 at r3 and ate 2 pearls in 79 rounds), roaming
+     14 cells from start (median), "war pearl", walked west along row 30 toward two enemy L3 dragons
+     (6 -> 2 cells in 4 rounds) and
+     died head-on.
+  C. Trades. 14 attack-type deaths (9 "attack", 3 "snipe", 1 "hunt", 1 "regicide"), all 1-for-1;
+     11 of 14 while they had more dragons. Only the regicide paid.
+  D. Late game with 3 dragons (r200-298, survival mode): the last 5 died in "pearl" moves next to enemy
+     heads (enemy 1-2 cells away when they stepped onto the pearl). Survival mode still accepted
+     contested pearls.
+
+WHAT STOCHASTIC PARROT DOES HERE
+  - Pure numbers: 204 of 207 splits are 4 -> 2+2; the fleet goes 9 -> 15 -> 30 -> 49.
+  - Sloppy but cheap: about 67 of their 162 deaths were head-ons among their own dragons; 72 more
+    were self-inflicted (walls, own bodies, self). 103 of their own drops re-eaten within 3 rounds.
+  - Their queen roamed here too (median 10 from start) and was the one queen they lost in 5 games.
+
+TAKEAWAY FOR THIS MAP
+  In the first 100 rounds every dragon should farm; one cheap hunter that shadows their queen was
+  enough to kill her. Once the queens are dead, survival mode must avoid all contested pearls.

@@ -1,0 +1,135 @@
+====================================================================================================
+GAME  Stochastic_Parrot / Weakhold   map 40x15 sym xy   we started (team A)
+RESULT REASON FOR LOSS : Elimination of all our dragons   last round 443
+replay check: 11003 steps, 0 non-adjacent (= portal jumps or parser gaps)
+
+TIMELINE  (dragons / total length / queen length / longest / pearls eaten so far)
+round |                  US                  |                 OPP                 
+    1 |      4      8      2      2      0 |      4      8      2      2      0
+   10 |      4     10      2      4      2 |      4     10      2      4      2
+   20 |      4      8      2      2      6 |      4     10      2      3      6
+   30 |      4      8      2      2      9 |      6     14      2      3     12
+   50 |      4      8      2      2     18 |      6     15      2      4     27
+   75 |      4      8      2      2     21 |      8     20      2      5     46
+  100 |      4      8      2      2     21 |      4     11      2      4     68
+  125 |      4      8      2      2     21 |      7     15      2      3     92
+  150 |      4      8      2      2     21 |      9     22      2      5    115
+  200 |      4      8      2      2     21 |     25     59      2      4    193
+  250 |      4     10      2      4     32 |     26     65      2      4    308
+  300 |      1      2      0      2     35 |     36     88      2      5    421
+  350 |      1      2      0      2     38 |     39     99      2      6    540
+  400 |      1      3      0      3     41 |     42    104      2      5    684
+  443 |      0      0      0      0     47 |     28    104      2      7    761
+max fleet: us 6  opp 45
+first round opp had 4+ more dragons than us: 58
+
+ECONOMY
+  pearls eaten: us 47  opp 761
+  eaten on OUR half / THEIR half:  us 45/0   opp 214/520
+  spawns 661; nearest head at spawn (median): us 15  opp 2; head adjacent at spawn: us 1%  opp 21%
+  spawn->eaten latency (median rounds): us 18.0  opp 4
+  death-drop pearls eaten: us {'own': 25, 'enemy': 1}  opp {'own': 342, 'enemy': 5, 'enemy-queen': 2}
+  own drops re-eaten within 3 rounds (recycling): us 4  opp 125
+  queen length gains: us {'drop': 2}  opp {}
+
+SPLITS  (child size x parent length)
+  us: 18 splits; child sizes {2: 15, 3: 2, 4: 1}; parent lengths {4: 15, 5: 2, 6: 1}
+      by phase {'0-49': 8, '50-99': 1, '200-299': 4, '300-399': 2, '400-500': 3}
+  opp: 312 splits; child sizes {2: 173, 3: 75, 4: 59, 5: 3, 6: 1, 7: 1}; parent lengths {4: 165, 5: 78, 6: 64, 7: 3, 8: 1, 9: 1}
+      by phase {'0-49': 13, '50-99': 16, '100-199': 54, '200-299': 93, '300-399': 116, '400-500': 20}
+
+MOVEMENT
+  us: 1227 dragon-turns; multi-step 0.0%; paid steps 0; portal jumps 0
+  opp: 9613 dragon-turns; multi-step 1.7%; paid steps 0; portal jumps 0
+
+DEATHS by cause
+  us: {'hit a wall': 17, 'head-on collision': 3}   self-inflicted (hit itself / no valid action): 0
+  opp: {'hit a wall': 184, 'hit itself': 79, 'hit a body': 20, 'head-on collision': 3}   self-inflicted (hit itself / no valid action): 79
+  by phase:
+    us     0-49: {'hit a wall': 6}
+    us    50-99: {'hit a wall': 1}
+    us  200-299: {'hit a wall': 5, 'head-on collision': 2}
+    us  300-399: {'hit a wall': 2}
+    us  400-500: {'hit a wall': 3, 'head-on collision': 1}
+    opp     0-49: {'hit a wall': 5, 'hit itself': 4}
+    opp    50-99: {'hit itself': 6, 'hit a wall': 10, 'hit a body': 1}
+    opp  100-199: {'hit a wall': 25, 'hit itself': 8, 'hit a body': 1}
+    opp  200-299: {'hit itself': 20, 'hit a wall': 53, 'hit a body': 6, 'head-on collision': 2}
+    opp  300-399: {'hit a wall': 68, 'hit itself': 34, 'hit a body': 8}
+    opp  400-500: {'hit itself': 7, 'hit a wall': 23, 'hit a body': 4, 'head-on collision': 1}
+  "hit a body": whose body: {('opp', 'own'): 20}
+  head-on pairs (us vs opp lengths, who sprinted):
+       1  ('trade', 'us:L3-5', 'opp:L3-5', 'opp-walked', 'us-walked')
+       1  ('trade', 'us:Q', 'opp:L3-5', 'opp-walked', 'us-walked')
+       1  ('trade', 'us:L2', 'opp:L3-5', 'opp-walked', 'us-walked')
+
+OUR DEATHS by what the dragon was doing (its last status text)
+      17  hit a wall             while "doomed"
+       1  head-on collision      while "pearl"
+       1  head-on collision      while "explore"
+       1  head-on collision      while ""
+
+QUEENS
+  us: alive 262 rounds; length max 4 end 4; inside an enemy strike reach 3% of rounds; corridor cells 2%; own dragons within 3 (median) 0.0; distance from start (median) 6.0
+    DIED round 262: head-on collision at length 4
+      r254  L2   head (4, 0)  nearest enemy heads (dist,len,id): [(4, 2, 130), (8, 2, 71), (8, 2, 75)]  "QUEEN cmb war pearl L2"
+      r255  L2   head (5, 0)  nearest enemy heads (dist,len,id): [(4, 2, 130), (8, 2, 71), (8, 2, 145)]  "QUEEN cmb war pearl L2"
+      r256  L3   head (6, 0)  nearest enemy heads (dist,len,id): [(4, 2, 130), (8, 2, 71)]  "QUEEN cmb war pearl L2"
+      r257  L3   head (7, 0)  nearest enemy heads (dist,len,id): [(4, 2, 130), (8, 2, 138), (8, 2, 148)]  "QUEEN cmb war pearl L3"
+      r258  L3   head (8, 0)  nearest enemy heads (dist,len,id): [(4, 2, 130), (6, 2, 148), (8, 2, 138)]  "QUEEN cmb war pearl L3"
+      r259  L3   head (9, 0)  nearest enemy heads (dist,len,id): [(4, 2, 130), (6, 2, 148), (7, 2, 114), (8, 2, 138)]  "QUEEN cmb war pearl L3"
+      r260  L3   head (10, 0)  nearest enemy heads (dist,len,id): [(4, 3, 130), (6, 2, 138), (7, 2, 114), (8, 2, 148)]  "QUEEN cmb war pearl L3"
+      r261  L4   head (10, 1)  nearest enemy heads (dist,len,id): [(2, 4, 130), (4, 2, 138), (7, 3, 64)]  "QUEEN cmb war explore L3"
+    board at end of round 261 (Q/q ours, K/k theirs, U/u ours, E/e theirs, * pearl, |- kelp):
+                - - -   -          
+       10 .|.|E e . . . .|. . . . .
+            - -   - - -            
+       11 . . .|.|. . .|.|. e E . E
+                - - -              
+       12 . . . . .|*|. .|. . . . e
+                      - -          
+       13 . . . . . U u .|. . . . .
+                          - - - -  
+       14 . . . . . . . . . * * *|.
+          - - - - - - - - - - - - -
+        0 . . . . q q q * * *|. . .
+                        - - -      
+        1 . e e e E . Q|. . .|E . .
+                  - - -            
+        2 . . . .|.|. . .|.|.|e . E
+                -     - -     - - -
+        3 . . .|. . .|. . .|. . . .
+            - -   - -     -   - - -
+        4 .|.|. .|. . .|. . .|. . e
+                - -   - - - -   -  
+        5 .|.|.|* *|.|. . . . .|.|E
+                -   -   - - - -   -
+        6 . .|. .|*|. .|. . . . . .
+              -       -            
+        7 . . . .|.|. .|. . . . . .
+  opp: alive 444 rounds; length max 4 end 2; inside an enemy strike reach 0% of rounds; corridor cells 0%; own dragons within 3 (median) 0.0; distance from start (median) 4.0
+
+OUR STATUS TEXTS by phase (top 8)
+      0-49: pearl 63%, explore 16%, guard-line 7%, grow-fleet 3%, guard 3%, doomed 3%, hunt-queen 2%, camp 2%
+     50-99: pearl 98%, grow-fleet 0%, explore 0%, doomed 0%, hunt-queen 0%
+   100-199: pearl 98%, hunt 2%
+   200-299: pearl 92%, hunt 2%, explore 2%, doomed 2%, grow-fleet 1%, guard 0%, guard-line 0%, save-split 0%
+   300-399: pearl 96%, doomed 2%, grow-fleet 1%, save-split 1%
+   400-500: pearl 88%, doomed 6%, save-split 4%, grow-fleet 2%
+
+OUR LAST 12 DEATHS (round, id, cause, length, queen?, status)
+    r244  #128   hit a wall             L3         "doomed"
+    r245  #16    hit a wall             L3         "doomed"
+    r253  #134   hit a wall             L2         "doomed"
+    r254  #146   head-on collision      L3         "pearl"
+    r259  #28    hit a wall             L2         "doomed"
+    r262  #0     head-on collision      L4   QUEEN "explore"
+    r342  #135   hit a wall             L3         "doomed"
+    r383  #237   hit a wall             L2         "doomed"
+    r421  #284   hit a wall             L2         "doomed"
+    r428  #324   hit a wall             L3         "doomed"
+    r442  #333   head-on collision      L2         ""
+    r443  #327   hit a wall             L2         "doomed"
+
+DRAGON COUNT every 25 rounds (us / opp)
+    r0:2/2  r25:4/4  r50:4/6  r75:4/8  r100:4/4  r125:4/7  r150:4/9  r175:4/9  r200:4/25  r225:4/25  r250:4/26  r275:1/32  r300:1/36  r325:1/41  r350:1/39  r375:1/41  r400:1/42  r425:2/32

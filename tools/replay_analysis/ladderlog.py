@@ -136,7 +136,7 @@ class Game:
                     s.body[i] = [(x, y)]; s.team[i] = i % 2; s.born[i] = 0; s.alive.add(i)
                 b = s.body[i]
                 ml = re.search(r'length (\d+)', rest)
-                newL = int(ml.group(1)) if ml else len(b)
+                newL = int(ml.group(1)) if ml else len(b) + (1 if 'eats a pearl' in rest else 0)  # local logs omit the length
                 b.insert(0, (x, y))
                 while len(b) > newL:
                     b.pop()

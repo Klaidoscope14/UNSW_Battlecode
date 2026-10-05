@@ -1,0 +1,92 @@
+====================================================================================================
+DEEP  Stochastic_Parrot / Australia   result: REASON FOR LOSS : Loss of our queen
+
+1. ENEMY QUEEN
+   survived
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+      38  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+      19  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+      16  ('us', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+      16  ('opp', 'hit a wall', 'forced', 'mate<=3', 're-eaten')
+      13  ('us', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+      12  ('us', 'hit a wall', 'forced', 'mate<=3', 're-eaten')
+      12  ('opp', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+      11  ('opp', 'hit itself', 'had a free cell', 'alone', 're-eaten')
+      10  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       6  ('opp', 'hit a wall', 'had a free cell', 'mate<=3', 'not re-eaten')
+       5  ('us', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+       5  ('us', 'hit itself', 'had a free cell', 'alone', 're-eaten')
+       5  ('us', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       4  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 'not re-eaten')
+       3  ('opp', 'hit itself', 'forced', 'alone', 're-eaten')
+       2  ('us', 'hit a wall', 'had a free cell', 'alone', 'not re-eaten')
+       2  ('opp', 'hit a wall', 'forced', 'alone', 're-eaten')
+       2  ('opp', 'hit a wall', 'forced', 'alone', 'not re-eaten')
+       2  ('opp', 'hit a wall', 'forced', 'mate<=3', 'not re-eaten')
+       2  ('opp', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+       1  ('opp', 'hit a wall', 'had a free cell', 'alone', 're-eaten')
+       1  ('opp', 'hit itself', 'forced', 'alone', 'not re-eaten')
+       1  ('opp', 'hit itself', 'forced', 'mate<=3', 'not re-eaten')
+       1  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       1  ('us', 'hit a wall', 'forced', 'alone', 'not re-eaten')
+       1  ('opp', 'hit a wall', 'had a free cell', 'alone', 'not re-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   101 deaths; median age 5 rounds; died within 10 rounds of birth: 61; head on a corridor/dead-end cell (<=2 open sides): 77
+   activity in the turns before (role/mode words): [('pearl', 130), ('war', 53), ('keep', 49), ('escape', 24), ('save-split', 23), ('hunt', 22), ('explore', 8), ('farm', 6)]
+   r30   #28    hit a wall           L2   age 0    open 2  last: []
+   r31   #22    hit a body           L2   age 30   open 3  last: ['col nrm pearl L2', 'col nrm pearl L3', 'col nrm save-split L4']
+   r32   #27    hit itself           L2   age 5    open 1  last: ['col nrm pearl L4', 'col nrm pearl L5', 'col nrm save-split L6']
+   r43   #29    hit a wall           L2   age 12   open 2  last: ['col nrm escape L9', 'col nrm pearl L9', 'col nrm save-split L10']
+   r57   #36    hit a wall           L3   age 0    open 2  last: []
+   r61   #39    hit a wall           L3   age 0    open 2  last: []
+   r73   #42    hit a wall           L3   age 0    open 2  last: []
+   r78   #50    hit itself           L3   age 0    open 2  last: []
+   r79   #33    hit a body           L2   age 32   open 3  last: ['exp nrm pearl L9', 'exp nrm unwind-split L10', 'exp nrm save-split L7']
+   r79   #48    hit a wall           L2   age 1    open 2  last: []
+   r80   #47    hit itself           L2   age 3    open 1  last: ['col nrm pearl L4', 'col nrm save-split L5']
+   r84   #52    hit itself           L2   age 4    open 2  last: ['col nrm pearl L3', 'col nrm pearl L3', 'col nrm save-split L4']
+   r84   #58    hit a wall           L2   age 0    open 2  last: []
+   r88   #61    hit a wall           L2   age 0    open 2  last: []
+   r98   #77    hit a wall           L3   age 0    open 2  last: []
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+     57  ('snipe', 'head-on collision')
+     18  ('attack', 'head-on collision')
+      2  ('hunt', 'head-on collision')
+      2  ('intercept', 'head-on collision')
+      2  ('last-attack', 'head-on collision')
+   attacks made while the opponent already had more dragons: 78/81
+   r51   snipe      L2   head-on collision    fleet 17/14
+   r82   snipe      L2   head-on collision    fleet 21/20
+   r94   attack     L5   head-on collision    fleet 22/28
+   r113  snipe      L2   head-on collision    fleet 25/42
+   r131  hunt       L2   head-on collision    fleet 26/58
+   r139  attack     L3   head-on collision    fleet 26/63
+   r140  snipe      L2   head-on collision    fleet 25/63
+   r143  attack     L4   head-on collision    fleet 25/64
+   r151  snipe      L2   head-on collision    fleet 27/64
+   r159  attack     L3   head-on collision    fleet 28/64
+   r161  snipe      L3   head-on collision    fleet 27/64
+   r165  snipe      L3   head-on collision    fleet 27/64
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 27 pearls / 648 dragon-turns = 4.2%;  after: 782 / 11948 = 6.5%
+   opp: rounds<=50: 7 pearls / 647 dragon-turns = 1.1%;  after: 1235 / 23027 = 5.4%
+   races (who was nearer when the pearl appeared -> who ate it): {('they were nearer', 'taken by opp'): 708, ('we were nearer', 'taken by us'): 501, ('they were nearer', 'taken by us'): 61, ('we were nearer', 'taken by opp'): 82, ('tie', 'taken by opp'): 27, ('tie', 'taken by us'): 34}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+     24  ('us', 2, 3)
+      6  ('opp', 2, 3)
+      3  ('opp', 2, 7)
+      2  ('opp', 2, 6)
+      2  ('us', 2, 4)
+      2  ('opp', 2, 4)
+      2  ('opp', 3, 3)
+      1  ('us', 2, 7)
+      1  ('us', 3, 19)
+      1  ('opp', 2, 5)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 58%  (spawn tiles cover 338 of 4096 cells)

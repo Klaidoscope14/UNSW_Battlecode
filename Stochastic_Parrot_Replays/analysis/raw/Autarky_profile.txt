@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE Stochastic_Parrot / Autarky
+  us: dragons ever 93, born by split 87, died 80, median lifespan 20 rounds
+     length mix: r50: n8 {'L2': 50, 'L3': 50}  r100: n13 {'L2': 77, 'L3': 23}  r200: n13 {'L2': 46, 'L3': 38, 'L4-5': 15}  r300: n13 {'L2': 38, 'L3': 46, 'L4-5': 15}  r400: n9 {'L2': 33, 'L3': 11, 'L6-9': 44, 'L10+': 11}  r499: n13 {'L2': 23, 'L3': 38, 'L4-5': 23, 'L6-9': 15}
+  opp: dragons ever 174, born by split 168, died 137, median lifespan 66.5 rounds
+     length mix: r50: n13 {'L2': 46, 'L3': 38, 'L4-5': 15}  r100: n20 {'L2': 65, 'L3': 30, 'L4-5': 5}  r200: n32 {'L2': 56, 'L3': 38, 'L4-5': 6}  r300: n38 {'L2': 45, 'L3': 53, 'L4-5': 3}  r400: n49 {'L2': 47, 'L3': 47, 'L4-5': 4, 'L6-9': 2}  r499: n36 {'L2': 17, 'L3': 25, 'L4-5': 31, 'L6-9': 28}
+  us queen: rounds 271; length at r50/100/200/300/400: 3/2/2/-/-; max 4; stays inside a 4-cell spread over 10 rounds 2% of the time; enemy heads within 3 of her: 0:193 1:43 2:29 3+:6
+  opp queen: rounds 501; length at r50/100/200/300/400: 3/3/3/3/3; max 3; stays inside a 4-cell spread over 10 rounds 24% of the time; enemy heads within 3 of her: 0:487 1:14 2:0 3+:0
+  us paid steps: {'ate a pearl on the paid step': 3, 'paid step': 3}
+  opp paid steps: {'paid step': 1}

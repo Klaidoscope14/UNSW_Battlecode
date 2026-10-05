@@ -1,0 +1,45 @@
+====================================================================================================
+DEEP  Stochastic_Parrot / Prisoners_Dilemma   result: REASON FOR LOSS : Elimination of all our dragons
+
+1. ENEMY QUEEN
+   survived
+   our queen showed "bunker": 0 turns
+
+2. SELF-INFLICTED / WALL DEATHS  (side, cause, forced?, teammate within 3?, drop re-eaten by own team <=3 rounds?)
+      10  ('opp', 'hit a wall', 'had a free cell', 'mate<=3', 'not re-eaten')
+       9  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       8  ('opp', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+       3  ('opp', 'hit a wall', 'had a free cell', 'alone', 'not re-eaten')
+       3  ('opp', 'hit itself', 'had a free cell', 'mate<=3', 'not re-eaten')
+       3  ('opp', 'hit itself', 'forced', 'mate<=3', 're-eaten')
+       1  ('us', 'hit itself', 'forced', 'mate<=3', 'not re-eaten')
+       1  ('us', 'hit a wall', 'forced', 'alone', 'not re-eaten')
+       1  ('us', 'hit a wall', 'had a free cell', 'mate<=3', 're-eaten')
+       1  ('us', 'hit itself', 'had a free cell', 'mate<=3', 're-eaten')
+       1  ('opp', 'hit itself', 'had a free cell', 'alone', 'not re-eaten')
+
+3. OUR NON-COMBAT DEATHS  (round, id, cause, length, age in rounds, open sides at head, what it did before)
+   4 deaths; median age 17.5 rounds; died within 10 rounds of birth: 2; head on a corridor/dead-end cell (<=2 open sides): 3
+   activity in the turns before (role/mode words): [('pearl', 15), ('grow-fleet', 4), ('explore', 2)]
+   r6    #3     hit itself           L3   age 6    open 2  last: ['exp war pearl L3', 'exp war grow-fleet L4', 'exp war pearl L2']
+   r6    #11    hit a wall           L3   age 5    open 1  last: ['cmb war pearl L3', 'cmb war grow-fleet L4', 'cmb war pearl L2']
+   r29   #9     hit a wall           L1   age 29   open 2  last: ['cmb war pearl L2 s2 SCR', 'cmb war explore L2 s2 SCR', 'cmb war explore L2 s2 SCR']
+   r83   #36    hit a body           L3   age 36   open 4  last: ['prt war pearl L2 s2', 'prt war pearl L2 s2', 'prt war pearl L2 s2']
+
+4. OUR ATTACK DEATHS  (what the dragon was doing; fleet us/opp just before)
+      2  ('attack', 'head-on collision')
+      2  ('last-attack', 'head-on collision')
+   attacks made while the opponent already had more dragons: 3/4
+   r4    attack     L3   head-on collision    fleet 7/7
+   r10   attack     L2   head-on collision    fleet 6/8
+   r42   last-attack L2   head-on collision    fleet 3/10
+   r257  last-attack L3   head-on collision    fleet 1/39
+
+5. PEARL EFFICIENCY
+   us: rounds<=50: 13 pearls / 188 dragon-turns = 6.9%;  after: 2 / 266 = 0.8%
+   opp: rounds<=50: 33 pearls / 441 dragon-turns = 7.5%;  after: 172 / 5191 = 3.3%
+   races (who was nearer when the pearl appeared -> who ate it): {('tie', 'taken by opp'): 5, ('they were nearer', 'taken by opp'): 159, ('we were nearer', 'taken by us'): 12, ('tie', 'taken by us'): 2, ('we were nearer', 'taken by opp'): 10, ('they were nearer', 'taken by us'): 1}
+
+6. HEAD-ONS STRAIGHT AFTER A MULTI-STEP MOVE  (side, steps, length)
+
+7. OPPONENT: dragon-turns with the head within 2 of a spawn tile without eating: 71%  (spawn tiles cover 84 of 512 cells)

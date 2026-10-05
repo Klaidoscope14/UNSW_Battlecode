@@ -1,0 +1,174 @@
+====================================================================================================
+GAME  Stochastic_Parrot / Default   map 32x32 sym xy   we started (team A)
+RESULT REASON FOR LOSS : Elimination of all our dragons   last round 298
+replay check: 9750 steps, 357 non-adjacent (= portal jumps or parser gaps)
+
+TIMELINE  (dragons / total length / queen length / longest / pearls eaten so far)
+round |                  US                  |                 OPP                 
+    1 |      7     16      4      4      0 |      8     16      2      2      0
+   10 |      7     14      2      2      2 |      6     13      2      3      1
+   20 |      8     17      2      3      6 |      7     17      2      4      5
+   30 |      7     15      2      3      7 |      7     16      2      3      6
+   50 |      9     19      2      3     11 |      9     22      2      3     19
+   75 |      8     24      2      5     19 |     15     37      2      3     44
+  100 |      7     21      0      5     30 |     15     39      0      3     82
+  125 |      7     19      0      5     35 |     23     57      0      3    136
+  150 |      6     13      0      3     41 |     30     79      0      4    184
+  200 |      3      8      0      3     45 |     42    106      0      4    273
+  250 |      3      9      0      3     51 |     44    105      0      3    391
+  298 |      0      0      0      0     56 |     49    128      0      8    497
+max fleet: us 9  opp 52
+first round opp had 4+ more dragons than us: 57
+
+ECONOMY
+  pearls eaten: us 56  opp 497
+  eaten on OUR half / THEIR half:  us 10/18   opp 151/139
+  spawns 562; nearest head at spawn (median): us 9.0  opp 2.0; head adjacent at spawn: us 5%  opp 27%
+  spawn->eaten latency (median rounds): us 2.5  opp 3
+  death-drop pearls eaten: us {'own': 13, 'enemy': 5, 'enemy-queen': 1}  opp {'own': 204, 'enemy-queen': 1, 'enemy': 24}
+  own drops re-eaten within 3 rounds (recycling): us 3  opp 103
+  queen length gains: us {'drop': 2}  opp {'drop': 2}
+
+SPLITS  (child size x parent length)
+  us: 21 splits; child sizes {2: 21}; parent lengths {4: 20, 7: 1}
+      by phase {'0-49': 8, '50-99': 4, '100-199': 5, '200-299': 4}
+  opp: 207 splits; child sizes {2: 204, 3: 3}; parent lengths {4: 200, 5: 6, 6: 1}
+      by phase {'0-49': 11, '50-99': 24, '100-199': 78, '200-299': 94}
+
+MOVEMENT
+  us: 1532 dragon-turns; multi-step 0.3%; paid steps 4; portal jumps 5
+  opp: 8174 dragon-turns; multi-step 0.5%; paid steps 1; portal jumps 352
+
+DEATHS by cause
+  us: {'head-on collision': 24, 'hit itself': 1}   self-inflicted (hit itself / no valid action): 1
+  opp: {'head-on collision': 90, 'hit a body': 30, 'hit a wall': 24, 'hit itself': 18}   self-inflicted (hit itself / no valid action): 18
+  by phase:
+    us     0-49: {'head-on collision': 3}
+    us    50-99: {'head-on collision': 6}
+    us  100-199: {'head-on collision': 8, 'hit itself': 1}
+    us  200-299: {'head-on collision': 7}
+    opp     0-49: {'head-on collision': 5, 'hit a body': 1}
+    opp    50-99: {'hit a wall': 1, 'hit a body': 1, 'hit itself': 1, 'head-on collision': 14}
+    opp  100-199: {'hit a body': 8, 'hit a wall': 10, 'head-on collision': 30, 'hit itself': 5}
+    opp  200-299: {'hit a body': 20, 'hit itself': 12, 'head-on collision': 41, 'hit a wall': 13}
+  "hit a body": whose body: {('opp', 'own'): 11}
+  head-on pairs (us vs opp lengths, who sprinted):
+      44  ('unpaired', 'opp', 'L2')
+      18  ('unpaired', 'opp', 'L3')
+      11  ('trade', 'us:L2', 'opp:L2', 'opp-walked', 'us-walked')
+       5  ('unpaired', 'opp', 'L4')
+       4  ('trade', 'us:L3-5', 'opp:L2', 'opp-walked', 'us-walked')
+       4  ('trade', 'us:L3-5', 'opp:L3-5', 'opp-walked', 'us-walked')
+       1  ('trade', 'us:L3-5', 'opp:L3-5', 'opp-walked', 'us-sprinted')
+       1  ('trade', 'us:Q', 'opp:L3-5', 'opp-walked', 'us-walked')
+       1  ('trade', 'us:L3-5', 'opp:Q', 'opp-walked', 'us-sprinted')
+       1  ('trade', 'us:L2', 'opp:L3-5', 'opp-walked', 'us-walked')
+       1  ('unpaired', 'us', 'L3')
+
+OUR DEATHS by what the dragon was doing (its last status text)
+       9  head-on collision      while "attack"
+       9  head-on collision      while "pearl"
+       3  head-on collision      while "snipe"
+       1  head-on collision      while "hunt"
+       1  head-on collision      while "regicide"
+       1  hit itself             while "recycle"
+       1  head-on collision      while ""
+
+QUEENS
+  us: alive 79 rounds; length max 4 end 2; inside an enemy strike reach 19% of rounds; corridor cells 1%; own dragons within 3 (median) 0; distance from start (median) 14
+    DIED round 79: head-on collision at length 2
+      r71   L2   head (15, 30)  nearest enemy heads (dist,len,id): [(7, 2, 1)]  "QUEEN cmb nrm pearl L2 s2"
+      r72   L2   head (14, 30)  nearest enemy heads (dist,len,id): [(7, 2, 1)]  "QUEEN cmb nrm pearl L2 s2"
+      r73   L2   head (13, 30)  nearest enemy heads (dist,len,id): [(7, 2, 1), (8, 3, 30)]  "QUEEN cmb nrm pearl L2 s2"
+      r74   L2   head (12, 30)  nearest enemy heads (dist,len,id): [(6, 3, 30), (7, 2, 1), (7, 3, 35)]  "QUEEN cmb nrm pearl L2 s2"
+      r75   L2   head (11, 30)  nearest enemy heads (dist,len,id): [(6, 3, 30), (7, 2, 1), (8, 3, 3)]  "QUEEN cmb nrm pearl L2 s2"
+      r76   L2   head (10, 30)  nearest enemy heads (dist,len,id): [(6, 3, 3), (6, 3, 30), (7, 2, 1)]  "QUEEN cmb nrm pearl L2 s2"
+      r77   L2   head (9, 30)  nearest enemy heads (dist,len,id): [(4, 3, 3), (4, 3, 30), (7, 2, 1)]  "QUEEN cmb nrm pearl L2 s2"
+      r78   L2   head (8, 30)  nearest enemy heads (dist,len,id): [(2, 3, 3), (2, 3, 30), (7, 2, 1), (7, 2, 33)]  "QUEEN cmb war pearl L2 s2"
+    board at end of round 78 (Q/q ours, K/k theirs, U/u ours, E/e theirs, * pearl, |- kelp):
+                    P              
+       24 . . . . . . . . . . . . e
+                                   
+       25 . . . . . . . . . . . . .
+                                   
+       26 . . . . . . . . . . . . .
+                                   
+       27 . . . . . . . . . . . . .
+          - - - - - - - - - - - - -
+       28 . . . u U . . . . . . u .
+                                   
+       29 . . . u . . . . . . . u u
+          - - - - - - - - - - - - -
+       30 . . . . E . Q q . . . . .
+                                   
+       31 . . . . e . . . . . . . .
+                                   
+        0 . . . . e u E . . . . . .
+                                   
+        1 . . . . . U e . . . . . .
+          - - - - -       - - - - -
+        2|. . . . .|. e . . . . . .
+                                   
+        3|. . . . .|. . . . . . . .
+              P           - - - - -
+        4|. . * . .|. . K k . . U u
+  opp: alive 89 rounds; length max 4 end 2; inside an enemy strike reach 62% of rounds; corridor cells 0%; own dragons within 3 (median) 0; distance from start (median) 10
+    DIED round 89: head-on collision at length 2
+      r81   L3   head (8, 2)  nearest enemy heads (dist,len,id): [(4, 2, 4), (4, 3, 17), (5, 2, 2)]  ""
+      r82   L3   head (8, 1)  nearest enemy heads (dist,len,id): [(4, 2, 4), (5, 2, 2), (6, 3, 17)]  ""
+      r83   L4   head (8, 0)  nearest enemy heads (dist,len,id): [(4, 2, 4), (6, 3, 17), (7, 2, 2)]  ""
+      r84   L4   head (7, 0)  nearest enemy heads (dist,len,id): [(4, 2, 4), (5, 2, 2), (6, 3, 17)]  ""
+      r85   L4   head (6, 0)  nearest enemy heads (dist,len,id): [(3, 2, 2), (4, 2, 4), (6, 3, 17), (7, 3, 9)]  ""
+      r86   L4   head (5, 0)  nearest enemy heads (dist,len,id): [(4, 2, 4), (5, 3, 9), (6, 3, 17), (7, 2, 37)]  ""
+      r87   L4   head (4, 0)  nearest enemy heads (dist,len,id): [(3, 3, 9), (6, 3, 17), (7, 2, 37)]  ""
+      r88   L2   head (4, 0)  nearest enemy heads (dist,len,id): [(2, 4, 9), (5, 3, 17), (8, 2, 37)]  ""
+    board at end of round 88 (Q/q ours, K/k theirs, U/u ours, E/e theirs, * pearl, |- kelp):
+                                   
+       26|. . . . . . . . . . . . .
+                                   
+       27|. . . . . . . . . . . . .
+                  - - - - - - - - -
+       28|. . . . . . . . . . . . .
+                                   
+       29|. . . . . . . . . . . . .
+                  - - - - - - - - -
+       30 . . . u u u . . . . . . .
+                                   
+       31 . .|. . . U . . . . . . .
+            - -                    
+        0 . .|. . . * K k . e E . .
+                                   
+        1 u . . . . . . . . . * * .
+                  - - - - -       -
+        2 U . . .|* . . . .|U . . .
+                                   
+        3 * . . .|. . . . .|u . . *
+                      P           -
+        4 . . . .|. . . . .|u . . .
+                                   
+        5 . . . .|. . . . *|. . . .
+                                   
+        6 . . . .|. . e E .|. . . .
+
+OUR STATUS TEXTS by phase (top 8)
+      0-49: pearl 42%, hunt-queen 17%, guard 9%, screen 9%, hunt 6%, guard-line 6%, portal 4%, grow-fleet 2%
+     50-99: pearl 59%, hunt-queen 17%, portal 4%, hunt 4%, guard 3%, screen 3%, explore 3%, intercept 2%
+   100-199: pearl 87%, explore 6%, hunter 3%, attack 1%, grow-fleet 1%, portal 1%, regroup 0%, recycle 0%
+   200-299: pearl 95%, portal 2%, explore 2%, grow-fleet 1%, save-split 0%, camp 0%
+
+OUR LAST 12 DEATHS (round, id, cause, length, queen?, status)
+    r140  #86    hit itself             L3         "recycle"
+    r157  #22    head-on collision      L2         "attack"
+    r162  #37    head-on collision      L2         "attack"
+    r178  #42    head-on collision      L2         "attack"
+    r183  #67    head-on collision      L3         "pearl"
+    r205  #92    head-on collision      L3         "pearl"
+    r214  #155   head-on collision      L2         ""
+    r256  #73    head-on collision      L4         "pearl"
+    r269  #203   head-on collision      L2         "pearl"
+    r276  #121   head-on collision      L3         "pearl"
+    r286  #202   head-on collision      L3         "pearl"
+    r298  #158   head-on collision      L2         "pearl"
+
+DRAGON COUNT every 25 rounds (us / opp)
+    r0:4/4  r25:7/7  r50:9/9  r75:8/15  r100:7/15  r125:7/23  r150:6/30  r175:5/38  r200:3/42  r225:3/42  r250:3/44  r275:3/43

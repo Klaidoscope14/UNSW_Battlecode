@@ -1,0 +1,65 @@
+### fountain
+Australia: 0 fast tiles; pearls eaten on them  us 0/809  opp 0/1242
+  by 100-round phase: []
+  us: 0 distinct eaters; their fate {}
+  opp: 0 distinct eaters; their fate {}
+
+### pocketcycle
+us: no trips
+opp: no trips
+
+### queenstyle
+Australia OPP queen #0: alive 501 rounds, died None; length start 4 max 4 r100 3 r250 3 end 3; pearls eaten 1
+     distinct cells 88; 2x2-loop rounds 9%; dist from start median 3 max 12; own within 3 median 0; enemy heads within 4: mean 0.00, rounds with any 0%
+Australia US  queen #1: alive 374 rounds, died 374; length start 4 max 7 r100 2 r250 4 end 2; pearls eaten 13
+     distinct cells 185; 2x2-loop rounds 5%; dist from start median 8 max 20; own within 3 median 0; enemy heads within 4: mean 0.16, rounds with any 13%
+
+### hunters
+Australia: their queen died None; mirror-spawn (24, 19)
+  r0    hunter-turns 30    mean hunter dist  36.9  closest head 14   queen from her start (max) 6
+  r50   hunter-turns 19    mean hunter dist  30.0  closest head 10   queen from her start (max) 10
+  r100  hunter-turns 102   mean hunter dist  25.8  closest head 9    queen from her start (max) 9
+  r150  hunter-turns 59    mean hunter dist  26.4  closest head 5    queen from her start (max) 8
+  r200  hunter-turns 185   mean hunter dist  25.8  closest head 4    queen from her start (max) 12
+  r250  hunter-turns 193   mean hunter dist  32.5  closest head 10   queen from her start (max) 5
+  r300  hunter-turns 39    mean hunter dist  39.5  closest head 10   queen from her start (max) 10
+  r350  hunter-turns 29    mean hunter dist  36.2  closest head 12   queen from her start (max) 10
+  r400  hunter-turns 18    mean hunter dist  29.5  closest head 15   queen from her start (max) 8
+  r450  hunter-turns 5     mean hunter dist  41.4  closest head 5    queen from her start (max) 9
+  r500  hunter-turns 0     mean hunter dist   0.0  closest head 5    queen from her start (max) 5
+
+### approach
+Australia
+  opp  vs dragon  d1    n=46    closer    0% (random  21%, lift 0.00)  farther  100%
+  opp  vs dragon  d2    n=440   closer   25% (random  34%, lift 0.75)  farther   75%
+  opp  vs dragon  d3-5  n=2828  closer   40% (random  43%, lift 0.94)  farther   60%
+  opp  vs queen   d3-5  n=34    closer   59% (random  38%, lift 1.54)  farther   41%
+  us   vs dragon  d1    n=56    closer    0% (random  19%, lift 0.00)  farther  100%
+  us   vs dragon  d2    n=474   closer   24% (random  33%, lift 0.73)  farther   76%
+  us   vs dragon  d3-5  n=3426  closer   46% (random  42%, lift 1.09)  farther   54%
+
+### infant
+Australia - children dead within 2 rounds of birth (side, parent status, cause): count / splits with that status
+      8 / 43   ('us', 'save-split', 'hit a wall')
+      8 / 20   ('us', 'unwind-split', 'hit a wall')
+      5 / 27   ('us', '?', 'hit itself')
+      5 / 20   ('us', 'unwind-split', 'hit itself')
+      4 / 43   ('us', 'save-split', 'hit itself')
+      4 / 125  ('us', 'grow-fleet', 'hit itself')
+      4 / 283  ('opp', '?', 'hit a wall')
+      3 / 125  ('us', 'grow-fleet', 'hit a wall')
+      3 / 283  ('opp', '?', 'head-on collision')
+      3 / 125  ('us', 'grow-fleet', 'head-on collision')
+      2 / 27   ('us', '?', 'hit a body')
+      1 / 27   ('us', '?', 'hit a wall')
+
+### trades
+Australia our attack-type head-on deaths: {('snipe', 'traded'): 57, ('attack', 'traded'): 20, ('hunt', 'traded'): 2, ('intercept', 'traded'): 2, ('pack-strike', 'traded'): 1} | enemy lengths taken {2: 36, 3: 20, 4: 11, 5: 9, 6: 1, 7: 2, 8: 1, 11: 1, 13: 1} | enemy queens killed 0
+
+### escort (our queen)
+Australia: us queen died 374 (head-on collision); escorts (enemy within 2 for 3+ rounds): 2
+  #20    r36-38 (3 rounds) dists 222  -> enemy died r51
+  #74    r214-217 (4 rounds) dists 1111  -> enemy died r218
+
+### escort (their queen)
+Australia: opp queen died None (); escorts (enemy within 2 for 3+ rounds): 0

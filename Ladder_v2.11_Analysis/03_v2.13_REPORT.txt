@@ -1,0 +1,52 @@
+fleet-v2.13.0 - what changed, how it was tested, what is still open (overnight run, 5 Oct)
+
+WHAT IS IN IT (every item has its own switch in main.cpp)
+  Phase A
+    A0  "hunt" and the long hunt-queen chase obey the v2.12 rule (no hunting while outnumbered or in
+        survival mode); a reported queen within 6 cells is still chased.
+    A1  Pocket check (21): through a portal, or into a small enclosed area, a non-queen's body must be
+        able to keep moving (survival search, budget 3,000 nodes). Blind portals only for length <= 3.
+    A2  Spawn camping job (12): non-queens leave for an upcoming spawn so as to arrive ~3 rounds early,
+        wait beside the tile (pearls do not appear under a body), step on in the spawn round; clusters
+        draw several campers. The queen keeps the old (wider) window - without it she idled and died.
+    A3  Feeding (24): cap feeding from round 150 on open maps when the fleet is full; only dragons of
+        length >= 3 feed (length-2 "feeders" only crowded her); feeders die within 3 cells when they
+        see her (bug fixed: a queen in view but not heard on sonar never got fed); feeding stops once
+        the queen is long enough (max(16, their queen + 6)) - a huge queen is hard to keep alive.
+    A4  Half-split at 20 (26) before the switch; leaders too on congested maps.
+    A5  Sightings (3): 2-3 screens in small fleets, screens face the nearest recent enemy, guards line
+        up on the queen's row/column. The queen will not enter a 1-wide corridor that leads to one of
+        our heads.
+  Dynamic allocation (your design)
+    - Numbers first on every map until a switch round, then length (no optional splits, spare dragons
+      feed the queen, or the longest dragon if she is dead). Floor 10-20 dragons by pressure.
+    - Switch round = 260 + 140 x min(enemies seen, 30) / 30   ->  260 (no enemies) ... 400 (30+).
+      The whole fleet shares the highest enemy count by sonar so it switches together.
+    - Fleet cap before the switch: one dragon per 6 cells, at most 60 (64 minus the queen's reserve).
+    - Majority hunting on maps up to 1,200 cells: with 12+ dragons and at least 2x the enemies we know
+      of, every spare dragon hunts, one hunter per enemy (no pile-ups), no feeding until the last 50.
+    - Queen insurance: certain to be struck -> she splits off all but 2 so the length survives.
+  Bugs found and fixed tonight
+    - QUEEN SLOTS: the engine refuses every split at the 64-unit limit, so a full fleet made the
+      queen's survival split impossible (Schooltime queen died at r316 in v2.12 and v2.13). Ordinary
+      dragons now leave 3 slots free; only the queen may use them.
+    - The emergency fallback move drove into kelp when boxed in; it now does the survival split.
+    - CPU: long dragons evaluated dead-end dives (up to 76M points per turn); dives are now only for
+      length <= 12. Peak CPU 27.3M (v2.12: 31.5M).
+
+BACKTEST OF THE SWITCH ROUND (420 games: 5 fixed rounds x 3 local bots x 14 maps x 2 sides)
+  Paired by setup, the differences were small (a few points where a win is 100) and noisy with one
+  seed: switching early (~250) looked best at low pressure, ~350 at medium; the high end could not be
+  separated. The chosen 260 -> 400 follows that and your "later with more enemies" idea.
+
+RESULTS (84 games each: vib2, swarm2, fleet11 x 14 maps x 2 sides)
+                    v2.12     v2.13.0
+  wins              73-11     76-8
+  queen deaths      28        23
+  smoke test        9-1       9-1, peak CPU 27.3M
+
+STILL OPEN
+  - Stripes and Devil vs fleet11 (our older bot) still lost - also lost by v2.12.
+  - The queen still dies in ~1 game in 4 locally (mostly head-ons she cannot see coming).
+  - Local bots are not the ladder: the next ladder replays are the real test
+    (bash tools/replay_analysis/run_all.sh <folder>).

@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Stochastic_Parrot / Default
+  us: dragon-turns 1548; head within 1 of a spawn tile 100%; a pearl within 3: 21%; nearest pearl 10+ away: 26%; pearl adjacent at round start but not eaten by the side that round: 31/75
+  opp: dragon-turns 8369; head within 1 of a spawn tile 100%; a pearl within 3: 21%; nearest pearl 10+ away: 33%; pearl adjacent at round start but not eaten by the side that round: 134/536
+  our status words, rounds 1-50: [('pearl', 154), ('hunt-queen', 61), ('guard', 34), ('screen', 31), ('guard-line', 22), ('hunt', 22), ('portal', 15), ('', 12)]
+  races lost while our head was nearer: 37; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r7->r37 (5, 2) #0 2 vs 8  "QUEEN cmb war pearl L2 s2"
+     r39->r47 (14, 19) #15 7 vs 13  "col nrm pearl L2 s2"
+     r35->r60 (14, 16) #15 2 vs 10  "col war portal L2 s2"
+     r21->r61 (16, 3) #11 1 vs 7  "cmb war attack L3 s2"
+     r44->r67 (26, 27) #4 5 vs 7  "cmb war hunt-queen L2 s2"
+     r28->r68 (15, 11) #2 8 vs 11  "cmb nrm guard L3 s2 GRD"
+     r14->r69 (28, 29) #9 3 vs 5  "cmb war intercept L2 s2 SCR"
+     r9->r70 (14, 10) #4 13 vs 21  "cmb war pearl L2 s2"
+     r34->r72 (10, 23) #9 11 vs 15  "cmb war screen L2 s2 SCR"
+     r16->r73 (29, 27) #9 2 vs 6  "cmb war screen L2 s2 SCR"
+  what our nearest dragon was doing in those lost races: [('pearl', 16), ('attack', 9), ('hunt-queen', 3), ('intercept', 2), ('screen', 2), ('portal', 1), ('guard', 1), ('hunt', 1)]
