@@ -3,8 +3,9 @@
 
   trace.py run NAME [DEF=VAL ...]   build fleet/ (with #define overrides) into work/NAME, play the trace game set
                                     with FLEET_TRACE on, keep one merged trace per game in work/trace/NAME/
-  trace.py diff A B                 compare two runs game by game: IDENTICAL, or the first (round, dragon) that
-                                    differs in each game, with both lines
+  trace.py diff A B [--actions]     compare two runs game by game: IDENTICAL, or the first (round, dragon) that
+                                    differs in each game, with both lines. --actions ignores the sonar values (for
+                                    a change of message format: same moves, splits and notes = same play)
 
 A trace line is: round id length head action sonars | note (one per dragon-turn, our team only). Identical traces
 mean identical games: same moves, splits and sonar values every turn. ~1-2 min for the 24 games.
@@ -81,8 +82,9 @@ def run(name, defs):
     print(f"{len(res)} games traced -> {d}" + (f"  PROBLEM: {bad}" if bad else ""))
 
 
-def diff(a, b):
+def diff(a, b, actions=False):
     da, db = os.path.join(WORK, "trace", a), os.path.join(WORK, "trace", b)
+    strip = (lambda ls: [re.sub(r' [NESW]\d+', '', l) for l in ls]) if actions else (lambda ls: ls)
     games = sorted(f for f in os.listdir(da) if f.endswith(".txt"))
     ndiff = 0
     for g in games:
@@ -91,7 +93,7 @@ def diff(a, b):
             print(f"{g}: missing in {b}")
             ndiff += 1
             continue
-        la, lb = open(os.path.join(da, g)).read().splitlines(), open(pb).read().splitlines()
+        la, lb = strip(open(os.path.join(da, g)).read().splitlines()), strip(open(pb).read().splitlines())
         if la == lb:
             continue
         ndiff += 1
@@ -107,7 +109,7 @@ def diff(a, b):
 if __name__ == "__main__":
     if len(sys.argv) >= 3 and sys.argv[1] == "run":
         run(sys.argv[2], sys.argv[3:])
-    elif len(sys.argv) == 4 and sys.argv[1] == "diff":
-        sys.exit(1 if diff(sys.argv[2], sys.argv[3]) else 0)
+    elif len(sys.argv) in (4, 5) and sys.argv[1] == "diff":
+        sys.exit(1 if diff(sys.argv[2], sys.argv[3], "--actions" in sys.argv) else 0)
     else:
         sys.exit(__doc__)

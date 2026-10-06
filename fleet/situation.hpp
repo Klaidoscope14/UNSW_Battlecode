@@ -19,9 +19,9 @@ Role role_for(int id)
 // Fleet size the expansion phase aims for.
 int expansion_target() { return std::min(unitLimit - QUEEN_SLOTS - 1, std::max(4, N / (DYN_ALLOC ? DYN_DENSITY : EXP_DENSITY))); }
 // Growth splits allowed: before the switch round (dynamic) or EXP_END.
-bool growth_open() { return DYN_ALLOC ? !switched : R < EXP_END; }
+bool growth_open() { return DYN_ALLOC ? !sit.switched : R < EXP_END; }
 // Fleet floor once dragons feed the queen: more enemies, more dragons kept.
-int cons_floor() { return DYN_ALLOC ? 10 + std::min(10, pressureMax / 3) : CONSOL_MIN_UNITS; }
+int cons_floor() { return DYN_ALLOC ? 10 + std::min(10, sit.pressureMax / 3) : CONSOL_MIN_UNITS; }
 
 void compute_fleet_state()
 {
@@ -30,66 +30,66 @@ void compute_fleet_state()
     for (auto const& e : enemyReps)
         if (R - e.round <= 60)
             recent.insert(e.id);
-    distinctEnemies = static_cast<int>(recent.size());
+    sit.distinctEnemies = static_cast<int>(recent.size());
     // Dynamic allocation: the more enemies we meet, the longer numbers matter
     // and the later we turn them into length. Sticky once switched.
     if (DYN_ALLOC)
     {
-        if (firstR < 0)
-            firstR = R;
-        pressureMax = std::max(pressureMax, distinctEnemies);
-        switchRound = SWITCH_FIXED > 0 ? SWITCH_FIXED : SW_LO + (SW_HI - SW_LO) * std::min(pressureMax, SW_E_HI) / SW_E_HI;
-        bool const informed = heardPressure || R - firstR >= 8 || firstR <= 1;
-        if (!switched && R >= switchRound && informed)
+        if (sit.firstR < 0)
+            sit.firstR = R;
+        sit.pressureMax = std::max(sit.pressureMax, sit.distinctEnemies);
+        sit.switchRound = SWITCH_FIXED > 0 ? SWITCH_FIXED : SW_LO + (SW_HI - SW_LO) * std::min(sit.pressureMax, SW_E_HI) / SW_E_HI;
+        bool const informed = sit.heardPressure || R - sit.firstR >= 8 || sit.firstR <= 1;
+        if (!sit.switched && R >= sit.switchRound && informed)
         {
-            switched = true;
+            sit.switched = true;
             queue_fact(msg_phase(), 70, 3);
         }
         if (R % 3 == me % 3)
             queue_fact(msg_phase(), 50, 1); // often: newborns and the queen hear little
     }
-    enemyEst = distinctEnemies;
-    if (ENEMY_EST && distinctEnemies > 0)
+    sit.enemyEst = sit.distinctEnemies;
+    if (ENEMY_EST && sit.distinctEnemies > 0)
     {
         // We hear of the enemies our fleet happens to see; a swarm is mostly
         // out of view. Scale by the share of the map our dragons watch.
         double const cover = std::max(EST_MIN_COVER_X100 / 100.0, std::min(1.0, units * static_cast<double>(EST_VIEW_CELLS) / N));
-        enemyEst = std::max(distinctEnemies, static_cast<int>(distinctEnemies / cover + 0.5));
+        sit.enemyEst = std::max(sit.distinctEnemies, static_cast<int>(sit.distinctEnemies / cover + 0.5));
     }
-    outnumbered = enemyEst > units;
-    lateSafe = LATE_SAFE && R >= 500 - LATE_SAFE_ROUNDS;
-    survivalMode = SURVIVAL && (units <= SURV_UNITS || (distinctEnemies >= SURV_RATIO_MIN && units * SURV_RATIO < distinctEnemies) || lateSafe);
+    sit.outnumbered = sit.enemyEst > units;
+    sit.lateSafe = LATE_SAFE && R >= 500 - LATE_SAFE_ROUNDS;
+    sit.survival = SURVIVAL && (units <= SURV_UNITS || (sit.distinctEnemies >= SURV_RATIO_MIN && units * SURV_RATIO < sit.distinctEnemies) || sit.lateSafe);
 
     // Section 12: more opponents around -> keep the big fleet for longer.
-    int const d = distinctEnemies;
+    int const d = sit.distinctEnemies;
     int const thr = (d >= 12 ? 400 : d >= 7 ? 360 : d >= 3 ? 310 : d >= 1 ? 250 : 200) - TRANS_SHIFT;
-    if (!transitioned)
-        transitionRound = thr;
-    if (!transitioned && R >= transitionRound)
-        transitioned = true;
+    if (!sit.transitioned)
+        sit.transitionRound = thr;
+    if (!sit.transitioned && R >= sit.transitionRound)
+        sit.transitioned = true;
 
-    localThreat = 0;
+    sit.localThreat = 0;
     std::unordered_set<int> counted;
     for (auto const& h : heads)
         if (!h.mine)
         {
-            localThreat++;
+            sit.localThreat++;
             counted.insert(h.id);
         }
     for (auto const& e : enemyReps)
         if (R - e.round <= 6 && !counted.count(e.id) && manhattan(e.cell, head) <= 8)
         {
-            localThreat++;
+            sit.localThreat++;
             counted.insert(e.id);
         }
-    if (echoEnemy >= 2)
-        localThreat++;
+    if (sit.echoEnemy >= 2)
+        sit.localThreat++;
 
     // P2: the home queen's leash follows the threat around her. Contact pulls
     // her home; quiet lets her eat further out (unlimited in the opening).
     if (units >= ADAPT_FLEET)
-        fleetEstablished = true;
-    queenOpening = QUEEN_ADAPT && !fleetEstablished && R < ADAPT_OPEN_END;
+        sit.fleetEstablished = true;
+    sit.queenOpening = QUEEN_ADAPT && !sit.fleetEstablished && R < ADAPT_OPEN_END;
     queenLeash = QUEEN_LEASH;
     if (QUEEN_ADAPT && amQueen)
     {
@@ -100,7 +100,7 @@ void compute_fleet_state()
             if (R - e.round <= 3 && manhattan(e.cell, head) <= THREAT_RADIUS)
                 lastThreatR = R;
         int const quiet = R - lastThreatR - QUIET_ROUNDS;
-        if (quiet >= 0 && queenOpening)
+        if (quiet >= 0 && sit.queenOpening)
             queenLeash = INF;
         else if (quiet >= 0 && R < ADAPT_END_ROUND)
             queenLeash = std::min(LEASH_MAX, QUEEN_LEASH + quiet / 2);
@@ -112,49 +112,49 @@ void compute_fleet_state()
     // is all that counts, so she keeps splitting while there is room).
     if (EXPANSION)
     {
-        if (expansionPhase && (!growth_open() || units >= expansion_target()))
-            expansionPhase = false;
-        queenSplits = (DYN_ALLOC ? !switched : R < QUEEN_GROW_ROUND) || enemyQueenDead;
+        if (sit.expansion && (!growth_open() || units >= expansion_target()))
+            sit.expansion = false;
+        sit.queenSplits = (DYN_ALLOC ? !sit.switched : R < QUEEN_GROW_ROUND) || sit.enemyQueenDead;
     }
     else
-        expansionPhase = queenSplits = false;
+        sit.expansion = sit.queenSplits = false;
 
     // OPEN_PLAN: majority (with hysteresis) ends the opening plan.
     {
         double const ratio = static_cast<double>(units) / std::max(1, est_enemy_units());
-        if (!haveMajority && units >= OPEN_MAJ_UNITS && ratio >= MAJ_ON)
-            haveMajority = true;
-        else if (haveMajority && ratio < MAJ_OFF)
-            haveMajority = false;
-        openPlan = OPEN_PLAN && !haveMajority && !switched && R < OPEN_PLAN_END;
+        if (!sit.majority && units >= OPEN_MAJ_UNITS && ratio >= MAJ_ON)
+            sit.majority = true;
+        else if (sit.majority && ratio < MAJ_OFF)
+            sit.majority = false;
+        sit.openPlan = OPEN_PLAN && !sit.majority && !sit.switched && R < OPEN_PLAN_END;
     }
     // Hunters: a fixed share of the fleet (by id) goes after the enemy queen
     // once the opening is over. The queen and the leaders never hunt.
     {
         std::uint32_t const hh = static_cast<std::uint32_t>(me) * 2246822519u + 3266489917u;
-        bool const active = HUNTERS && !(enemyQueenDead && !ourQueenDead) && (R >= HUNT_START || !expansionPhase) && R >= OPEN_FARM_ROUND &&
-                            !(HUNT_GATE && (survivalMode || outnumbered) && !ourQueenDead);
+        bool const active = HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND &&
+                            !(HUNT_GATE && (sit.survival || sit.outnumbered) && !sit.ourQueenDead);
         int const slot = static_cast<int>((hh >> 13) % 10);
-        hunterSlot = !amQueen && slot < HUNTER_SHARE;
-        isHunter = active && !amQueen && !isLeader && slot < HUNTER_SHARE && !openPlan; // OPEN_PLAN: multiply first
+        my.hunterSlot = !amQueen && slot < HUNTER_SHARE;
+        my.hunter = active && !amQueen && !my.leader && slot < HUNTER_SHARE && !sit.openPlan; // OPEN_PLAN: multiply first
         // Guards: their own slice of the fleet; once the enemy queen is dead
         // the hunters come home too.
-        isGuard = GUARDS && !amQueen && !isLeader && !ourQueenDead && !isHunter &&
-                  ((slot >= HUNTER_SHARE && slot < HUNTER_SHARE + GUARD_SHARE) || (enemyQueenDead && slot < HUNTER_SHARE)) &&
-                  (GUARD_MIN_UNITS == 0 || enemyQueenDead || (units >= GUARD_MIN_UNITS && !expansionPhase)) && units > GUARD_FLEET_MIN &&
-                  (R >= OPEN_FARM_ROUND || enemyQueenDead);
-        isScreen = SCREENS && isGuard &&
+        my.guard = GUARDS && !amQueen && !my.leader && !sit.ourQueenDead && !my.hunter &&
+                  ((slot >= HUNTER_SHARE && slot < HUNTER_SHARE + GUARD_SHARE) || (sit.enemyQueenDead && slot < HUNTER_SHARE)) &&
+                  (GUARD_MIN_UNITS == 0 || sit.enemyQueenDead || (units >= GUARD_MIN_UNITS && !sit.expansion)) && units > GUARD_FLEET_MIN &&
+                  (R >= OPEN_FARM_ROUND || sit.enemyQueenDead);
+        my.screen = SCREENS && my.guard &&
                    (slot == HUNTER_SHARE || (SCREENS_MORE && units < 20 && slot == HUNTER_SHARE + 1 && (me & 1)));
-        isDefender = OWN_HALF && !amQueen && !isLeader && !isGuard && !isHunter && slot == DEFENDER_SLOT && R >= HUNT_START;
+        my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && slot == DEFENDER_SLOT && R >= HUNT_START;
     }
-    isWall = false; // set below once the leader election is done
+    my.wall = false; // set below once the leader election is done
 
     // Too many leaders (they could not hear each other at election time):
     // step down if enough longer leaders are known.
     amQueen = me == queenId;
     if (amQueen)
-        isLeader = true; // the queen leads for the whole game
-    else if (isLeader)
+        my.leader = true; // the queen leads for the whole game
+    else if (my.leader)
     {
         // F1: any longer teammate counts (not just leaders): with patchy sonar
         // few leaders are ever heard of, and nobody stepped down.
@@ -162,12 +162,12 @@ void compute_fleet_state()
         for (auto const& [id, s] : fleet)
             if (id != me && id != queenId && (s.leader || GIANT_ONE) && R - s.round <= 30 && (s.len > L || (s.len == L && id < me)))
                 longer++;
-        if (longer >= LEADER_COUNT || (GIANT_ONE && !roleLeader && L < LEADER_MIN_LEN - 1))
-            isLeader = false;
+        if (longer >= LEADER_COUNT || (GIANT_ONE && !my.roleLeader && L < LEADER_MIN_LEN - 1))
+            my.leader = false;
     }
 
     // Leader election (section 11): the longest dragons we know of.
-    if (transitioned && !expansionPhase && !isLeader && L >= (GIANT_ONE ? LEADER_MIN_LEN : 3))
+    if (sit.transitioned && !sit.expansion && !my.leader && L >= (GIANT_ONE ? LEADER_MIN_LEN : 3))
     {
         int freshLeaders = 0;
         std::vector<std::pair<int, int>> ranking{{-L, me}};
@@ -184,56 +184,56 @@ void compute_fleet_state()
         std::sort(ranking.begin(), ranking.end());
         for (int i = 0; i < slots && i < static_cast<int>(ranking.size()); i++)
             if (ranking[i].second == me)
-                isLeader = true;
+                my.leader = true;
     }
 
     // Heir: once the enemy queen is dead ours only has to live, and the
     // longest of the rest grows (insurance for the longest-dragon tiebreak).
-    isHeir = false;
-    if (HEIR && enemyQueenDead && !ourQueenDead && !amQueen && !(GIANT_ONE && units < GIANT_MIN_UNITS))
+    my.heir = false;
+    if (HEIR && sit.enemyQueenDead && !sit.ourQueenDead && !amQueen && !(GIANT_ONE && units < GIANT_MIN_UNITS))
     {
-        isHeir = true;
+        my.heir = true;
         for (auto const& [id, s] : fleet)
             if (id != me && id != queenId && R - s.round <= 10 && (s.len > L || (s.len == L && id < me)))
-                isHeir = false;
-        if (isHeir)
-            isLeader = true;
+                my.heir = false;
+        if (my.heir)
+            my.leader = true;
     }
 
     // P5 giant: from GIANT_ROUND the longest of the rest stops splitting and
     // grows on every map, so the queen is never our only long dragon.
-    isGiant = false;
-    if (GIANT_ALL && R >= GIANT_ROUND && !amQueen && !ourQueenDead && L >= GIANT_MIN_LEN && !isHeir && !(GIANT_ONE && units < GIANT_MIN_UNITS))
+    my.giant = false;
+    if (GIANT_ALL && R >= GIANT_ROUND && !amQueen && !sit.ourQueenDead && L >= GIANT_MIN_LEN && !my.heir && !(GIANT_ONE && units < GIANT_MIN_UNITS))
     {
-        isGiant = true;
+        my.giant = true;
         for (auto const& [id, s] : fleet)
         {
             if (id == me || id == queenId)
                 continue;
             if (R - s.round <= 10 && (s.len > L || (s.len == L && id < me)))
-                isGiant = false;
+                my.giant = false;
             // F1: another leader we heard of lately that is at least as long: it is the giant, not us
             if (GIANT_ONE && s.leader && R - s.round <= 30 && (s.len > L || (s.len == L && id < me)))
-                isGiant = false;
+                my.giant = false;
         }
-        if (isGiant)
-            isLeader = true;
+        if (my.giant)
+            my.leader = true;
     }
     // F1: the giant / heir role ended - so does the leadership it gave (it
     // left half the fleet as non-splitting "leaders" on big maps).
     if (GIANT_ONE && !amQueen)
     {
-        if (roleLeader && !isGiant && !isHeir)
-            isLeader = false;
-        roleLeader = isGiant || isHeir;
+        if (my.roleLeader && !my.giant && !my.heir)
+            my.leader = false;
+        my.roleLeader = my.giant || my.heir;
     }
 
-    isWall = wall_now() && !amQueen && !isLeader && !isHunter && !isGuard && !isDefender && wall_slot(me) && L >= WALL_MIN_LEN;
+    my.wall = wall_now() && !amQueen && !my.leader && !my.hunter && !my.guard && !my.defender && wall_slot(me) && L >= WALL_MIN_LEN;
 
     // Big open map late in the game: length decides the tiebreaks there and
     // long dragons do not trap themselves, so the fleet turns into length.
     // Small or kelp-dense maps keep their numbers.
-    openMap = consolidate = false;
+    sit.openMap = sit.consolidate = false;
     if (N >= OPEN_MIN_CELLS)
     {
         int known = 0, kelp = 0;
@@ -243,29 +243,29 @@ void compute_fleet_state()
                 known++;
                 kelp += edgeType[code] == E_KELP;
             }
-        openMap = known > 0 && kelp <= OPEN_KELP_MAX * known;
-        consolidate = CONSOLIDATE && openMap && R >= CONSOL_ROUND;
+        sit.openMap = known > 0 && kelp <= OPEN_KELP_MAX * known;
+        sit.consolidate = CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND;
     }
     if (DYN_ALLOC)
-        consolidate = switched; // every map: after the switch, length
+        sit.consolidate = sit.switched; // every map: after the switch, length
 
     // Majority on a smaller map: hunt them down, win by elimination.
-    majorityHunt = MAJ_HUNT && N <= SMALL_MAP_CELLS && !survivalMode && distinctEnemies >= 1 && units >= MAJ_MIN_UNITS &&
-                   units * 10 >= MAJ_RATIO_X10 * enemyEst;
+    sit.majorityHunt = MAJ_HUNT && N <= SMALL_MAP_CELLS && !sit.survival && sit.distinctEnemies >= 1 && units >= MAJ_MIN_UNITS &&
+                   units * 10 >= MAJ_RATIO_X10 * sit.enemyEst;
 
     // Modes (sections 13-15).
     bool enemyNearby = false;
     for (auto const& e : enemyReps)
         if (R - e.round <= 30 && manhattan(e.cell, head) <= 12)
             enemyNearby = true;
-    if (localThreat >= 2 || (localThreat >= 1 && role == ROLE_COMBAT))
-        mode = MODE_COMBAT;
-    else if (transitioned && !enemyNearby && localThreat == 0)
-        mode = MODE_FARM;
-    else if (transitioned)
-        mode = MODE_PRESERVE;
+    if (sit.localThreat >= 2 || (sit.localThreat >= 1 && my.role == ROLE_COMBAT))
+        sit.mode = MODE_COMBAT;
+    else if (sit.transitioned && !enemyNearby && sit.localThreat == 0)
+        sit.mode = MODE_FARM;
+    else if (sit.transitioned)
+        sit.mode = MODE_PRESERVE;
     else
-        mode = MODE_NORMAL;
+        sit.mode = MODE_NORMAL;
 }
 
 // Our half: nearer our queen's start than its mirror image (theirs).
@@ -290,7 +290,7 @@ int halfMargin(int c) // > 0 on our side, < 0 on theirs
 
 int est_enemy_units()
 {
-    return std::max(enemyEst, 1);
+    return std::max(sit.enemyEst, 1);
 }
 
 // Best guess of the enemy queen's head: in view, recently reported, or the
@@ -366,13 +366,13 @@ struct TieState
 TieState tie_state()
 {
     TieState t;
-    if (ourQueenDead)
+    if (sit.ourQueenDead)
         t.ourQ = 0;
     else if (me == queenId)
         t.ourQ = L;
     else if (auto const q = fleet.find(queenId); q != fleet.end() && R - q->second.round <= 60)
         t.ourQ = q->second.len;
-    if (enemyQueenDead)
+    if (sit.enemyQueenDead)
         t.theirQ = 0;
     else if (auto const e = enemyLenMem.find(enemyQueenId); e != enemyLenMem.end() && R - e->second.round <= 150)
         t.theirQ = e->second.len;
@@ -391,7 +391,7 @@ TieState tie_state()
 int giant_id()
 {
     int best = -1, bestLen = 0;
-    if (isLeader && !amQueen)
+    if (my.leader && !amQueen)
     {
         best = me;
         bestLen = L;

@@ -13,6 +13,7 @@ namespace {
 enum : std::uint8_t { E_UNK = 0, E_OPEN = 1, E_KELP = 2, E_PORTAL = 3 };
 
 std::vector<std::uint8_t> edgeType; // best knowledge (observed, told or mirrored)
+int edgeVersion = 0;                // bumped whenever edgeType / edgePartner change (topology rebuilds)
 std::vector<std::uint8_t> obsEdge;  // observed by us or a teammate (symmetry test)
 std::vector<int> edgePid;           // portal id, -1 unknown
 std::vector<int> edgePartner;       // partner edge code, -1 unknown
@@ -55,6 +56,17 @@ int cross(int c, int d)
     if ((p & 1) == 0) // partner is the north edge of pc
         return d == 2 ? pc : nb(pc, 0);
     return d == 1 ? pc : nb(pc, 3); // partner is the west edge of pc
+}
+
+// GraphView (Architecture_v2 2.3): how a search treats an edge nobody has seen. Every search uses one of:
+//   step_open(c, d)  unexplored edge = open water (optimistic): planning, Voronoi, enemy reach, survival, exits
+//   cross(c, d)      unexplored edge = not crossable (< 0; -2 tells it apart): dives, pockets, sprints, strikes
+//   edgeType == E_OPEN only (known open water, no portals): free loops, bunker boxes
+// flood() is the one FRONTIER search: it does not enter unexplored edges but reports that the water may go on.
+int step_open(int c, int d)
+{
+    int const n = cross(c, d);
+    return n == -2 ? nb(c, d) : n;
 }
 
 // Symmetry (section 10)

@@ -4,6 +4,38 @@
 
 namespace {
 
+// Move cost by severity band (Architecture_v2 2.8). Every scoring term belongs to one band:
+//   LIFE    certain death or a trap with nothing gained; the queen inside an enemy's strike reach; taking
+//           the queen's last way out; a head-on with a teammate
+//   SAFETY  proxies of danger: two-turn exposure, corners, no free loop, portals and unexplored cells for
+//           the queen, next to enemy heads, crowding the queen
+//   GOAL    progress to the goal, pearls, room, dives that pay, forced bunker / post loops
+//   STYLE   spread from teammates, facing, danger zones, pinning enemies, boxing their queen
+// Step 5: `total` is still the plain sum in the original order (identical play); `band` records the split.
+enum Band { BAND_LIFE, BAND_SAFETY, BAND_GOAL, BAND_STYLE };
+struct Cost
+{
+    double total = 0;
+    std::array<double, 4> band{};
+    void add(Band b, double v)
+    {
+        total += v;
+        band[b] += v;
+    }
+    void set(Band b, double v) // replaces everything so far
+    {
+        total = v;
+        band = {};
+        band[b] = v;
+    }
+    void add_split(double v, Band b1, double v1, Band b2) // v in the total; v1 of it to b1, the rest to b2
+    {
+        total += v;
+        band[b1] += v1;
+        band[b2] += v - v1;
+    }
+};
+
 // Numbers are the goal, but a crowded map kills small dragons for nothing.
 bool room_for_more()
 {
@@ -20,7 +52,7 @@ bool split_allowed(Controller& ct, int child)
     return ct.can_split(child) && (amQueen || units < unitLimit - QUEEN_SLOTS);
 }
 
-void act_move(Controller& ct, int d, char const* why)
+bool act_move(Controller& ct, int d, char const* why)
 {
     ct.make_move(dir_of(d));
     note = why;
@@ -28,9 +60,10 @@ void act_move(Controller& ct, int d, char const* why)
     lastDirs = {d};
     if (traceF)
         traceAct = std::string("M") + DCH[d];
+    return true;
 }
 
-void act_split(Controller& ct, int child, char const* why)
+bool act_split(Controller& ct, int child, char const* why)
 {
     ct.do_split(child);
     note = why;
@@ -38,6 +71,7 @@ void act_split(Controller& ct, int child, char const* why)
     lastDirs.clear();
     if (traceF)
         traceAct = "S" + std::to_string(child);
+    return true;
 }
 
 struct SprintPlan
@@ -65,7 +99,7 @@ void sprint_dfs(std::vector<int> const& b, int len, int step, int maxSteps, int 
         {
             // Head-on with the enemy queen: worth any non-queen dragon.
             bool const canPay = step + 1 <= freeN || len >= 3;
-            if (canPay && occHead[n] && occId[n] == enemyQueenId && !occMine[n] && !amQueen && !enemyQueenDead && !best.kill)
+            if (canPay && occHead[n] && occId[n] == enemyQueenId && !occMine[n] && !amQueen && !sit.enemyQueenDead && !best.kill)
             {
                 dirs.push_back(d);
                 best.dirs = dirs;
@@ -135,7 +169,7 @@ void sprint_dfs(std::vector<int> const& b, int len, int step, int maxSteps, int 
     }
 }
 
-void act_moves(Controller& ct, std::vector<int> const& dirs, char const* why)
+bool act_moves(Controller& ct, std::vector<int> const& dirs, char const* why)
 {
     std::vector<Direction> ds;
     for (int d : dirs)
@@ -150,6 +184,7 @@ void act_moves(Controller& ct, std::vector<int> const& dirs, char const* why)
         for (int d : dirs)
             traceAct += DCH[d];
     }
+    return true;
 }
 
 } // namespace

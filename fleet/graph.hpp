@@ -24,6 +24,26 @@ void set_body(std::vector<int> const& b, int len)
     }
 }
 
+// Scoped overlays (Architecture_v2 3b). A helper that searches with a simulated body puts it on the board for
+// its own scope only: BodyScope restores our real body (body, L) when it ends, WallScope removes the temporary
+// walls (e.g. the parent's front segments while checking a split child). Outside every scope the board shows
+// our real body and no extra walls.
+struct BodyScope
+{
+    BodyScope(std::vector<int> const& b, int len) { set_body(b, len); }
+    ~BodyScope() { set_body(body, L); }
+    BodyScope(BodyScope const&) = delete;
+    BodyScope& operator=(BodyScope const&) = delete;
+};
+struct WallScope
+{
+    WallScope() { wstamp++; }
+    void wall(int c) { wallStamp[c] = wstamp; }
+    ~WallScope() { wstamp++; }
+    WallScope(WallScope const&) = delete;
+    WallScope& operator=(WallScope const&) = delete;
+};
+
 bool passable(int c, int t)
 {
     if ((otherRel[c] && t < otherRel[c]) || wallStamp[c] == wstamp)
@@ -58,7 +78,7 @@ FloodRes flood(int start, int tailCell, int cap)
         for (int d = 0; d < 4; d++)
         {
             int const n = cross(c, d);
-            if (n == -2)
+            if (n == -2) // GraphView: the FRONTIER search - flag it, do not enter
             {
                 r.frontier = true; // unexplored water beyond: count as open
                 continue;
@@ -111,7 +131,7 @@ void plan_bfs(int start, std::vector<int>& dist)
                 {
                     int n = cross(c, d);
                     int w = 1;
-                    if (n == -2)
+                    if (n == -2) // GraphView: open, at a cost (Dial planner)
                     {
                         n = nb(c, d);
                         w = UNKNOWN_EDGE_COST;
@@ -139,9 +159,7 @@ void plan_bfs(int start, std::vector<int>& dist)
         int const t = dist[c] + 1;
         for (int d = 0; d < 4; d++)
         {
-            int n = cross(c, d);
-            if (n == -2)
-                n = nb(c, d);
+            int const n = step_open(c, d);
             if (n < 0 || dist[n] != INF || !passable(n, t))
                 continue;
             dist[n] = t;
@@ -219,7 +237,7 @@ bool survive_rec(int h, int t, int need, int len)
 // b is the body after the move (head first), with its length.
 bool queen_can_survive(std::vector<int> const& b, int len, int nodeCap = SURV_NODE_CAP)
 {
-    set_body(b, len);
+    BodyScope const sb(b, len);
     pstamp++;
     survNodes = 0;
     survCap = nodeCap;
@@ -265,12 +283,11 @@ bool split_child_escapes(std::vector<int> const& b, int len)
         return true; // tail out of view, well away from the dead end
     int const childLen = len - 2;
     std::vector<int> child(b.rbegin(), b.rbegin() + childLen);
-    wstamp++;
+    WallScope ws;
     for (int i = 0; i < len - childLen; i++)
-        wallStamp[b[i]] = wstamp;
-    set_body(child, childLen);
+        ws.wall(b[i]);
+    BodyScope const sb(child, childLen);
     FloodRes const f = flood(child[0], child.back(), childLen + 8);
-    wstamp++;
     return f.tail || f.area >= std::min(childLen + 1, 6);
 }
 
@@ -280,7 +297,7 @@ double dive_rec(std::vector<int> const& b, int len, int depth, int eaten, std::v
     set_body(b, len);
     int const tailCell = static_cast<int>(b.size()) >= len ? b.back() : -1;
     FloodRes const f = flood(h, tailCell, 2 * len + 4);
-    if (f.tail || f.area + (f.frontier ? len : 0) >= 2 * len + 4 || (FRONTIER_OPEN && !isLeader && f.frontier))
+    if (f.tail || f.area + (f.frontier ? len : 0) >= 2 * len + 4 || (FRONTIER_OPEN && !my.leader && f.frontier))
         return eaten + 0.5; // back in open water: everything eaten is profit, nobody lost
     if (depth >= DIVE_DEPTH || ++diveNodes > diveCap)
         return eaten - 3; // unresolved: assume the split and a bit more

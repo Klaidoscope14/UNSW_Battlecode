@@ -27,6 +27,7 @@ void set_partner(int a, int b)
         return;
     edgePartner[a] = b;
     edgePartner[b] = a;
+    edgeVersion++;
     if (edgeType[a] == E_UNK) edgeType[a] = E_PORTAL;
     if (edgeType[b] == E_UNK) edgeType[b] = E_PORTAL;
     portalPairs.push_back({a, b});
@@ -49,6 +50,7 @@ bool learn_edge(int code, std::uint8_t type, int pid, bool direct)
     if (edgeType[code] != type)
     {
         edgeType[code] = type;
+        edgeVersion++;
         changed = true;
         if (type == E_KELP)
             kelpList.push_back(code);
@@ -80,6 +82,7 @@ bool learn_edge(int code, std::uint8_t type, int pid, bool direct)
         if (edgeType[mc] == E_UNK)
         {
             edgeType[mc] = type;
+            edgeVersion++;
             if (type == E_KELP)
                 kelpList.push_back(mc);
         }
@@ -116,9 +119,9 @@ void note_drop(int c, int round)
             return;
     bool nearQ = false;
     auto const q = fleet.find(queenId);
-    if (!ourQueenDead && q != fleet.end() && R - q->second.round <= 20 && manhattan(q->second.cell, c) <= 6)
+    if (!sit.ourQueenDead && q != fleet.end() && R - q->second.round <= 20 && manhattan(q->second.cell, c) <= 6)
         nearQ = true;
-    if (!ourQueenDead && me == queenId && !body.empty() && manhattan(body[0], c) <= 6)
+    if (!sit.ourQueenDead && me == queenId && !body.empty() && manhattan(body[0], c) <= 6)
         nearQ = true;
     dropEv.push_back({c, round, nearQ});
     if (dropEv.size() > 64)
@@ -235,6 +238,7 @@ void set_symmetry(int k)
         if (edgeType[mc] == E_UNK)
         {
             edgeType[mc] = obsEdge[code];
+            edgeVersion++;
             if (obsEdge[code] == E_KELP)
                 kelpList.push_back(mc);
         }
@@ -440,6 +444,9 @@ void update_body(Controller& ct)
             bool consistent = true;
             for (std::size_t i = 0; i < chain.size() && i < pred.size(); i++)
                 consistent &= chain[i] == pred[i];
+            // B1: a cell we can see that is not ours cannot be part of our body (the rest is out of view).
+            for (std::size_t i = chain.size(); i < pred.size() && BODY_TRUST_VISION; i++)
+                consistent &= !(vis[pred[i]] && occId[pred[i]] != me);
             if (consistent && pred.size() >= chain.size())
             {
                 body = pred;
@@ -452,11 +459,15 @@ void update_body(Controller& ct)
         auto const it = std::find(prevBody.begin(), prevBody.end(), chain.back());
         if (it != prevBody.end())
             for (auto j = it + 1; j != prevBody.end() && static_cast<int>(chain.size()) < L; ++j)
+            {
+                if (BODY_TRUST_VISION && vis[*j] && occId[*j] != me)
+                    break; // B1: visibly not ours - the rest of the body is out of view
                 if (!inChain[*j])
                 {
                     chain.push_back(*j);
                     inChain[*j] = 1;
                 }
+            }
     }
     body = chain;
 }
@@ -476,7 +487,7 @@ void prune_knowledge()
 void add_enemy(int cell, int round, int id, int len, int estLen = 0)
 {
     if (id == enemyQueenId)
-        lastEqSeenR = std::max(lastEqSeenR, round);
+        sit.lastEqSeenR = std::max(sit.lastEqSeenR, round);
     for (auto& e : enemyReps)
         if (e.id == id && e.round <= round)
         {
@@ -497,9 +508,13 @@ bool apply_message(std::uint64_t m)
     switch (type)
     {
     case T_STATUS: {
-        int const id = b.get(14), len = b.get(10), cell = b.get(12), leader = b.get(1), round = b.get(9);
+        int const id = b.get(14), len = b.get(10), cell = b.get(12), leader = b.get(1), round = b.get(9), eqDead = b.get(1);
         if (id == me || cell >= N || round > R)
             return false;
+        // Q: the news that their queen is dead rides on every status (the dedicated message rarely reached our
+        // queen: sonar runs along rows and columns and stops at the first dragon).
+        if (EQ_STATUS_BIT && eqDead && !sit.enemyQueenDead)
+            sit.enemyQueenDead = true;
         if (id <= 1 && me > 1 && !queenSeen) // only teammates speak our protocol, so this is our queen
         {
             queenId = id;
@@ -627,11 +642,11 @@ bool apply_message(std::uint64_t m)
         int const pm = b.get(6), sw = b.get(1), round = b.get(9);
         if (round > R)
             return false;
-        heardPressure = true;
-        bool changed = pm > pressureMax || (sw == 1 && !switched);
-        pressureMax = std::max(pressureMax, pm);
+        sit.heardPressure = true;
+        bool changed = pm > sit.pressureMax || (sw == 1 && !sit.switched);
+        sit.pressureMax = std::max(sit.pressureMax, pm);
         if (sw == 1 && R >= SW_LO)
-            switched = true;
+            sit.switched = true;
         return changed;
     }
     case T_QSPAWN: {
@@ -645,14 +660,14 @@ bool apply_message(std::uint64_t m)
     }
     case T_QUEEN_DEAD: {
         bool const enemy = b.get(1) == 1;
-        if (enemy && !enemyQueenDead)
+        if (enemy && !sit.enemyQueenDead)
         {
-            enemyQueenDead = true;
+            sit.enemyQueenDead = true;
             return true;
         }
-        if (!enemy && !ourQueenDead && !amQueen)
+        if (!enemy && !sit.ourQueenDead && !amQueen)
         {
-            ourQueenDead = true;
+            sit.ourQueenDead = true;
             return true;
         }
         return false;
@@ -707,7 +722,7 @@ void read_sonar(Controller& ct)
             queue_fact(m, prio, prio > 15 ? 1 : 2); // gossip: pass new facts along the chain
         }
     SonarEchoes const e = ct.get_sonar_echoes();
-    echoEnemy = e.enemy + e.enemy_head;
+    sit.echoEnemy = e.enemy + e.enemy_head;
 }
 
 // Section 17: a teammate that vanished from the middle of our window died.
@@ -729,9 +744,9 @@ void detect_teammate_deaths()
         dangers.push_back({cell, R, cause});
         queue_fact(msg_danger(cell, cause), 75, 3);
         fleet.erase(id);
-        if (id == queenId && !ourQueenDead)
+        if (id == queenId && !sit.ourQueenDead)
         {
-            ourQueenDead = true;
+            sit.ourQueenDead = true;
             queue_fact(msg_queen_dead(false), 95, 4);
         }
     }
@@ -739,7 +754,7 @@ void detect_teammate_deaths()
     // is out of view and a death-drop pearl (on a tile that never spawns) lies
     // on her last body or within one turn's move of her head: a head-on kills
     // both, and the striker's own sonar dies with it, so watchers must tell.
-    if (prevEnemyQueenCell >= 0 && !enemyQueenDead && !visibleIds.count(enemyQueenId))
+    if (prevEnemyQueenCell >= 0 && !sit.enemyQueenDead && !visibleIds.count(enemyQueenId))
     {
         int const fq = EQ_DEATH_DETECT ? std::max(1, (prevEnemyQueenLen + 3) / 4) : 1;
         bool dead = cheb(prevEnemyQueenCell, head) <= 3 - fq;
@@ -753,14 +768,14 @@ void detect_teammate_deaths()
         }
         if (dead)
         {
-            enemyQueenDead = true;
+            sit.enemyQueenDead = true;
             queue_fact(msg_queen_dead(true), 95, 4);
         }
     }
     // The same from a fleet report of her (at most three rounds old: a watcher
     // that moves before the striker sees the drop only next round): a fresh
     // death drop near where she was, and she is not in our window.
-    if (EQ_DEATH_DETECT && !EQ_STRICT && !enemyQueenDead && !visibleIds.count(enemyQueenId))
+    if (EQ_DEATH_DETECT && !EQ_STRICT && !sit.enemyQueenDead && !visibleIds.count(enemyQueenId))
         for (auto const& e : enemyReps)
         {
             int const age = R - e.round;
@@ -769,14 +784,14 @@ void detect_teammate_deaths()
             int const rad = std::min(3, std::max(1, (e.len + 3) / 4) * age);
             if (cheb(e.cell, head) + rad <= 3)
             {
-                enemyQueenDead = true; // every cell she could have reached is in view, and she is not
+                sit.enemyQueenDead = true; // every cell she could have reached is in view, and she is not
                 queue_fact(msg_queen_dead(true), 95, 4);
                 break;
             }
             for (int c = 0; c < N; c++)
                 if (vis[c] && dropRound[c] == R && manhattan(c, e.cell) <= rad)
                 {
-                    enemyQueenDead = true;
+                    sit.enemyQueenDead = true;
                     queue_fact(msg_queen_dead(true), 95, 4);
                     break;
                 }

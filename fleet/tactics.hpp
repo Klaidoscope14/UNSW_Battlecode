@@ -17,6 +17,7 @@ struct Cand
     int dt = INF;       // path distance to the target after this move
     bool noLoop = false; // queen (length <= 3): no free 2x2 reachable afterwards
     double score = -1e18;
+    std::array<double, 4> bands{}; // score split by severity band (BAND_LIFE .. BAND_STYLE)
     std::vector<int> nb1;
 };
 
@@ -35,14 +36,12 @@ bool child_can_escape(int childLen, bool growth = false)
     if (static_cast<int>(body.size()) < L)
         return true; // tail is out of view, well away from whatever traps the head
     std::vector<int> child(body.rbegin(), body.rbegin() + childLen);
-    wstamp++;
+    WallScope ws;
     for (int i = 0; i < L - childLen; i++)
-        wallStamp[body[i]] = wstamp;
-    set_body(child, childLen);
+        ws.wall(body[i]);
+    BodyScope const sb(child, childLen);
     int const need = growth && SPLIT_ROOM ? std::max(6, 2 * childLen + 4) : std::min(childLen + 1, 6);
     FloodRes const f = flood(child[0], child.back(), std::max(childLen + 8, need + 2));
-    wstamp++;
-    set_body(body, L);
     // A growth split is optional: its child must have room to live, not just
     // to take a step (children born into pockets died within a few rounds).
     return (f.tail && !(growth && SPLIT_ROOM)) || f.area >= need;
@@ -108,6 +107,14 @@ double queen_threat_pen(int n)
     return p;
 }
 
+// The part of queen_threat_pen that is only caution (not inside any reach yet).
+double queen_margin_pen(int n)
+{
+    if (QUEEN_HARD_THREAT && qThreat[n] == INF && qMargin[n] <= QUEEN_MARGIN)
+        return QUEEN_MARGIN_PEN * (QUEEN_MARGIN + 1 - qMargin[n]);
+    return 0;
+}
+
 double end_threat(int n)
 {
     double t = 0;
@@ -121,13 +128,13 @@ double end_threat(int n)
         }
         if (amQueen && QUEEN_THREAT_MAP)
             continue; // added once below from the threat map
-        int const reach = isLeader ? enemy_reach(hh) : 1;
+        int const reach = my.leader ? enemy_reach(hh) : 1;
         if (manhattan(hh.cell, n) <= reach)
-            t += amQueen ? 3e6 : isLeader ? 300000 : THREAT_PEN;
+            t += amQueen ? 3e6 : my.leader ? 300000 : THREAT_PEN;
     }
     if (amQueen && QUEEN_THREAT_MAP)
         t += queen_threat_pen(n);
-    if (isLeader)
+    if (my.leader)
         for (int tc : enemyTails)
             if (manhattan(tc, n) <= 1)
                 t += amQueen ? 400000 : 100000;
@@ -179,9 +186,7 @@ int queen_exits(int qh, std::vector<int> const& newBody)
     int k = 0;
     for (int d = 0; d < 4; d++)
     {
-        int n = cross(qh, d);
-        if (n == -2)
-            n = nb(qh, d); // unexplored: may be open
+        int const n = step_open(qh, d); // unexplored: may be open
         if (n < 0)
             continue;
         if (vis[n] && occId[n] >= 0 && occId[n] != me)

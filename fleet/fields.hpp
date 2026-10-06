@@ -1,5 +1,14 @@
 // L1 FIELDS - per-turn maps: distances from my head, pearl richness, Voronoi territory, enemy
 // strike reach (queen threat map, one and two turns), distances from our queen.
+// Field cache (Architecture_v2 3c): each field is computed at most once per turn (or less often), on first use:
+//   distHead            plan_bfs(head) in prepare_turn, every turn
+//   vorOurs / vorEnemy  compute_voronoi(), once per round (vorRound)
+//   regionVal           update_region_value(), every 5 rounds
+//   qThreat* / qMargin  compute_queen_threat(), once per turn, queen only
+//   qDist               queen_dist_bfs(), only when QUEEN_CLEAR is on
+//   topology            topo_refresh() (topology.hpp), when an edge was learned (at most every TOPO_EVERY rounds)
+// Per-candidate searches (flood, survival, dives, plan_bfs from a candidate cell) are not fields: they depend on
+// the simulated body and run inside a BodyScope.
 // Part of the fleet bot; included once, in order, by main.cpp (one translation unit).
 #pragma once
 
@@ -65,9 +74,7 @@ void vor_bfs(std::vector<int> const& seeds, std::vector<int>& dist)
         int const c = vorQ[i];
         for (int k = 0; k < 4; k++)
         {
-            int n = cross(c, k);
-            if (n == -2)
-                n = nb(c, k); // unexplored edge: assume open
+            int const n = step_open(c, k); // unexplored edge: assume open
             if (n < 0 || dist[n] <= dist[c] + 1)
                 continue;
             dist[n] = dist[c] + 1;
@@ -142,9 +149,7 @@ void reach_bfs(int src, int freeR, int maxR, std::vector<int>& out, std::vector<
             continue;
         for (int k = 0; k < 4; k++)
         {
-            int n = cross(c, k);
-            if (n == -2)
-                n = nb(c, k); // unexplored edge: assume the enemy can pass
+            int const n = step_open(c, k); // unexplored edge: assume the enemy can pass
             if (n < 0 || thStamp[n] == thS)
                 continue;
             thStamp[n] = thS;
@@ -246,9 +251,7 @@ void queen_dist_bfs(int src, int maxR)
             continue;
         for (int k = 0; k < 4; k++)
         {
-            int n = cross(c, k);
-            if (n == -2)
-                n = nb(c, k);
+            int const n = step_open(c, k);
             if (n < 0 || qDist[n] != INF)
                 continue;
             qDist[n] = qDist[c] + 1;

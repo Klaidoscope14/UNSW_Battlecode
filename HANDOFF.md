@@ -7,10 +7,45 @@ Read this first, then `Architecture_Plan.txt` (the agreed next job) and `Combine
   headers (`config.hpp` = all switches by module, `core/world/state/comms/perceive/graph/fields/situation/topology/
   commander/intent/tactics/act/decide/speak.hpp`), included in order by `main.cpp` (one translation unit, turn loop only).
   `helper.hpp` = engine API, `bot.toml`. The layer list is at the top of `main.cpp`.
+- Step 2: team-level flags live in `Situation sit` (sit.survival, sit.switched, sit.enemyQueenDead...) and this dragon's
+  roles in `Duty my` (my.leader, my.hunter, my.guard...), both in `state.hpp`; goals are `enum Intent` (I_PEARL...,
+  `intent_name()` gives the old strings, so indicators and traces are unchanged).
+- Step 4: `decide()` (decide.hpp) is a short pipeline: prepare_turn -> analyse_moves -> read_contact -> the REFLEX
+  table (rx_*, first that acts wins) -> the TARGET steps (tg_*, in order, each may replace the goal) -> commit_target
+  -> feed_sacrifice / plan_split -> score_moves -> finish_move. Values shared between stages live in `Turn tn`
+  (reset each turn); each stage binds `auto& x = tn.x;` for what it reads or writes.
+- Step 5: every move-scoring term in `score_moves` is tagged with a severity band via `Cost` (act.hpp):
+  BAND_LIFE / BAND_SAFETY / BAND_GOAL / BAND_STYLE. `cost.total` is still the plain sum in the original order (play
+  unchanged); each candidate keeps `cd.bands`. `QDEBUG` logs also print the A and B band totals.
+- Step 6a (tested, OFF): `BAND_COMPARE` 1 (life > safety > goal+style) cost Portals 3 games (the queen traded room
+  for tiny safety gains); 2 (life first, then the sum) changed only 3 queen moves in 291k dragon-turns (suite 194-10,
+  Qd 48 = noise). Kept at 0 (v2.16 play). Debug: compile with `BAND_DIAG` and set `FLEET_DIAG=<file>` to log every
+  turn where the band comparison would choose differently.
+- Step 7b: static topology in `topology.hpp` (`topo_build`, rebuilt lazily when `edgeVersion` changes): bridges and
+  loop regions (2-edge-connected components) of the known water, the bridge forest, and for every bridge both ways a
+  `Branch` summary (cells, largest loop, spawn tiles, frontier). Queries: `topo_beyond`, `topo_trap(from, dir, len)`
+  (step into a fully known branch with no loop longer than len), `topo_loop_near`. Switches `TOPO_TRAP`, `TOPO_LOOP`.
+  Verified against an independent Python reference: build with `TOPO_DIAG <round>` + `FLEET_DIAG=<file>`, then
+  `python3 tools/testing/topo_check.py <file>` (also prints an ASCII render: o loop, . no cycle, = bridge end, ? frontier).
+  Results (204 games): TOPO_TRAP 198-6 Qd 43 prot 84-0 (wall deaths -1.2%); + TOPO_LOOP 198-6 Qd 42 prot 84-0 (one
+  long queen saved, nothing else changed). Both ON. CPU on big_empty: max 48.8M (was 39.6M; topology rebuilds as edges
+  are learned).
+- Step 7f: sonar wire format (comms.hpp) = 52-bit block (type 4 | payload 48) under a keyed 4-round Feistel cipher
+  (`MSG_KEY`, salted by team) + 12-bit check code. Accepted only if the code matches, the type is ours and every
+  payload bit past the type's layout (`layout_bits`) is zero. Self-test (`MSG_SELFTEST` + `FLEET_DIAG`): 0 round-trip
+  failures; ~1e-5 of random or small foreign values accepted, never a QUEEN_DEAD/SYM. Play unchanged:
+  `trace.py diff ... --actions` (ignores sonar values) IDENTICAL on 24 games.
+- Step 3: `step_open(c, d)` (world.hpp) names the "unexplored edge = open" rule (GraphView comment lists all three
+  rules); `BodyScope` / `WallScope` (graph.hpp): a helper's simulated body / temporary walls last only for its scope,
+  outside every scope the board shows our real body. fields.hpp header lists the per-turn fields and their caches.
+  `TOPO_EVERY` (rebuild at most every N rounds) exists but stays 1.
   Every dragon runs its own copy of the program; they share only sonar (4 messages/turn, 64-bit each).
 - Win order after r500: longer LIVING queen, then longest dragon, then total length; elimination ends it early.
   Head-ons kill both. Sprint = free steps ceil(L/4) + paid steps (1 segment each, down to length 2). Vision 7x7 (radius 3).
-- Submission = zip of `bot.toml`, `main.cpp` and ALL `*.hpp` in `fleet/` (older zips in the repo root had 3 files).
+- Submission zip: `python3 tools/make_zip.py NAME` -> `fleet-NAME.zip` (bot.toml + main.cpp + all fleet/*.hpp, the
+  layout the docs give for C++: `include = ["*.cpp", "*.hpp", ...]`, zip directory on the include path). `--single`
+  pastes every header into one main.cpp (bot.toml + main.cpp + helper.hpp, like the v2.x zips). Both were checked
+  the docs' way (unzip into an empty folder, --sandbox game); the script repeats that check every time.
 - Team "Low Cortisol". The user tests zips on the real ladder and sends replays; local tests are a filter, not the truth.
 
 ## User's standing rules

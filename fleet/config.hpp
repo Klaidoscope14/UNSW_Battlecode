@@ -393,6 +393,21 @@
 #define RECYCLE_MIN_UNITS 6
 #endif
 
+#ifndef BODY_TRUST_VISION
+#define BODY_TRUST_VISION 0 // B1 (tested, OFF): our body model never keeps a cell vision shows is not ours - 195-9,
+                            // Portals 81-3: the queen forgot her real segments beyond a portal and hit herself
+#endif
+
+#ifndef LEGAL_BY_VISION
+#define LEGAL_BY_VISION 1 // B1b: a visible cell with no dragon on it is always a legal step (the body model can hold
+                          // stale segments after a portal crossing and made such moves look like hitting our tail)
+#endif
+
+#ifndef TOPO_TRAP
+#define TOPO_TRAP 1 // 7b: a step across a bridge into a fully known branch with no loop longer than us is a trap
+                    // (workers: unsafe unless a dive pays; queen: like a dead-end pocket). Any shape, any size.
+#endif
+
 // ====================================================================================================
 // PORTALS
 // ====================================================================================================
@@ -577,6 +592,19 @@
 #endif
 #ifndef THREAT_RADIUS
 #define THREAT_RADIUS 8 // an enemy head seen (or reported within 3 rounds) this close to her is a threat
+#endif
+
+#ifndef BAND_COMPARE
+#define BAND_COMPARE 0 // 6a (tested, OFF): 2 = life band first, then the sum of the rest - changed 3 queen moves in 291k
+                       // dragon-turns, suite 194-10 Qd 48 (noise); 1 = life > safety > goal + style - 194-10, Portals
+                       // 81-3 (the queen gave up room for tiny safety gains); 0 = one plain sum (v2.16)
+#endif
+
+#ifndef TOPO_EVERY
+#define TOPO_EVERY 1 // 7b/3c: topology rebuilt at most every this many rounds when new edges are known (CPU)
+#endif
+#ifndef TOPO_LOOP
+#define TOPO_LOOP 1 // 7b: queens too long for the k x k ring test (L >= 16) need a loop region longer than them nearby
 #endif
 
 // ====================================================================================================
@@ -902,6 +930,13 @@
 #endif
 #ifndef GUARD_FLEET_MIN
 #define GUARD_FLEET_MIN 5 // no guards or screens with this few dragons: everyone collects
+#endif
+#ifndef EQ_INFER_UNSEEN
+#define EQ_INFER_UNSEEN 0 // Q2a: EQ_INFER also when their queen was never seen at all (she died unseen in 5 of 7 test games)
+#endif
+#ifndef EQ_STATUS_BIT
+#define EQ_STATUS_BIT 1 // Q: every STATUS message carries "their queen is dead" (in 7 test games 47-90 of our dragons
+                        // knew, our queen never did - she kept chasing pearls and died)
 #endif
 #ifndef BUNKER_GUARDS
 #define BUNKER_GUARDS 1 // 6: the queen announces her bunker box; guards circle 2x2 posts on its open sides

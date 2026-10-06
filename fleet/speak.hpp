@@ -9,7 +9,7 @@ namespace {
 // column, the shorter way round), or -1.
 int queen_sonar_dir()
 {
-    if (me == queenId || ourQueenDead || body.empty())
+    if (me == queenId || sit.ourQueenDead || body.empty())
         return -1;
     auto const q = fleet.find(queenId);
     if (q == fleet.end() || R - q->second.round > 3)

@@ -5,6 +5,44 @@
 
 namespace {
 
+// The goal a dragon is heading for this turn (shown in the indicator and the trace).
+enum Intent
+{
+    I_EXPLORE,
+    I_PEARL,
+    I_LATE_SAFE,
+    I_EVADE,
+    I_FLEE,
+    I_HUNT,
+    I_HUNT_QUEEN,
+    I_FEED,
+    I_HUNTER,
+    I_PACK,
+    I_LURK,
+    I_REGROUP,
+    I_WALL,
+    I_INTERCEPT,
+    I_POST,
+    I_SCREEN,
+    I_GUARD,
+    I_GUARD_LINE,
+    I_RESCUE,
+    I_BUNKER,
+    I_REST,
+    I_HOME,
+    I_PORTAL,
+    I_PUSH,
+    I_DEFEND,
+    I_CAMP,
+    I_ZONE,
+    I_OUTPOST,
+};
+char const* intent_name(Intent i)
+{
+    static char const* const names[] = {"explore", "pearl", "late-safe", "evade", "flee", "hunt", "hunt-queen", "feed", "hunter", "pack", "lurk", "regroup", "wall", "intercept", "post", "screen", "guard", "guard-line", "rescue", "bunker", "rest", "home", "portal", "push", "defend", "camp", "zone", "outpost"};
+    return names[i];
+}
+
 std::vector<PearlCand> gather_pearls()
 {
     compute_voronoi();
@@ -37,12 +75,12 @@ std::vector<PearlCand> gather_pearls()
         if (VORONOI && static_cast<int>(vorEnemy.size()) == N)
         {
             if (vorEnemy[c] + 1 < eta)
-                conf *= (AGGRO_EXPANSION && expansionPhase && !amQueen) ? 0.8 : 0.35;
+                conf *= (AGGRO_EXPANSION && sit.expansion && !amQueen) ? 0.8 : 0.35;
         }
         else
             for (auto const& h : heads)
                 if (!h.mine && manhattan(h.cell, c) + 1 < eta)
-                    conf *= (AGGRO_EXPANSION && expansionPhase && !amQueen) ? 0.8 : 0.35;
+                    conf *= (AGGRO_EXPANSION && sit.expansion && !amQueen) ? 0.8 : 0.35;
         if (OWN_HALF && halfMargin(c) > 0)
             conf *= OWN_HALF_BONUS; // ours first: raiders feed on what we leave
         // v2.14: the queen keeps to her home ground, away from enemy heads, and
@@ -88,7 +126,7 @@ std::vector<PearlCand> gather_pearls()
         if (REGION_VALUE && !amQueen)
             conf *= 1.0 + RV_PEARL_W * rv_size_factor() * rv_norm(c);
         // In survival mode she does not go near them at all.
-        if (amQueen && survivalMode)
+        if (amQueen && sit.survival)
         {
             bool nearEnemy = false;
             for (auto const& e : enemyReps)
@@ -108,7 +146,7 @@ std::vector<PearlCand> gather_pearls()
         // Dangerous area reported by the fleet.
         for (auto const& dg : dangers)
             if (dg.cause == 1 && R - dg.round <= 20 && manhattan(dg.cell, c) <= 3)
-                conf *= isLeader ? 0.3 : 0.7;
+                conf *= my.leader ? 0.3 : 0.7;
         out.push_back({c, appear, conf});
     }
     if (out.size() > 60)
@@ -225,11 +263,11 @@ int choose_explore_goal()
                 else if (mg >= 0 && mg <= 4)
                     score -= VOR_FRONT_BONUS;
             }
-            if (role == ROLE_EXPLORER)
+            if (my.role == ROLE_EXPLORER)
                 score -= 0.3 * dh; // explorers push further out
             for (auto const& dg : dangers)
                 if (dg.cause == 1 && R - dg.round <= 30 && manhattan(dg.cell, c) <= 4)
-                    score += isLeader ? 200 : 40;
+                    score += my.leader ? 200 : 40;
             if (score < bestScore)
             {
                 bestScore = score;

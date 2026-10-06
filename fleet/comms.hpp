@@ -4,9 +4,12 @@
 
 namespace {
 
-// Sonar messages
-// [63..56] magic  [55..52] type  [51..48] checksum  [47..0] payload
-constexpr std::uint64_t MAGIC = 0xB7;
+// Sonar messages (7f): 64 bits = [63..12] the 52-bit block (type 4 bits << 48 | payload 48 bits) under a keyed
+// 4-round Feistel cipher, [11..0] a 12-bit check code of the plain block. All battles and replays are public and
+// replays show sonar values: without the key nobody can read our messages (the queen's position is in her
+// STATUS) or forge them. The key is salted by team, so the other side's copy of this bot cannot read them either.
+// A message is accepted only if the code matches, the type is one we use and every payload bit past that type's
+// layout is zero - so a stray enemy value almost never passes (a 3-bit QUEEN_DEAD has 45 bits that must be 0).
 enum MsgType
 {
     T_STATUS = 1,
@@ -48,29 +51,121 @@ struct BitR
     }
 };
 
-std::uint64_t checksum(int type, std::uint64_t payload)
+#ifndef MSG_KEY
+#define MSG_KEY 0x6A09E667F3BCC908ULL // secret: change it to change every message
+#endif
+std::uint64_t mix64(std::uint64_t x)
 {
-    // Salted by team, so the other side's copy of this bot fails validation.
-    std::uint64_t cs = static_cast<std::uint64_t>(type) ^ (myTeam == Team::A ? 0x5 : 0xA);
-    for (int i = 0; i < 12; i++)
-        cs ^= (payload >> (4 * i)) & 15;
-    return cs;
+    x ^= x >> 30;
+    x *= 0xBF58476D1CE4E5B9ULL;
+    x ^= x >> 27;
+    x *= 0x94D049BB133111EBULL;
+    x ^= x >> 31;
+    return x;
+}
+std::uint64_t team_key() { return MSG_KEY ^ (myTeam == Team::A ? 0x3C6EF372FE94F82BULL : 0xA54FF53A5F1D36F1ULL); }
+
+constexpr int HALF_BITS = 26;
+constexpr std::uint64_t HALF_MASK = (1ULL << HALF_BITS) - 1;
+std::uint64_t feistel_f(std::uint64_t half, int round) { return mix64(half ^ team_key() ^ (0x9E3779B97F4A7C15ULL * (round + 1))) & HALF_MASK; }
+std::uint64_t encrypt52(std::uint64_t block)
+{
+    std::uint64_t l = block >> HALF_BITS, r = block & HALF_MASK;
+    for (int k = 0; k < 4; k++)
+    {
+        std::uint64_t const t = r;
+        r = l ^ feistel_f(r, k);
+        l = t;
+    }
+    return (l << HALF_BITS) | r;
+}
+std::uint64_t decrypt52(std::uint64_t block)
+{
+    std::uint64_t l = block >> HALF_BITS, r = block & HALF_MASK;
+    for (int k = 3; k >= 0; k--)
+    {
+        std::uint64_t const t = l;
+        l = r ^ feistel_f(l, k);
+        r = t;
+    }
+    return (l << HALF_BITS) | r;
+}
+std::uint64_t check_code(std::uint64_t block) { return mix64(block ^ ~team_key()) >> 52; }
+
+// Payload bits each type uses (the rest must be zero). PEARL and KELP carry a count in their lowest bits.
+int layout_bits(int type, std::uint64_t payload)
+{
+    switch (type)
+    {
+    case T_STATUS: return 47;
+    case T_PEARL: return 1 + (static_cast<int>(payload & 1) + 1) * 23;
+    case T_PORTAL: return 26;
+    case T_KELP: return 2 + static_cast<int>(payload & 3) * 13;
+    case T_ENEMY: return 44;
+    case T_DANGER: return 24;
+    case T_SYM: return 2;
+    case T_CLAIM: return 43;
+    case T_PORTAL_EDGE: return 33;
+    case T_QUEEN_DEAD: return 3;
+    case T_QSPAWN: return 12;
+    case T_PHASE: return 16;
+    case T_BUNKER: return 21;
+    case T_ZONE: return 27;
+    default: return -1; // not a type we send
+    }
 }
 
 std::uint64_t pack(int type, std::uint64_t payload)
 {
     payload &= (1ULL << 48) - 1;
-    return (MAGIC << 56) | (static_cast<std::uint64_t>(type) << 52) | (checksum(type, payload) << 48) | payload;
+    std::uint64_t const block = (static_cast<std::uint64_t>(type) << 48) | payload;
+    return (encrypt52(block) << 12) | check_code(block);
 }
 
 bool unpack(std::uint64_t m, int& type, std::uint64_t& payload)
 {
-    if ((m >> 56) != MAGIC)
+    std::uint64_t const block = decrypt52(m >> 12);
+    if ((m & 0xFFF) != check_code(block))
         return false;
-    type = static_cast<int>((m >> 52) & 15);
-    payload = m & ((1ULL << 48) - 1);
-    return ((m >> 48) & 15) == checksum(type, payload);
+    type = static_cast<int>(block >> 48);
+    payload = block & ((1ULL << 48) - 1);
+    int const bits = layout_bits(type, payload);
+    return bits >= 0 && (payload >> bits) == 0;
 }
+
+#ifdef MSG_SELFTEST
+// Debug: round trips of valid messages, and how many random / small foreign values pass as ours.
+void msg_selftest(std::FILE* f)
+{
+    std::mt19937_64 g(12345);
+    int bad = 0, randomPass = 0, smallPass = 0, qdeadPass = 0;
+    int const types[] = {T_STATUS, T_PEARL, T_PORTAL, T_KELP, T_ENEMY, T_DANGER, T_SYM, T_CLAIM, T_PORTAL_EDGE, T_QUEEN_DEAD, T_QSPAWN, T_PHASE, T_BUNKER, T_ZONE};
+    for (int i = 0; i < 200000; i++)
+    {
+        int const t = types[i % 14];
+        std::uint64_t p = g();
+        int const bits = layout_bits(t, p);
+        p &= (1ULL << bits) - 1;
+        int t2;
+        std::uint64_t p2;
+        if (!unpack(pack(t, p), t2, p2) || t2 != t || p2 != p)
+            bad++;
+    }
+    int t2;
+    std::uint64_t p2;
+    for (int i = 0; i < 1000000; i++)
+    {
+        if (unpack(g(), t2, p2))
+        {
+            randomPass++;
+            qdeadPass += t2 == T_QUEEN_DEAD || t2 == T_SYM;
+        }
+        smallPass += unpack(static_cast<std::uint64_t>(i), t2, p2);
+    }
+    std::fprintf(f, "selftest team %c: round-trip failures %d / 200000; random 64-bit accepted %d / 1000000 (queen-dead or sym %d); "
+                    "values 0..999999 accepted %d\n", myTeam == Team::A ? 'A' : 'B', bad, randomPass, qdeadPass, smallPass);
+}
+#endif
 
 struct Fact
 {
@@ -125,8 +220,9 @@ std::uint64_t msg_status()
     b.put(me, 14);
     b.put(std::min(L, 1023), 10);
     b.put(body.empty() ? 0 : body[0], 12);
-    b.put(isLeader ? 1 : 0, 1);
+    b.put(my.leader ? 1 : 0, 1);
     b.put(R, 9);
+    b.put(EQ_STATUS_BIT && sit.enemyQueenDead ? 1 : 0, 1); // Q: every status carries "their queen is dead"
     return pack(T_STATUS, b.v);
 }
 std::uint64_t msg_portal(int a, int c)
@@ -202,8 +298,8 @@ std::uint64_t msg_bunker(int tl)
 std::uint64_t msg_phase()
 {
     BitW b;
-    b.put(std::min(pressureMax, 63), 6);
-    b.put(switched ? 1 : 0, 1);
+    b.put(std::min(sit.pressureMax, 63), 6);
+    b.put(sit.switched ? 1 : 0, 1);
     b.put(R, 9);
     return pack(T_PHASE, b.v);
 }

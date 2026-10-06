@@ -35,9 +35,7 @@ void match_bfs(int src)
             continue;
         for (int k = 0; k < 4; k++)
         {
-            int n = cross(c, k);
-            if (n == -2)
-                n = nb(c, k);
+            int const n = step_open(c, k);
             if (n < 0 || mStamp[n] == mS)
                 continue;
             mStamp[n] = mS;
@@ -57,7 +55,7 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
         int id, cell, fixedEta;
         bool leader;
     };
-    std::vector<Agent> agents{{me, body[0], -1, isLeader}};
+    std::vector<Agent> agents{{me, body[0], -1, my.leader}};
     std::unordered_set<int> seen{me};
     for (auto const& h : heads)
         if (h.mine && !seen.count(h.id))
@@ -128,7 +126,7 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
             double cost = (CAMP_JOB && wait > 0 ? eta + 0.5 * std::max(0, wait - eta) : std::max(eta, wait)) + 1.0;
             cost /= p.conf;
             if (a.leader)
-                cost *= a.id == queenId ? (EXPANSION && queenSplits ? 1.0 : 0.3) : 0.6; // feed the queen (once she grows), then the leaders
+                cost *= a.id == queenId ? (EXPANSION && sit.queenSplits ? 1.0 : 0.3) : 0.6; // feed the queen (once she grows), then the leaders
             pairs.push_back({cost + a.id * 1e-7, ai, pi});
         }
         // A teammate we cannot see but who claimed this pearl still counts.
@@ -165,12 +163,12 @@ int hunter_slot(int id)
 
 bool hunts_now()
 {
-    return HUNTERS && !(enemyQueenDead && !ourQueenDead) && (R >= HUNT_START || !expansionPhase) && R >= OPEN_FARM_ROUND;
+    return HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND;
 }
 
 // P8 wall: when it forms (later on bigger maps) and who is in it.
 int wall_round() { return std::min(260, 120 + N / 40); }
-bool wall_now() { return WALL && HUNTERS && !openPlan && N >= WALL_MIN_CELLS && R >= wall_round() && units >= WALL_FORM_RATIO * est_enemy_units(); }
+bool wall_now() { return WALL && HUNTERS && !sit.openPlan && N >= WALL_MIN_CELLS && R >= wall_round() && units >= WALL_FORM_RATIO * est_enemy_units(); }
 bool wall_slot(int id)
 {
     int const sl = hunter_slot(id);
@@ -182,7 +180,7 @@ bool pack_member(int id, int len, bool leader)
 {
     if (id == queenId || leader)
         return false;
-    if (ENDGAME_PACKS && ourQueenDead && len <= 6)
+    if (ENDGAME_PACKS && sit.ourQueenDead && len <= 6)
         return true;
     if (wall_now() && wall_slot(id) && len >= WALL_MIN_LEN)
         return true;
@@ -206,17 +204,17 @@ void assign_prey()
     // Our queen is dead: only the longest dragon can still win it. If theirs
     // has not been seen for 100 rounds she is most likely dead too (theirs
     // die early), so their longest dragons come first.
-    bool const giantHunt = GIANT_HUNT && ourQueenDead && R >= GIANT_HUNT_ROUND && (enemyQueenDead || R - lastEqSeenR >= 100);
-    int qt = enemyQueenDead || giantHunt ? -1 : enemy_queen_target();
+    bool const giantHunt = GIANT_HUNT && sit.ourQueenDead && R >= GIANT_HUNT_ROUND && (sit.enemyQueenDead || R - sit.lastEqSeenR >= 100);
+    int qt = sit.enemyQueenDead || giantHunt ? -1 : enemy_queen_target();
     // Big map, her position not seen lately: she hides at home among her
     // swarm, and the long walk there only feeds it (ladder: never reached).
-    if (HUNT_FAR_SMALL && qt >= 0 && N > SMALL_MAP_CELLS && !ourQueenDead && R - lastEqSeenR > HUNT_FRESH)
+    if (HUNT_FAR_SMALL && qt >= 0 && N > SMALL_MAP_CELLS && !sit.ourQueenDead && R - sit.lastEqSeenR > HUNT_FRESH)
         qt = -1;
     if (qt >= 0)
         preyList.push_back({qt, enemyQueenId, 0, true});
     // Long enemy dragons: when the queens no longer decide the game, or while
     // nobody knows where the enemy queen is.
-    if (ourQueenDead || enemyQueenDead || qt < 0)
+    if (sit.ourQueenDead || sit.enemyQueenDead || qt < 0)
         for (auto const& e : enemyReps)
             if (e.id != enemyQueenId && R - e.round <= 6 && e.len >= (giantHunt ? GIANT_PREY_MIN : PREY_MIN_LEN))
                 preyList.push_back({e.cell, e.id, e.len, false});

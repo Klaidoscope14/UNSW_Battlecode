@@ -101,7 +101,7 @@ void init_world(Controller& ct, Game& game)
     queenId = me <= 1 ? me : (myTeam == Team::A ? 0 : 1);
     enemyQueenId = 1 - queenId;
     amQueen = me == queenId;
-    role = role_for(me);
+    my.role = role_for(me);
 
     edgeType.assign(2 * N, E_UNK);
     obsEdge.assign(2 * N, E_UNK);
@@ -155,6 +155,14 @@ int main()
 {
     auto [ct, game] = unswbc::init();
     init_world(ct, game);
+#ifdef MSG_SELFTEST
+    if (char const* df = std::getenv("FLEET_DIAG"); df && me <= 1)
+        if (std::FILE* f = std::fopen(df, "a"))
+        {
+            msg_selftest(f);
+            std::fclose(f);
+        }
+#endif
     if (char const* dir = std::getenv("FLEET_TRACE"))
     {
         std::string const path = std::string(dir) + "/" + (myTeam == Team::A ? "A" : "B") + std::to_string(me) + ".txt";
@@ -178,25 +186,82 @@ int main()
             prune_knowledge();
             detect_teammate_deaths();
             record_enemies();
-            fleet[me] = {L, body[0], R, isLeader};
+            fleet[me] = {L, body[0], R, my.leader};
             compute_fleet_state();
 
             decide(ct);
+#ifdef QDIAG
+            // Debug (item Q): every dragon notes the round it first learns their queen is dead.
+            static bool eqKnown = false;
+            if (sit.enemyQueenDead && !eqKnown)
+            {
+                eqKnown = true;
+                if (char const* df = std::getenv("FLEET_DIAG"))
+                    if (std::FILE* f = std::fopen(df, "a"))
+                    {
+                        std::fprintf(f, "EQ %c %d id%d queen%d\n", myTeam == Team::A ? 'A' : 'B', R, me, amQueen ? 1 : 0);
+                        std::fclose(f);
+                    }
+            }
+            // Debug (item Q): the queen's view whenever an enemy head is within 10, for the head-on death study.
+            if (char const* df = std::getenv("FLEET_DIAG"); df && amQueen && !body.empty())
+            {
+                int nearE = INF;
+                for (auto const& h : heads)
+                    if (!h.mine)
+                        nearE = std::min(nearE, manhattan(h.cell, body[0]));
+                if (nearE <= 10 || getenv("QDIAG_ALL"))
+                    if (std::FILE* f = std::fopen(df, "a"))
+                    {
+                        std::fprintf(f, "Q %c %d L%d @%d,%d note=%s anySafe=%d eqDead=%d eqSeen=%d |", myTeam == Team::A ? 'A' : 'B', R, L, body[0] % W,
+                                     body[0] / W, note.c_str(), tn.anySafe ? 1 : 0, sit.enemyQueenDead ? 1 : 0, R - sit.lastEqSeenR);
+                        for (auto const& cd : tn.cands)
+                        {
+                            if (!cd.legal || cd.dest < 0)
+                            {
+                                std::fprintf(f, " %c:x", DCH[cd.d]);
+                                continue;
+                            }
+                            std::fprintf(f, " %c:%d,%d t%d t2%d ok%d%d A%.0f B%.0f", DCH[cd.d], cd.dest % W, cd.dest / W,
+                                         qThreat[cd.dest] >= INF ? -1 : qThreat[cd.dest], qThreat2[cd.dest] >= INF ? -1 : 1,
+                                         cd.ok1 ? 1 : 0, cd.ok2 ? 1 : 0, cd.bands[0], cd.bands[1]);
+                        }
+                        std::fprintf(f, " | E");
+                        for (auto const& h : heads)
+                            if (!h.mine)
+                                std::fprintf(f, " %d@%d,%d l%d/%d d%d", h.id, h.cell % W, h.cell / W, h.len, h.estLen, manhattan(h.cell, body[0]));
+                        std::fprintf(f, " | rep");
+                        for (auto const& e : enemyReps)
+                            if (R - e.round <= 3)
+                                std::fprintf(f, " %d@%d,%d l%d a%d", e.id, e.cell % W, e.cell / W, std::max(e.len, e.estLen), R - e.round);
+                        std::fprintf(f, "\n");
+                        std::fclose(f);
+                    }
+            }
+#endif
+#ifdef TOPO_DIAG
+            if (char const* df = std::getenv("FLEET_DIAG"); df && amQueen && R == TOPO_DIAG)
+                if (std::FILE* f = std::fopen(df, "a"))
+                {
+                    topo_render(f);
+                    std::fclose(f);
+                }
+#endif
             acted = true;
             send_sonars(ct);
 
             static char const* const roleName[] = {"col", "exp", "prt", "cmb"};
             static char const* const modeName[] = {"nrm", "farm", "keep", "war"};
-            std::string ind = std::string(amQueen ? "QUEEN " : isLeader ? "LEAD " : "") + roleName[role] + " " + modeName[mode] + " " + note +
+            std::string ind = std::string(amQueen ? "QUEEN " : my.leader ? "LEAD " : "") + roleName[my.role] + " " + modeName[sit.mode] + " " + note +
                               " L" + std::to_string(L);
             if (symKnown >= 0)
                 ind += " s" + std::to_string(symKnown);
-            if (isScreen || isGuard)
-                ind += isScreen ? " SCR" : " GRD";
-            if (isWall)
+            if (my.screen || my.guard)
+                ind += my.screen ? " SCR" : " GRD";
+            if (my.wall)
                 ind += " WAL";
             if (LOG_PHASE)
-                ind += " P" + std::to_string(pressureMax) + (switched ? "*" : "");
+                ind += " P" + std::to_string(sit.pressureMax) + (sit.switched ? "*" : "");
             ct.set_indicator_string(ind);
         }
         catch (...)
