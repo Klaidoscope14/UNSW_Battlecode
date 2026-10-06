@@ -3,11 +3,14 @@
 Read this first, then `Architecture_Plan.txt` (the agreed next job) and `Combined_Changes.txt` (the user's ideas).
 
 ## The project
-- UNSW Battlecode ("Slay Queen" rules), C++ bot in `fleet/` (`main.cpp` ~7,300 lines, `helper.hpp` = engine API, `bot.toml`).
+- UNSW Battlecode ("Slay Queen" rules), C++ bot in `fleet/`: since Architecture_v2 step 1 the code is split into layer
+  headers (`config.hpp` = all switches by module, `core/world/state/comms/perceive/graph/fields/situation/topology/
+  commander/intent/tactics/act/decide/speak.hpp`), included in order by `main.cpp` (one translation unit, turn loop only).
+  `helper.hpp` = engine API, `bot.toml`. The layer list is at the top of `main.cpp`.
   Every dragon runs its own copy of the program; they share only sonar (4 messages/turn, 64-bit each).
 - Win order after r500: longer LIVING queen, then longest dragon, then total length; elimination ends it early.
   Head-ons kill both. Sprint = free steps ceil(L/4) + paid steps (1 segment each, down to length 2). Vision 7x7 (radius 3).
-- Submission = zip of `bot.toml`, `main.cpp`, `helper.hpp` (built as in the zips in the repo root).
+- Submission = zip of `bot.toml`, `main.cpp` and ALL `*.hpp` in `fleet/` (older zips in the repo root had 3 files).
 - Team "Low Cortisol". The user tests zips on the real ladder and sends replays; local tests are a filter, not the truth.
 
 ## User's standing rules
@@ -19,13 +22,13 @@ Read this first, then `Architecture_Plan.txt` (the agreed next job) and `Combine
 ## Versions
 | zip | content |
 |---|---|
-| `fleet-v2.16.0.zip` | **current** = `fleet/main.cpp` (uncommitted changes since commit "v 2.15.0" — commit them) |
+| `fleet-v2.16.0.zip` | **current submission**; `fleet/` = the same play, restructured (step 1: 204 games identical) |
 | `fleet-v2.15.5.zip` | fallback (before the opening plan) |
 | 2.15.3 / 2.15.4 | older steps (F6/F7, Voronoi) |
 
 What each version added is in the memory file `project-fleet-bot.md` and in the comments next to each `#define`.
 
-## Switches that matter (top of `fleet/main.cpp`)
+## Switches that matter (`fleet/config.hpp`)
 ON: QUEEN_HOME, PURSUIT_SAFE, FOUNTAINS + DEADEND_STRICT (P1), THREAT_TAIL_FREE + QUEEN_LOOK2 (P3, LOOK2_PAID 0),
 GIANT_ALL + GIANT_ONE (one giant/heir, leader election from length 6), SPLIT_MORE, SPLIT_ROOM 0, QUEEN_MIN_KEEP 3,
 QUEEN_FIRST_SPLIT, REGION_VALUE (centre explore only), OUTPOSTS, WALL (maps >= 1500 cells), EQ_INFER (their queen
@@ -45,6 +48,11 @@ v2.15.x comparable — candidate to turn on), OPEN_QUEEN (queen splits to 2 + ex
 - `python3 tools/testing/compare.py v2.16.0 NAME` — totals, queen deaths, protected maps, losses per map.
 - `python3 tools/testing/same.py v2.16.0 NAME` — identical-game check for pure refactors (verified: re-running
   v2.16.0 reproduces all 204 games exactly).
+- `python3 tools/testing/trace.py run NAME [DEF=VAL ...]` then `trace.py diff base NAME` — THE check for pure
+  refactors (Architecture_v2 steps 1-5): 24 games (~1 min) with `FLEET_TRACE` on; every dragon-turn's action, sonar
+  values and note are compared, and the first diverging (round, dragon) is printed. Baseline `base` = v2.16.0
+  (+ trace hooks; its 24 results match results/v2.16.0.txt). Traces live in `tools/testing/work/trace/` (~50 MB each).
+- `python3 tools/testing/check_switches.py` — fails if any `#define` name is used twice.
 - `bash tools/testing/opening.sh NAME "DEF=VAL" "maps"` — opening economy medians (noisy: ±150 pearls per game on
   Around UNSW; only use for big effects).
 - Baselines: `results/v2.16.0.txt` (197-7, queen deaths 44, protected 84-0), `results/v2.15.5.txt` (193-11, 33, 83-1).

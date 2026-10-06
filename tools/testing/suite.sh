@@ -7,7 +7,7 @@ T=$(cd "$(dirname "$0")" && pwd); ROOT=$(cd "$T/../.." && pwd)
 export PATH=~/.local/bin:$PATH UNSWBC_NO_UPDATE=1
 NAME=$1; shift
 OUT="$T/results/${NAME}${SEED0:+_s$SEED0}.txt"
-B="$T/work/$NAME"; rm -rf "$B"; mkdir -p "$B"; cp "$ROOT/fleet/bot.toml" "$ROOT/fleet/helper.hpp" "$B/"
+B="$T/work/$NAME"; rm -rf "$B"; mkdir -p "$B"; cp "$ROOT/fleet/bot.toml" "$ROOT"/fleet/*.hpp "$B/"
 { for d in "$@"; do echo "#define ${d%%=*} ${d#*=}"; done; cat "$ROOT/fleet/main.cpp"; } > "$B/main.cpp"
 cd "$ROOT"
 if ! unswbc run maps/default_small.map "$B" "$T/sparring/vib2" --seed 1 --no-replay > "$B/build.log" 2>&1; then echo "BUILD/RUN FAILED - see $B/build.log"; exit 1; fi

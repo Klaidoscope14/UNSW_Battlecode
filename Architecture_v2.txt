@@ -1,0 +1,436 @@
+FLEET BOT - ARCHITECTURE v2 (design proposal; no code changed)
+Built from: Combined_Changes.txt (your ideas + diagram), Architecture_Plan.txt (first draft), and a full read of
+fleet/main.cpp v2.16.0 (7,309 lines). Every claim about "today" below points at real code.
+
+=====================================================================================================
+0. WHAT READING THE CODE TAUGHT ME (the facts the design has to fit)
+=====================================================================================================
+  F1  The turn loop is ALREADY layered at both ends (main(), line 7264):
+        read_vision -> update_body -> read_sonar -> update_unobserved -> resolve_symmetry -> prune_knowledge
+        -> detect_teammate_deaths -> record_enemies -> compute_fleet_state -> decide -> send_sonars
+      Perception and comms are fine. The tangle is in compute_fleet_state (roles/phases, 240 lines) and
+      decide() (2,240 lines). The refactor is mostly about those two.
+
+  F2  decide() is really FIVE stages run in a fixed order (this is the hidden structure):
+        a. candidate analysis   - 4 moves: legal / ok1 / ok2 / area / dive / survival / noLoop      (4889-5050)
+        b. reflexes             - ~18 early `return act_*`: regicide, escort-hit, snipe, pack-strike,
+                                  survival splits, escape, insure, recycle, attack                    (5121-5440)
+        c. target chain         - ~29 writes to target/why; LATER BLOCKS OVERWRITE EARLIER ONES        (5443-6363)
+        d. feed sacrifice + splits (9 split kinds, first eligible wins)                              (6365-6511)
+        e. move scoring (~45 terms) + sprint extension                                                (6522-7033)
+      Reflexes (b) need the candidate analysis (a), so "candidates" belongs BEFORE behaviours, not in the
+      last layer as the first draft had it.
+
+  F3  The target chain hides one repeated rule: almost every role override says "...unless the current pearl
+      is within R steps", with a different R each time:
+        hunt 4 (majority hunt 2), feed 6, pack/wall 2, guard 4, defender 10, portal scout +4 margin, zone 8.
+      This is a PEARL LEASH per role. Making it an explicit parameter replaces most of the 26 `why`-string
+      comparisons.
+
+  F4  Roles are mutually exclusive by construction (isGuard needs !isHunter, isWall needs !isGuard, packs need
+      !feedPhase...). So the chain rarely arbitrates between two DUTIES; it arbitrates between
+      (i) the economy goal (pearl/zone/camp/explore), (ii) ONE role duty, (iii) a few cross-role emergencies
+      (hunt-queen when close, rescue, intercept) and (iv) the queen's own modes. A generic "everyone proposes,
+      arbiter picks" engine is more machinery than the problem needs (see 2.4).
+
+  F5  The queen is a different agent living inside the same function: 146 `amQueen` references; her move
+      terms (1e5-3e6) and the workers' (150-9000) are interleaved in one loop.
+
+  F6  Sixteen search functions with FOUR different rules for unexplored edges and THREE for bodies:
+        unexplored edge = open      : plan_bfs, vor_bfs, reach_bfs, match_bfs, queen_dist_bfs, survive_rec, queen_exits
+        unexplored edge = wall      : dive_rec, loop_reachable/ring_free/box_cells, in_pocket, pocket_ahead, look2, regicide
+        unexplored edge = frontier  : flood (not entered, but flagged "open beyond")
+        unexplored edge = "unknown" : known_dead_end (any unknown edge -> "not a dead end")
+        bodies timed (tail frees)   : flood, plan_bfs, survive_rec, dive_rec, regicide (own body)
+        bodies solid                : reach_bfs, look2_safe_cells (visible bodies block)
+        bodies ignored              : vor_bfs, match_bfs, queen_dist_bfs
+      Each choice was deliberate, but nothing names them, so a new feature silently picks one. The map model
+      needs ONE neighbour function with a named policy.
+
+  F7  Shared mutable scratch: set_body()/stamp/wallStamp/ignoreContested are global state that floods read.
+      decide() calls set_body ~20 times to switch "which body is on the board". Any reordering of code changes
+      results. This is the biggest risk for an identical-games refactor.
+
+  F8  Side effects hide inside "choose" functions: choose_explore_goal draws rng and caches exploreGoal;
+      choose_outpost refreshes a 10-round cache; gather_pearls refreshes regionVal/Voronoi; the bookkeeping
+      after the chain writes skipPearl / chaseCnt / campTile / stall* / lastPearl; queue_fact is called from
+      decision code, and send_sonars sorts with std::sort (unstable), so the ORDER facts were queued changes
+      which ones go out. Calling every behaviour "just to see its proposal" would change games.
+
+  F9  Team decisions are computed by every dragon from a DIFFERENT view (its own 7x7 + fleet reports of
+      different ages): choose_pearl, assign_prey, wall rank, leader/giant/heir election, zones, majority,
+      switch round. When views differ, the "implicit consensus" breaks: the v2.15 bug with 20-28 leaders at
+      once was exactly this. Only `switched` is actively synchronised (T_PHASE).
+
+  F10 About 20 boolean phase flags spread over the code: expansionPhase, openPlan, haveMajority, switched,
+      transitioned, consolidate, lateSafe, earlyFeed, survivalMode, outnumbered, majorityHunt, enemyQueenDead,
+      ourQueenDead, eqProbDead, leadSafe, behindQ, bunkerMode (4 causes), queenSplits, queenStarving, mode.
+      Some are v1 leftovers (transitioned / mode / role_for's 4 roles) that newer logic overrides.
+
+  F11 Six map-size thresholds that mean nearly the same thing: OPEN_MIN_CELLS 1000, SMALL_MAP_CELLS 1200,
+      RUNNER_MIN_CELLS 1200, WALL_MIN_CELLS 1500, RV_FULL_CELLS 1600, N/250 outposts; plus openMap (kelp<=20%).
+
+  F12 Comms: 8-bit magic + 4-bit type + 4-bit checksum + 48-bit payload. 14 of the 16 types are used. All
+      battles and replays are public, and replays show sonar values: anyone who decodes our format can read
+      our queen's position from her STATUS messages.
+
+  F13 CPU: peak ~40M of the judge's 100M points. Speed is NOT our problem; correctness and coordination are.
+      In the judge the clock advances with points spent, but local `unswbc run` uses wall-clock time, so
+      clock-based budgets would make local games non-reproducible. Budgets must stay as node counts.
+
+  F14 same.py compares only the result line (winner, reason, lengths, rounds). That is a good filter but a
+      refactor can diverge mid-game and still produce the same line. Pure refactors need a stronger check.
+
+=====================================================================================================
+1. WHAT IS ROUGH IN THE DIAGRAM (and how v2 fixes it)
+=====================================================================================================
+  Your diagram asks the right question at each layer (know -> map -> safe -> do -> go -> move), so v2 keeps
+  that spine. What it is missing:
+
+  1. TIME SCALES. It is one chain, but the work happens at 3 rates:
+       per game / per new edge : map profile, static topology, symmetry
+       per turn                : fields (distances, Voronoi, threat, density), situation, team plan
+       per candidate move      : body simulation, flood, survival search, cost terms
+     Mixing the rates is why things get recomputed 3-4 times today.
+  2. TWO SCOPES. "What should WE do" must be computed from a SHARED view (what the fleet tells each other),
+     or the dragons disagree (F9). "What should I do" uses everything I see. The diagram does not separate
+     them.
+  3. ACTIONS ARE NOT ONLY MOVES. Splits (9 kinds), sacrifices (feed, recycle) and sprints are actions;
+     reflexes skip the planning entirely. The diagram ends in "MOVE".
+  4. SAFETY APPEARS TWICE: as FIELDS (where is it dangerous: threat, enemy ETA) and as a GATE in action
+     choice (never trade a level of safety for a pearl). The diagram only has the first.
+  5. THE LOOP CLOSES. What a dragon tells others (comms out) and what it remembers (commitments, stall
+     timers) are layers too.
+  6. "Macro graph -> local A* -> Sprint DP" as a pathfinding stack: BFS over 4,096 cells costs ~0.3M
+     points; we use 40M of 100M. A macro graph earns its place for SAFETY (dead ends, chokepoints), not speed.
+     Sprints are at most 3 free steps; a DFS over them is exact and cheap.
+
+=====================================================================================================
+2. THE ARCHITECTURE
+=====================================================================================================
+
+  2.1 Turn pipeline
+  ---------------------------------------------------------------------------------------------------
+
+     ┌────────────────────────── per game / when new edges are learned ─────────────────────────────┐
+     │  MapProfile (size, kelp share, portals, maze-ness, start fleet)   Topology (dead ends, chokes,  │
+     │  Symmetry                                                          loops, corridors)            │
+     └───────────────────────────────────────────────┬───────────────────────────────────────────────┘
+                                                     │ read-only
+   L0 PERCEIVE  vision + own body + inbox ─► TRUST ─► WORLD (MapKnowledge, PearlBook, EnemyBook,
+                                                             TeamView, Self)
+   L1 FIELDS    computed once, lazily, read-only:  distSelf, Voronoi(ours/theirs, in TURNS),
+                                                   threat(1 turn / 2 turns), density (prefix sums)
+   L2 SITUATE   Situation axes:  Clock x Strength x Queens x Local     (+ tiebreak estimate)
+   ── TEAM SCOPE (inputs = TeamView only, deterministic, same answer on every dragon) ─────────────
+   L3 COMMAND   RoleAllocator (quota table by situation)  +  claims for singleton roles
+                matchers: pearls, prey, zones, posts, wall ranks
+   ── SELF SCOPE ──────────────────────────────────────────────────────────────────────────────────
+   L4 TACTICS   candidate analysis (4 moves)  ─►  REFLEXES (ordered table) ─► action?  ─────────┐
+   L5 INTENT    economy goal  +  role duty (with pearl leash)  +  overrides  +  queen machine     │
+                ─► one Goal  ─► commit() bookkeeping                                               │
+   L6 ACT       sacrifice? ─► split planner? ─► move planner (severity bands) + sprint ─► action ◄─┘
+   L7 SPEAK     message registry ─► scheduler (4 rays, aimed) ─► sonar out;  trace / indicator
+
+  2.2 L0 PERCEIVE + TRUST + WORLD  ("What do I know? Can I trust it?")
+  ---------------------------------------------------------------------------------------------------
+    MapKnowledge  edgeType/obsEdge/portals/symmetry (today 1055-1790, unchanged)
+    PearlBook     seenRound, obsNext, nextSpawn, pearlState, gaps, drops (today 1137-1150)
+    EnemyBook     enemyReps + enemyLenMem + escortSeen + queen status (seen / reported / probably dead /
+                  dead) in one place, each entry with age and confidence
+    TeamView      fleet reports (Status), claims, zone reports, bunker box, phase: THE SHARED VIEW. Team-scope
+                  code may read only this (+ itself). Visible teammates are folded in only through their
+                  reports, so two dragons near each other compute the same thing.
+    Self          body, L, lastDirs, commitments (lastPearl, stall/chase/camp timers, miningTrip, restCell,
+                  bunkerBox)
+    Trust         (new) runs inside apply_message:
+                    - MAC check (replaces the 4-bit checksum; see L7)
+                    - plausibility: an enemy report needing more than free+paid reach
+                      (ceil(L/4) + L-2 cells per round) from its last trusted position is dropped
+                    - TTL per message type (from the registry), not hard-coded ages in 30 places
+
+  2.3 L1 FIELDS + MAP MODEL  ("What does the map look like? Where is it dangerous?")
+  ---------------------------------------------------------------------------------------------------
+    GraphView  ONE step function:  step(cell, dir, Policy) with
+                 Policy.unknown  = OPEN | WALL | FRONTIER        (F6, named instead of implied)
+                 Policy.bodies   = TIMED | SOLID | IGNORE
+                 Policy.portals  = KNOWN_ONLY | BLIND_OK
+               Every existing search keeps its exact current policy (written next to it), so games stay
+               identical; new code must choose one explicitly.
+    BodyOverlay  replaces the global set_body/stamp/wallStamp juggling with a scoped object:
+                 { Overlay ov(body_after_move); flood(ov, ...); }  - no hidden state between calls (F7).
+    FieldCache  each field computed at most once per turn, on first use (lazy), read-only afterwards:
+                 distSelf      today plan_bfs(head)
+                 vorOurs/Enemy today compute_voronoi; v2 option: arrival time in TURNS (cells / free steps),
+                               because a length-12 enemy covers 3 cells a turn (Voronoi counts cells today)
+                 threat1/2     today compute_queen_threat (qThreat, qThreatCnt, qMargin, qThreat2);
+                               also usable by leaders and the giant, not only the queen
+                 density       (new) 2D prefix sums over: spawn rate, known spawn tiles, enemy sightings (decayed),
+                               teammates. O(1) box sums; the map wraps, so a query splits into <= 4 rectangles.
+                               Replaces regionVal's diamond loops, spawn_tiles_near, crowd counts.
+    Topology   (new, static; recomputed only when an edge is learned):
+                 - bridges + 2-edge-connected components of known water (iterative Tarjan: no recursion,
+                   the wasm stack is small)
+                 - every cell: on a loop? loop capacity of its component? depth into a dead-end branch?
+                   pearls / spawn tiles in that branch?
+                 - articulation cells between regions = chokepoints
+               Replaces in_pocket, pocket_ahead, known_dead_end and corridor_leads_to (4 functions,
+               3 definitions of "dead end") with lookups. Used for safety, guard posts, corking, feeder
+               delivery tiles and map profile; NOT for pathfinding (6 in section 1).
+    MapProfile (new) one struct: size class (from N, exact and the same for everyone), kelp share and
+               maze-ness (share of known cells on no loop), portal count, start fleet, sealed queen start.
+               Replaces the six N thresholds and openMap (F11). Rule: anything the TEAM must agree on uses
+               only the N-based class (known exactly by all); learned features (kelp, maze) tune
+               SELF-scope safety only.
+
+  2.4 L2 SITUATION  ("Where do we stand?")
+  ---------------------------------------------------------------------------------------------------
+    One struct with ORTHOGONAL axes instead of ~20 flags (a single phase enum would explode into
+    combinations):
+      Clock     OPENING (multiply until majority; today openPlan/expansionPhase)
+                -> BUILD (numbers; until the switch round)
+                -> CONSOLIDATE (after the switch: length; today switched/consolidate)
+                -> FINAL (last 40-50 rounds; lateSafe / earlyFeed)
+      Strength  SURVIVAL | OUTNUMBERED | EVEN | AHEAD | MAJORITY  (from units vs enemyEst, with hysteresis)
+      Queens    ours ALIVE/DEAD  x  theirs ALIVE-SEEN / ALIVE-UNSEEN / PROBABLY-DEAD / DEAD
+      Local     threat count, enemy in view, stalkers, crowd (self scope only)
+      Tiebreak  tie_state(): ahead / behind / unknown on queen, longest, total
+    Consensus: Clock, Strength and Queens are TEAM axes, so they are synchronised by sonar (T_PHASE already
+    carries `switched`; it has room for the majority bit and the enemy-queen state). Local stays per dragon.
+    Legacy v1 pieces (transitioned / mode / section-12 table) are absorbed here and removed.
+
+  2.5 L3 COMMAND - team plan  ("What should we do?")  -- TEAM SCOPE
+  ---------------------------------------------------------------------------------------------------
+    Contract: pure functions of (TeamView, Situation, MapProfile, my id/len); ties broken by id.
+    Three coordination mechanisms, each used where it fits:
+      a. HASH SLOTS for SHARE roles (hunters, guards, wall, defenders, runners, scouts). Today: two hashes,
+         fixed shares. v2: one slot in 0-99 and a QUOTA TABLE indexed by (Clock, Strength, size class),
+         e.g. OPENING = 100% collectors; CONTEST+MAJORITY = 30% hunters... Robust: needs no knowledge of
+         teammates at all.
+      b. CLAIMS for SINGLETON roles (giant, heir, screen per side, bunker posts, cork): the candidate
+         broadcasts "I am giant (len)", the longest (then lowest id) wins, the claim expires without
+         renewal. This is the cure for the 20-28 leaders bug, done once for every singleton role.
+      c. LOCAL MATCHING for JOBS (pearls, prey, zones): greedy matching over teammates within a radius,
+         which stays stable when far-away views differ. (Why not Hungarian: see 3.)
+    RoleAllocator returns ONE primary role per dragon:
+      QUEEN | GIANT/HEIR | HUNTER | WALL | GUARD | SCREEN | DEFENDER | RUNNER | SCOUT | FEEDER | COLLECTOR
+    plus modifiers (aggressive temperament = today's role_for "combat"). Today these rules live in
+    compute_fleet_state (2635-2735), wall_now/pack_member, the feedPhase expression and decide().
+
+  2.6 L4 TACTICS + REFLEXES  ("Is there something I must do right now?")
+  ---------------------------------------------------------------------------------------------------
+    Candidate analysis (today 4889-5050) becomes its own product, computed before anything else decides:
+      per move: legal, blind, attack, eat, ok1, ok2, area, dive value, survival, noLoop, body after the move
+      summary : anyLegal, anySafe, diving, attack available (+ target length), stalkers, enemy queen adjacent
+    Reflexes = an ORDERED TABLE of (condition, action), first match wins; same order as today:
+      regicide(paid) > escort-hit > snipe > pack-strike > regicide(sprint) > [no legal move: unwind-split /
+      queen-stall / last-attack / save-split / doomed] > escape sprint > trap-split > insure-split >
+      recycle > attack
+    Each row is a small function; the table makes the priority order visible and testable. Order is kept
+    as is (it encodes the "death only when compensated" rule).
+
+  2.7 L5 INTENT  ("Where should I go?")  -- instead of a generic arbiter
+  ---------------------------------------------------------------------------------------------------
+    Goal = { Intent (enum, replaces `why` strings), cell, leash, hold, portalDir }
+    Composition, in this order:
+      1. ECONOMY goal (shared by all non-queens): matched pearl (with commitment + stall/chase skips)
+         -> zone -> outpost -> camp -> explore.  Today: choose_pearl ... choose_explore_goal.
+      2. ROLE DUTY from the primary role's behaviour, with that role's PEARL LEASH (F3):
+           HUNTER   prey / lurk / regroup               leash 2
+           WALL     line position                       leash 2
+           GUARD    intercept / post / guard-line       leash 4
+           SCREEN   screen post                         leash 3
+           FEEDER   delivery tile next to queen/giant   leash 6
+           DEFENDER own-half camp                       leash 10
+           SCOUT    nearest unexplored portal           margin 4
+           RUNNER / COLLECTOR: none (economy only; zone overrides a pearl > 8 away)
+         The duty wins unless the economy goal is a pearl within the leash.
+      3. OVERRIDES (any non-queen role): hunt-queen when she is fresh and close, rescue a stalked queen.
+      4. QUEEN MACHINE (the queen skips 1-3): states
+           SURVIVE (crowd -> flee) > BUNKER (enemy queen dead / tie / late / probably dead)
+           > LATE-SAFE (hold, only safe drops) > EAT (pearls inside leash, clear of enemies)
+           > REST (open water at home) > HOME
+         with her own leash taken from Topology + MapProfile (2.3), not a fixed 7.
+    commit(goal): the bookkeeping that today runs after the chain (skipPearl, chaseCnt, campTile, stall,
+    lastPearl, exploreGoal) runs ONLY for the chosen goal (F8). Behaviours are pure functions.
+    Intent memory: keep the last goal unless the new one is better by a margin (today's TARGET_COMMIT
+    generalised to every intent; it stops zone <-> pearl and guard <-> pearl flip-flops).
+
+  2.8 L6 ACT  ("What do I do this turn?")
+  ---------------------------------------------------------------------------------------------------
+    Sacrifice planner  feed-leader / recycle: where my death drops land (head, then every 2nd segment).
+                       v2: feeders die on a DELIVERY TILE (Topology: inside the queen's loop region), not
+                       "within 3 of her head" (P4 showed 5-15% of fed length reached her).
+    Split planner      table of split kinds in today's order: bunker-trim > queen-split > grow-fleet >
+                       lane-split > pearl-split > half-split > keep-fleet (+ post-trim, survival splits stay
+                       reflexes). Shared gates computed once: calm, room_for_more, split_allowed,
+                       child_can_escape.
+    Move planner       scores the analysed candidates with a COST PROFILE (Queen / Leader-Giant / Worker)
+                       and SEVERITY BANDS:
+          band A  LIFE    certain trap with no paying dive; queen inside a free/paid strike reach; queen in a
+                          known dead end; teammate taking the queen's last exit; portal head-on with a teammate
+          band B  SAFETY  queen: two-turn exposure (look2), corner/all-exits with an enemy near, no reachable
+                          loop, portal mouth, unexplored cells, corridor entry; worker: next to an enemy head,
+                          crowding the queen
+          band C  GOAL    progress to the goal, pearl eaten, area, dive value, camping
+          band D  STYLE   spread from teammates, facing, confinement of enemies, box their queen
+       Comparison: band A total first, then band B total, then C+D as a weighted sum.
+       Within a band the current relative weights stay. A lower band can never outweigh a higher one.
+       This fixes the known conflict by construction: today CORNER_PEN (1.5M, a band-B proxy) is larger than
+       HARD_THREAT_PEN (1.2M, band A), so the queen could prefer a cell inside enemy reach over a corner.
+       Compensation rule: a trap whose dive pays (pearls - 2 >= threshold) is NOT band A for a worker.
+    Sprint planner     today's sprint_dfs (free steps <= 3, exact); regicide_path BFS for paid strikes.
+
+  2.9 L7 SPEAK  ("What do I tell the others?")
+  ---------------------------------------------------------------------------------------------------
+    Registry: one table row per message type: {type, encoder, decoder, send prio, sends, relay prio, TTL}.
+    Today relay priorities are special cases inside read_sonar (2195-2230); prio/sends are literals at
+    ~40 queue_fact calls.
+    Type space: 14/16 used. Type 15 becomes "extended": a 4-bit subtype in the payload gives 16 more types
+    (claims, delivery tile, cork target, phase v2).
+    Security (cheap): 52 bits (type + payload) go through a keyed 3-round Feistel cipher with a secret key
+    in our source (replays show values, not code); a 12-bit MAC replaces magic + checksum. Opponents can no
+    longer read our queen's position from public replays or forge messages. One-time wire change.
+    Outbox: decision code only calls outbox.add(msg); ordering stays deterministic (stable sort).
+    Telemetry: TRACE build writes per dragon-turn {round, id, reflex/intent, action, severity band of the
+    chosen move, top cost terms} to a local file; the indicator string carries intent + band so ladder
+    replays explain each move without LOG lines (LOG costs 2.5M points per flush + 4,000 per byte).
+
+  2.10 Cross-cutting rules (the contracts)
+  ---------------------------------------------------------------------------------------------------
+    C1 Fields are computed at most once per turn and are read-only afterwards.
+    C2 Behaviours are pure; side effects only in commit() and in the outbox.
+    C3 Team-scope code reads only TeamView + Situation + MapProfile; deterministic; ties by id.
+    C4 Every search has a NODE budget (deterministic). No clock budgets (F13).
+    C5 Every move term belongs to exactly one band.
+    C6 Every switch has a unique name, enforced by a check script in tools/testing (the MAJ_MIN_UNITS bug).
+    C7 Every action is explainable: reflex or intent + band, in the trace and the indicator.
+
+  2.11 Files (single translation unit: main.cpp includes the headers in order; bot.toml already ships
+       every .hpp; the anonymous namespace and the generated code stay as they are)
+  ---------------------------------------------------------------------------------------------------
+    config.hpp      switches grouped by module (+ unique-name check)
+    core.hpp        geometry, wrap, INF, rng, globals W/H/N/R
+    world.hpp       L0: MapKnowledge, PearlBook, EnemyBook, TeamView, Self, vision/sonar ingest, death detection
+    comms.hpp       L0 trust + L7: registry, cipher/MAC, outbox, scheduler
+    graph.hpp       L1: GraphView, BodyOverlay, BFS kernels, survival + dive searches
+    fields.hpp      L1: FieldCache (distances, Voronoi, threat, density)
+    topology.hpp    L1: static topology (new)
+    profile.hpp     L1: MapProfile (new)
+    situation.hpp   L2
+    commander.hpp   L3: RoleAllocator, claims, matchers
+    tactics.hpp     L4: candidate analysis, reflex table
+    intent.hpp      L5: Goal/Intent, economy, role duties, overrides, queen machine, commit
+    act.hpp         L6: sacrifice, split planner, cost profiles + bands, move planner, sprints
+    telemetry.hpp   trace + indicator
+    main.cpp        the turn loop (~80 lines)
+
+  Where today's code goes:
+    1055-1790 learning/symmetry ............ world.hpp        2340-2500 flood/plan_bfs ......... graph.hpp
+    1795-2340 vision/sonar/deaths ......... world.hpp        2513-2773 compute_fleet_state ..... situation + commander
+    1308-1522 + 7036-7166 messages ........ comms.hpp        2778-3510 pearls/zones/explore .... intent.hpp (economy)
+    2956-3052 regionVal/Voronoi ........... fields.hpp       3588-3733 survival/dive ........... graph.hpp
+    3735-4152 threat/pockets/flee ......... fields + topology + intent (queen)
+    4155-4250 sprint_dfs .................. act.hpp          4354-4514 bunker .................. intent.hpp (queen)
+    4516-4704 packs/prey/regicide ......... commander + tactics
+    decide 4889-5050 -> tactics; 5121-5440 -> reflex table; 5443-6363 -> intent; 6365-6511 -> act (sacrifice,
+    splits); 6522-7033 -> act (move planner + sprint)
+
+=====================================================================================================
+3. EVERY IDEA FROM Combined_Changes.txt: WHERE IT LIVES AND MY VERDICT
+=====================================================================================================
+  2D prefix sums ................. BUILD (L1 density). O(N) per turn, wrap = up to 4 rectangles per query.
+                                   Real value: the queen's safest quadrant, zone crowding, outpost richness.
+                                   Box instead of diamond changes values, so it is measured, not a pure refactor.
+  Adversarial A* ................. DROP as a pathfinder (F13: BFS costs ~0.3M of 100M). Its content, "don't
+                                   race what the enemy wins", is Voronoi (done). UPGRADE instead: Voronoi in
+                                   TURNS, not cells (a long enemy moves several cells a turn). EXPERIMENT.
+  Zobrist hashing ................ DROP. headHist holds 16 cells; nothing to speed up.
+  Hungarian / min-cost flow ...... EXPERIMENT, low priority. Two reasons from our data: (1) C (path
+                                   distances) lost pearls because the "worse" manhattan matching spreads
+                                   dragons by accident; an optimal sum of distances crowds them the same way.
+                                   (2) A global optimum flips when one far input changes, and every dragon has a
+                                   slightly different view (F9): greedy over nearby teammates is locally stable.
+                                   If tried: an auction restricted to a local cluster, plus the zone quota.
+  Graph compression / Tarjan ..... BUILD as Topology (L1), for safety, chokepoints, corking, delivery tiles and
+                                   map profile, not pathfinding. Bridges / 2-edge-connected components (the grid
+                                   is undirected; SCC is for directed graphs). Iterative, recomputed on new edges.
+  2D Fenwick / quadtree .......... DROP. Prefix sums rebuilt each turn are simpler; no point updates needed.
+  Bitboards ...................... DROP for now. W <= 64 fits a uint64 row, but timed bodies (tails freeing
+                                   over time) do not fit a bitmask, and CPU is not the limit.
+  Sprint DP ...................... DROP. Free steps <= 3; sprint_dfs is exact; long paid strikes use BFS.
+  Team salts / crypto ............ BUILD (L7), cheap: cipher + 12-bit MAC hides the queen's position in public
+                                   replays and blocks forgery. One-time format change.
+  Outlier rejection .............. BUILD (L0 trust), cheap. Use free + PAID reach as the speed limit (a dragon
+                                   can sprint ceil(L/4) + L - 2 cells), not ceil(L/4) as written in the idea.
+  Body blocking / sway-pinning ... EXPERIMENT as a CORK duty (L5, claim-based): their queen's head inside a
+                                   Topology dead-end branch -> one short dragon takes the branch mouth; she cannot
+                                   leave. BOX_QUEEN (today) is the in-view version.
+  Choke-point costs, long dragons  BUILD (L6 band B): a cell whose loop capacity < my length is a corridor I
+                                   cannot turn in. Generalises QUEEN_LONG_LEN's corridor penalty to everyone long.
+  Topological leash .............. BUILD (L5 queen machine): her leash = cells with loop capacity > her length and
+                                   our Voronoi margin >= k, not a fixed radius 7.
+  Feeder conduits ................ BUILD after Topology (L6 sacrifice + delivery-tile message).
+  Enemy travel-time bidding ...... DONE (Voronoi, v2.15.4); the TURNS upgrade above improves it.
+  Your strategy pieces (opening plan, zones, packs, wall, giant, bunker, screens, P3 safety) are not rewritten;
+  they move into their layer as they are.
+
+=====================================================================================================
+4. MIGRATION PLAN
+=====================================================================================================
+  Rule: pure refactor steps must be IDENTICAL, checked by a decision trace, not only by result lines (F14).
+  v2.16.0 stays the ladder submission until a restructured build is proven identical or better.
+
+  Step 0  Tooling (~1 h)
+          TRACE build: per dragon-turn action + note written to a local file; trace_hash.py compares two
+          builds game by game and prints the first diverging (game, round, dragon). Unique-switch check script.
+  Step 1  Unity split into the files of 2.11 + switches grouped in config.hpp. Optional: delete the ~18
+          tested-OFF features (QUEEN_ADAPT, MATCH_PATHS, OPEN_QUEEN, QUEEN_EVADE...; PORTAL_RUSH stays, it is
+          still a candidate); they are compiled out, so games stay identical; git keeps them. IDENTICAL.                                              ~2 h
+  Step 2  Intent enum replaces the `why` strings; Situation struct gathers the flags (no logic change).
+          IDENTICAL.                                                                             ~2 h
+  Step 3  GraphView policies + BodyOverlay + FieldCache, one search at a time (the riskiest step: F7).
+          IDENTICAL; CPU should drop.                                                            ~3 h
+  Step 4  Reflex table + candidate analysis split out; intent as an ordered FOLD of today's blocks (each block
+          sees the current goal, exactly as now) with propose/commit split. IDENTICAL.            ~3 h
+  Step 5  Cost profiles + bands with TODAY's values, the comparison still a plain sum. IDENTICAL.  ~2 h
+  ---- from here every step changes behaviour: 204-game suite, acceptance rule as today ----
+  Step 6  Behaviour-changing switches to the structure, one at a time:
+            a. band comparison (A > B > C+D)          d. claims for singleton roles (giant/heir/screen)
+            b. role duty + pearl leash (replaces the   e. Situation consensus (majority + queen state in T_PHASE)
+               fold where they differ)                f. quota table for share roles
+            c. intent memory (generalised commitment)
+  Step 7  New pieces, each a switch with the suite:
+            a. density prefix sums      b. Topology (+ dead-end lookups, chokepoint cost)
+            c. MapProfile               d. queen topological leash      e. feeder delivery tiles
+            f. trust: cipher/MAC + plausibility      g. cork duty      h. Voronoi in turns
+            i. matching experiment (local auction)
+  Effort: steps 0-5 about 1.5 days, step 6 about 1 day, then about half a day per new piece.
+
+  LEAN TRACK (if the deadline is close): steps 0, 1, 2 and 5 + 6a (bands) + 7b (Topology). About 1 day.
+  It keeps most of the value: readable files, explainable moves, no cross-band bugs, and the topology
+  that four of your ideas need.
+
+=====================================================================================================
+5. RISKS
+=====================================================================================================
+  - Hidden state order (F7, F8): identical games depend on the order of set_body calls, rng draws and
+    queue_fact calls. Mitigation: the trace check after every sub-step; move one function at a time.
+  - Band comparison changes many queen decisions at once. Mitigation: it is one switch (6a); compare queen
+    deaths by cause (qdeath.py) as well as wins.
+  - Claims and consensus add sonar traffic (4 slots/turn). Mitigation: extended type with low send counts;
+    claims only for singleton roles.
+  - Local tests do not predict the ladder. The trace + indicator (C7) are what make ladder replays
+    explainable against the 1800-rated teams.
+
+=====================================================================================================
+6. DECISIONS FOR YOU
+=====================================================================================================
+  1. Approve the layer model (2.1) with its two changes from the first draft: candidate analysis comes
+     before the reflexes, and L5 is economy + role duty with a pearl leash + overrides + queen machine,
+     not a generic "everyone proposes" arbiter.
+  2. Approve the three coordination mechanisms (hash slots + quota table, claims, local matching).
+  3. Approve the verdicts in section 3 (BUILD / EXPERIMENT / DROP).
+  4. Full track (steps 0-7) or lean track? How many days are left before the final submission?
+  5. In step 1, delete the ~18 tested-OFF features (kept in git) or keep them as switches?
+  6. Message format change (cipher + MAC): yes or no?
