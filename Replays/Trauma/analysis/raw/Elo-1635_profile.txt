@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE Verity / Elo-1635
-  us: dragons ever 252, born by split 250, died 209, median lifespan 28.0 rounds
-     length mix: r50: n3 {'L3': 67, 'L4-5': 33}  r100: n4 {'L2': 50, 'L3': 25, 'L4-5': 25}  r200: n18 {'L2': 56, 'L3': 22, 'L4-5': 22}  r300: n37 {'L2': 43, 'L3': 41, 'L4-5': 5, 'L6-9': 11}  r400: n43 {'L2': 44, 'L3': 35, 'L4-5': 14, 'L6-9': 7}  r499: n44 {'L2': 45, 'L3': 32, 'L4-5': 16, 'L6-9': 7}
-  opp: dragons ever 21, born by split 19, died 17, median lifespan 124 rounds
-     length mix: r50: n3 {'L2': 67, 'L4-5': 33}  r100: n3 {'L2': 67, 'L6-9': 33}  r200: n4 {'L3': 75, 'L10+': 25}  r300: n12 {'L2': 67, 'L3': 25, 'L6-9': 8}  r400: n11 {'L2': 82, 'L3': 9, 'L10+': 9}  r499: n4 {'L3': 75, 'L10+': 25}
-  us queen: rounds 501; length at r50/100/200/300/400: 4/4/4/4/4; max 6; stays inside a 4-cell spread over 10 rounds 60% of the time; enemy heads within 3 of her: 0:495 1:6 2:0 3+:0
-  opp queen: rounds 501; length at r50/100/200/300/400: 4/8/14/8/18; max 28; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:446 1:52 2:3 3+:0
-  us paid steps: {'paid step': 8}

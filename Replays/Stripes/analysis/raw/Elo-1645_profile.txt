@@ -1,8 +1,0 @@
-====================================================================================================
-PROFILE Ravenus / Elo-1645
-  us: dragons ever 6, born by split 4, died 6, median lifespan 30.0 rounds
-     length mix: r50: n2 {'L2': 50, 'L3': 50}  r100: n2 {'L2': 50, 'L4-5': 50}  r200: n2 {'L2': 50, 'L3': 50}
-  opp: dragons ever 63, born by split 61, died 35, median lifespan 36 rounds
-     length mix: r50: n6 {'L2': 50, 'L3': 50}  r100: n11 {'L2': 82, 'L3': 18}  r200: n25 {'L2': 76, 'L3': 24}
-  us queen: rounds 267; length at r50/100/200/300/400: 3/4/2/-/-; max 5; stays inside a 4-cell spread over 10 rounds 13% of the time; enemy heads within 3 of her: 0:182 1:54 2:24 3+:7
-  opp queen: rounds 214; length at r50/100/200/300/400: 3/2/2/-/-; max 4; stays inside a 4-cell spread over 10 rounds 65% of the time; enemy heads within 3 of her: 0:195 1:19 2:0 3+:0

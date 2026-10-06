@@ -1,8 +1,0 @@
-====================================================================================================
-PROFILE Outsider Traders / Elo-1626
-  us: dragons ever 5, born by split 3, died 5, median lifespan 6 rounds
-     length mix: r50: n1 {'L4-5': 100}  r100: n1 {'L4-5': 100}
-  opp: dragons ever 64, born by split 62, died 45, median lifespan 23.5 rounds
-     length mix: r50: n6 {'L2': 67, 'L3': 33}  r100: n15 {'L2': 60, 'L3': 20, 'L4-5': 20}
-  us queen: rounds 187; length at r50/100/200/300/400: 4/4/-/-/-; max 5; stays inside a 4-cell spread over 10 rounds 14% of the time; enemy heads within 3 of her: 0:141 1:38 2:8 3+:0
-  opp queen: rounds 194; length at r50/100/200/300/400: 2/3/-/-/-; max 5; stays inside a 4-cell spread over 10 rounds 36% of the time; enemy heads within 3 of her: 0:192 1:2 2:0 3+:0

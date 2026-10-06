@@ -1,9 +1,0 @@
-============================================================================================
-SUMMARY    T1   T2   T3   T4   T5   T6   T7   T8   result
-Elo-1505   ok   X    X    X    X    ok   ok   ok   LOSS Longer queen
-Elo-1541   ok   ok   X    ok   X    X    ok   ok   LOSS Longer queen
-Elo-1607   X    ok   X    X    X    X    ok   ok   LOSS Lost by Longest dragon
-Elo-1635   ok   ok   ok   ok   X    X    ok   ok   LOSS Longer queen
-Elo-1705   ok   ok   ok   ok   X    X    ok   ok   LOSS Lost by Longest Queen
-Elo-1707   ok   ok   ok   X    X    X    ok   ok   LOSS Longer queen
-met       5/6  5/6  3/6  3/6  0/6  1/6  6/6  6/6

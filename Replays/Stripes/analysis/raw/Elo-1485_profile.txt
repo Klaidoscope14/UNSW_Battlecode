@@ -1,8 +1,0 @@
-====================================================================================================
-PROFILE Quantify / Elo-1485
-  us: dragons ever 10, born by split 8, died 10, median lifespan 20.5 rounds
-     length mix: r50: n2 {'L2': 50, 'L3': 50}  r100: n2 {'L2': 50, 'L3': 50}
-  opp: dragons ever 37, born by split 35, died 18, median lifespan 27 rounds
-     length mix: r50: n9 {'L2': 78, 'L3': 22}  r100: n14 {'L2': 64, 'L3': 36}
-  us queen: rounds 157; length at r50/100/200/300/400: 2/2/-/-/-; max 2; stays inside a 4-cell spread over 10 rounds 22% of the time; enemy heads within 3 of her: 0:104 1:41 2:9 3+:3
-  opp queen: rounds 24; length at r50/100/200/300/400: -/-/-/-/-; max 4; stays inside a 4-cell spread over 10 rounds 43% of the time; enemy heads within 3 of her: 0:24 1:0 2:0 3+:0

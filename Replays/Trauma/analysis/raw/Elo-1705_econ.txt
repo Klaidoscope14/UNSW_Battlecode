@@ -1,9 +1,0 @@
-====================================================================================================
-ECON  Ciallo～(∠・ω< )⌒☆ / Elo-1705
-  us: dragon-turns 7485; head within 1 of a spawn tile 59%; a pearl within 3: 57%; nearest pearl 10+ away: 1%; pearl adjacent at round start but not eaten by the side that round: 803/1191
-  opp: dragon-turns 3465; head within 1 of a spawn tile 12%; a pearl within 3: 13%; nearest pearl 10+ away: 18%; pearl adjacent at round start but not eaten by the side that round: 55/96
-  our status words, rounds 1-50: [('pearl', 74), ('explore', 31), ('rest', 25), ('camp', 18), ('', 3), ('grow-fleet', 1)]
-  races lost while our head was nearer: 2; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
-     r430->r437 (2, 0) #92 3 vs 6  "prt keep hunt L2 s2"
-     r429->r438 (1, 0) #92 1 vs 6  "prt keep hunt L2 s2"
-  what our nearest dragon was doing in those lost races: [('hunt', 2)]

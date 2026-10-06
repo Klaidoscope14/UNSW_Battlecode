@@ -1,9 +1,0 @@
-====================================================================================================
-ECON  Machli / Elo-1472
-  us: dragon-turns 11131; head within 1 of a spawn tile 65%; a pearl within 3: 53%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 875/1539
-  opp: dragon-turns 1452; head within 1 of a spawn tile 64%; a pearl within 3: 36%; nearest pearl 10+ away: 5%; pearl adjacent at round start but not eaten by the side that round: 76/115
-  our status words, rounds 1-50: [('pearl', 91), ('camp', 8), ('rest', 4), ('', 3), ('explore', 3), ('grow-fleet', 1)]
-  races lost while our head was nearer: 2; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
-     r324->r329 (2, 7) #124 5 vs 6  "LEAD exp farm pearl L4"
-     r397->r404 (8, 8) #199 4 vs 7  "col farm save-split L5 GRD"
-  what our nearest dragon was doing in those lost races: [('pearl', 1), ('save-split', 1)]

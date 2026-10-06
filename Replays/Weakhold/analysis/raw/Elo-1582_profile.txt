@@ -1,8 +1,0 @@
-====================================================================================================
-PROFILE ? / Elo-1582
-  us: dragons ever 25, born by split 23, died 18, median lifespan 21 rounds
-     length mix: r50: n3 {'L2': 67, 'L4-5': 33}  r100: n3 {'L2': 67, 'L4-5': 33}  r200: n2 {'L2': 50, 'L4-5': 50}  r300: n1 {'L4-5': 100}  r400: n4 {'L2': 50, 'L4-5': 50}  r499: n7 {'L2': 57, 'L3': 29, 'L4-5': 14}
-  opp: dragons ever 92, born by split 90, died 88, median lifespan 52.0 rounds
-     length mix: r50: n4 {'L2': 100}  r100: n15 {'L2': 80, 'L3': 20}  r200: n26 {'L2': 62, 'L3': 35, 'L6-9': 4}  r300: n26 {'L2': 35, 'L3': 38, 'L4-5': 15, 'L6-9': 12}  r400: n6 {'L2': 17, 'L4-5': 17, 'L10+': 67}  r499: n4 {'L10+': 100}
-  us queen: rounds 338; length at r50/100/200/300/400: 4/4/4/4/-; max 4; stays inside a 4-cell spread over 10 rounds 31% of the time; enemy heads within 3 of her: 0:242 1:79 2:15 3+:2
-  opp queen: rounds 49; length at r50/100/200/300/400: -/-/-/-/-; max 4; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:49 1:0 2:0 3+:0

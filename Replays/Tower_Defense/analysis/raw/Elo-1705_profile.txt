@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE ? / Elo-1705
-  us: dragons ever 20, born by split 18, died 17, median lifespan 60.5 rounds
-     length mix: r50: n2 {'L2': 50, 'L3': 50}  r100: n2 {'L2': 50, 'L4-5': 50}  r200: n4 {'L2': 75, 'L3': 25}  r300: n4 {'L2': 25, 'L3': 75}  r400: n4 {'L2': 50, 'L3': 50}  r499: n3 {'L6-9': 67, 'L10+': 33}
-  opp: dragons ever 303, born by split 301, died 281, median lifespan 21 rounds
-     length mix: r50: n4 {'L2': 100}  r100: n17 {'L2': 53, 'L3': 35, 'L4-5': 12}  r200: n33 {'L2': 64, 'L3': 33, 'L4-5': 3}  r300: n40 {'L2': 58, 'L3': 40, 'L6-9': 2}  r400: n20 {'L2': 25, 'L3': 45, 'L4-5': 25, 'L10+': 5}  r499: n20 {'L2': 30, 'L3': 35, 'L4-5': 20, 'L6-9': 10, 'L10+': 5}
-  us queen: rounds 224; length at r50/100/200/300/400: 3/5/2/-/-; max 7; stays inside a 4-cell spread over 10 rounds 16% of the time; enemy heads within 3 of her: 0:194 1:20 2:9 3+:1
-  opp queen: rounds 100; length at r50/100/200/300/400: 2/-/-/-/-; max 4; stays inside a 4-cell spread over 10 rounds 2% of the time; enemy heads within 3 of her: 0:100 1:0 2:0 3+:0
-  us paid steps: {'paid step': 1}

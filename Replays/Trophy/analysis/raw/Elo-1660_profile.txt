@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE CookAgent / Elo-1660
-  us: dragons ever 16, born by split 14, died 16, median lifespan 22.5 rounds
-     length mix: r50: n5 {'L2': 60, 'L3': 40}  r100: n7 {'L2': 86, 'L3': 14}
-  opp: dragons ever 98, born by split 96, died 50, median lifespan 53.0 rounds
-     length mix: r50: n25 {'L2': 76, 'L3': 24}  r100: n47 {'L2': 70, 'L3': 26, 'L4-5': 4}
-  us queen: rounds 83; length at r50/100/200/300/400: 2/-/-/-/-; max 8; stays inside a 4-cell spread over 10 rounds 14% of the time; enemy heads within 3 of her: 0:37 1:27 2:18 3+:1
-  opp queen: rounds 185; length at r50/100/200/300/400: 2/5/-/-/-; max 8; stays inside a 4-cell spread over 10 rounds 7% of the time; enemy heads within 3 of her: 0:173 1:9 2:3 3+:0
-  us paid steps: {'ate a pearl on the paid step': 1}

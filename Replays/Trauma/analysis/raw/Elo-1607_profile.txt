@@ -1,9 +1,0 @@
-====================================================================================================
-PROFILE Hydra / Elo-1607
-  us: dragons ever 12, born by split 10, died 10, median lifespan 52.0 rounds
-     length mix: r50: n3 {'L2': 67, 'L4-5': 33}  r100: n4 {'L2': 50, 'L3': 25, 'L4-5': 25}  r200: n4 {'L2': 50, 'L3': 25, 'L4-5': 25}  r300: n4 {'L3': 50, 'L4-5': 50}  r400: n2 {'L4-5': 50, 'L6-9': 50}  r499: n2 {'L3': 50, 'L10+': 50}
-  opp: dragons ever 339, born by split 337, died 321, median lifespan 23 rounds
-     length mix: r50: n11 {'L2': 82, 'L3': 18}  r100: n16 {'L2': 75, 'L3': 19, 'L4-5': 6}  r200: n37 {'L2': 54, 'L3': 43, 'L4-5': 3}  r300: n31 {'L2': 45, 'L3': 48, 'L4-5': 3, 'L6-9': 3}  r400: n28 {'L2': 36, 'L3': 43, 'L4-5': 14, 'L6-9': 7}  r499: n19 {'L2': 16, 'L3': 32, 'L4-5': 37, 'L6-9': 11, 'L10+': 5}
-  us queen: rounds 492; length at r50/100/200/300/400: 4/4/4/4/4; max 5; stays inside a 4-cell spread over 10 rounds 48% of the time; enemy heads within 3 of her: 0:413 1:75 2:4 3+:0
-  opp queen: rounds 235; length at r50/100/200/300/400: 2/2/3/-/-; max 4; stays inside a 4-cell spread over 10 rounds 0% of the time; enemy heads within 3 of her: 0:232 1:3 2:0 3+:0
-  us paid steps: {'paid step': 1}
