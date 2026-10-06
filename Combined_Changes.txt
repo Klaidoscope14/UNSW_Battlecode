@@ -1,0 +1,133 @@
+I think implementing each of these changes would not yield in a good output and not be as efficient.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Rebuilding Map Representation: 2D Prefix Sums (Static Grid Optimization)
+Since Claude suggested this as an alternative to the Fenwick Tree, we should actually implement it. While listing 200 enemy reports is cheap, checking all map cells for specific local metrics within the Candidate Move loop can be optimized.
+* The Adjustment: Build a 2D Prefix Sum matrix P[y][x] at the start of decide(). You can populate it with known spawn tile rates, enemy sighting clusters, or revealed hazards.
+* The Advantage: Instead of running bounded Manhattan loops or iterative scans inside your Candidate Move calculations to measure "safe fields" or "resource richness," you can calculate the exact density of any rectangular matrix slice in \(O(1)\) time using: \(\text{Sum}=P[y_{2}][x_{2}]-P[y_{1}-1][x_{2}]-P[y_{2}][x_{1}-1]+P[y_{1}-1][x_{1}-1]\)
+* Application: Instantly helps your queen identify which macro-quadrant of her leash zone has the lowest adversary profile.
+
+2. A* with an Adversarial Bounding Box (Pruning Dial's Algorithm)
+Your implementation of Dial's algorithm (plan_bfs) is solid, but it is currently isotropic—it spreads out equally in all directions until it hits the target.
+* The Adjustment: Convert the search into an Adversarial A*. Use the true path distance to the target as your \(g(c)\) cost, but inject a dynamic heuristic \(h(c)\) based on the closest visible enemy’s path distance to that same target.
+* The Advantage: If a collector bot is calculating a path to a pearl, and the path intersects a bounding box where an enemy head's \(g(\text{pearl})\) is mathematically guaranteed to be shorter than your agent's travel time, the pathfinder can abort the search branch early. This saves precious node allocation budget for other complex calculations.
+
+3. Zobrist Hashing for Loop Detection (State Tracking)
+Your bot currently tracks snake loops using a basic linear history vector (headHist).
+* The Adjustment: Use Zobrist Hashing—a classic CP technique for board games. Assign a random 64-bit integer to every tile on the board. Maintain a single uint64_t current_hash. When the head enters a tile, XOR the tile's hash into current_hash; when a segment leaves, XOR it out.
+* The Advantage: Checking if your queen or a guard has entered a cyclical trap or an infinite dithering loop drops from an \(O(H)\) array search to a single \(O(1)\) hash-table lookup or bitwise comparison.
+
+4. Bipartite Matching via the Hungarian Algorithm (Perfecting choose_pearl)
+Your choose_pearl loop uses a greedy sorting mechanism. Greedy matching can cause two collectors to cross paths suboptimally because the first agent aggressively grabs the "closest" pearl, forcing the second agent to walk double the distance for the remaining option.
+* The Adjustment: Replace the greedy sort with a lightweight Hungarian Algorithm matrix solver (or a Successive Shortest Path Min-Cost Max-Flow network).
+* The Reason it works here: Since the total pool of active collectors and known pearls is capped at small amounts (typically \(\le 24\) agents), an \(O(V^3)\) Hungarian matching will execute almost instantly. It guarantees that the cumulative team steps spent moving toward resources are mathematically minimized.
+
+---------------------------------------------------------------------------------------------------------------------------
+
+1. Spatial Graph Compression (Converting the Grid into Topo-Nodes)
+Right now, your pathfinding views the world as flat arrays representing individual cells (N = W × H). In a maze map or standard corridor layouts, treating every single tile as a graph node wastes processing cycles.
+* Choke-Point Segmentation (Bridge Finding): Run Tarjan’s Strongly Connected Components (SCC) or a bridge-finding algorithm during the opening rounds.
+* The Concept: Identify "Articulation Points" (tiles that, if blocked, completely split a region of the map in two). Compress long 1-wide corridors into a single virtual Weighted Edge, and treat open rooms/intersections as macro Nodes.
+* The Advantage: Instead of running a BFS across thousands of individual tiles to find a far-off pearl, your macro-pathfinding runs across maybe 20 to 50 localized macro-nodes in microseconds, allowing you to instantly run complex multi-turn distance checks.
+
+2. Space Partitioning via 2D Fenwick Trees / Quadtrees
+Your code frequently iterates over the entire grid or runs nested loops searching for entities like "all reported enemies within radius X."
+* Coordinate Point Updates: Maintain a 2D Fenwick Tree (Binary Indexed Tree) or a localized Quadtree updated dynamically by your sonar and vision loops.
+* The Concept: When a sonar report logs an enemy, instead of pushing it to a linear vector (enemyReps) and checking every candidate against it via O(E) Manhattan loops, query the 2D Fenwick tree for a specific bounding box.
+* The Advantage: Reduces spatial queries (like finding the density of active threats around your queen or identifying the closest teammate) from O(N) or O(E) down to a blistering \(O(\log^2 W)\).
+
+3. Bit-Parallelism / Bitboard Bitmasks
+In multi-agent grid games, state verification takes up a significant portion of execution time. Top teams borrow a concept from computer chess: Bitboards.
+* The Concept: A 64-bit integer (uint64_t) can perfectly store a true/false flag for a map section or an entire row/column. Since your max fleet size is exactly 64 (unitLimit = 64), you can use a single uint64_t as a team status bitmask.
+* The Application:
+    * Store a bitmask of tiles containing known static hazards (kelp).
+    * When the queen calculates valid moves, instead of checking four array indices, you can mask her surrounding neighborhood using bitwise shifts (&, |, ~). Hardware-level CPU bit operations process instantly, eliminating loop overhead entirely.
+
+4. Dynamic Programming (DP) for Free Step Sprints
+Your sprint_dfs is highly tactical but relies on a depth-first search branch calculation that could theoretically face exponential complexity growth if path vectors expand.
+* The Concept: Convert your lookahead sequence into a Dynamic Programming Matrix or a Memoized State Space: \(\text{DP}[cell][step]=\text{max\_pearls\_eaten\_safely}\)
+* The Advantage: If multiple search branches converge onto the same tile at step K with the same body length, you can instantly prune the suboptimal branch. This ensures your tactical calculators never hit the node cap budget limit on complex map tiles.
+
+5. Minimum Cost Maximum Flow (Min-Cost Max-Flow) for Pearl Harvesting
+Your choose_pearl matching logic resolves assignments beautifully using a communication-light greedy sorting heuristic. However, greedy sort algorithms don't guarantee a global optimum; they can cause agents to cross paths suboptimally in complex corridor matrices.
+* The Concept: Construct a virtual Bipartite Matching Graph where one side is your live fleet units and the other side is the known pearl coordinates. Connect them with directed edges where the edge weight is the calculated Dial's path travel distance.
+* The Application: Run a lightweight Successive Shortest Path (SSP) flow solver. Because your active fleet size shrinks dynamically, a fast flow network layout guarantees an absolute mathematically perfect global distribution of units to resources, entirely preventing path crossing or dead efficiency spaces.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Adversarial Sonar & Gossip Manipulation
+Your bot currently trusts global sonar broadcasts to build an exact mirror of the map. Top teams will intentionally broadcast fake coordinates or out-of-order data drops to pollute your map model and trap your queen.
+
+* 
+* Cryptographic Team Salts: Instead of a simple integer checksum, hash your payload with a pseudo-random turn-based key generated using a shared seed unique to your team (e.g., initialized via the exact layout of your initial team positions at Round 0).
+* Outlier Rejection Filtering: Introduce a time-to-live and spatial check on incoming enemy reports. If a sonar ping reports an enemy queen at a position that requires breaking the speed ceiling of ceil(L/4) steps per turn from her last verified location, flag the message as anomalous and discard it.
+* 
+2. Micro-Interception: "Body Blocking" and Grid Pinning
+Your pathfinding handles avoidance well, but it lacks offensive trapping mechanics. In tight map spaces, a shorter teammate shouldn't just "strike" an enemy head; it should actively force a positional trap.
+
+* 
+* Sway-Pinning Logic: When a combat/pack bot is near an enemy dragon, it shouldn't always sprint to strike the head. If the enemy dragon is entering a corridor, calculate if stepping onto a forward tile forces the enemy to loop or crash into itself. You can effectively "box" the enemy queen using a cheap length-2 collector acting as a sacrificial block.
+* Dynamic Choke-Point Weights: In Dial's algorithm, dynamically increase the movement cost for spaces with fewer open sides if enemyEst is high. This naturally guides your long dragons away from narrow hallways that are highly susceptible to defensive screen blocks, keeping them in open water.
+* 
+3. Dynamic Leash Modulation via Map Topology
+Your queen currently relies on a fixed leash radius (queenLeash) that expands based on safety timers. However, geography dictates safety far more than time.
+
+* 
+* Topological Safe Zones: Run a one-time flood fill at start to classify zones by topological density. If the map has open fields, the leash should expand aggressively. If the queen is spawning in a highly convoluted maze or a pocket matrix, the leash should shrink to a defensive layout, using guards to farm adjacent portals and bring food back.
+* Feeder Conduits: Instead of feeders rushing directly to the queen's head and risking collisions, map out fixed "Delivery Tiles" where the queen can orbit safely. Feeders can stream in, self-destruct on a targeted drop tile, and cycle out without crowding the queen's immediate structural exits.
+* 
+4. Advanced Target Swapping and Bid Management
+Your deterministic solver (choose_pearl) avoids duplicate tracking, but it doesn't account for adversarial intercepts.
+
+* 
+* Enemy Travel-Time Bidding: When calculating the value of a pearl or resource spawn, calculate the distance from the nearest visible enemy head to that resource. If an enemy can reach the pearl within X turns less than your designated agent, drop the target immediately and trigger a re-route. This eliminates wasted travel time spent racing toward resources you cannot win.
+
+
+             WHAT DO I KNOW?
+                    ↓
+          ┌──────────────────┐
+          │ Information Trust│
+          └────────┬─────────┘
+                   ↓
+          WHAT DOES THE MAP
+             LOOK LIKE?
+                   ↓
+      ┌────────────┼─────────────┐
+      ↓            ↓             ↓
+ Detailed Grid   Density      Topology
+      │            │             │
+      └────────────┼─────────────┘
+                   ↓
+            WHAT IS SAFE?
+                   ↓
+       ┌───────────┼───────────┐
+       ↓           ↓           ↓
+   Enemy ETA    Threats     Choke points
+       │           │           │
+       └───────────┼───────────┘
+                   ↓
+          WHAT SHOULD WE DO?
+                   ↓
+       ┌───────────┴───────────┐
+       ↓                       ↓
+  Team strategy            Queen strategy
+       ↓                       ↓
+ Pearl assignment          Safe territory
+       ↓                       ↓
+       └───────────┬───────────┘
+                   ↓
+             WHERE SHOULD
+              I GO?
+                   ↓
+              Macro graph
+                   ↓
+             Local A*/BFS
+                   ↓
+             Sprint DP
+                   ↓
+          Combat / blocking
+                   ↓
+          Candidate scoring
+                   ↓
+                MOVE

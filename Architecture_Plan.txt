@@ -1,0 +1,234 @@
+FLEET BOT - ARCHITECTURE PLAN (proposal; no code changed)
+Built from Combined_Changes.txt, the ladder analyses and today's local tests.
+
+=====================================================================================================
+0. WHY THE CURRENT CODE FIGHTS US
+=====================================================================================================
+  - One file, 7,300 lines, 311 compile-time switches. decide() alone is ~2,240 lines.
+  - Decisions are a chain of blocks that overwrite each other: 29 places set `target`/`why`, 25 places
+    compare `why` strings, and the LAST block that fires wins. Adding a block silently changes who wins
+    elsewhere (e.g. zones overriding pearls, outposts overriding exploring, the wall overriding pearls).
+  - Move scoring is one long sum of ~40 hand-tuned constants (CORNER_PEN 1.5M vs HARD_THREAT_PEN 1.2M
+    etc.). Two constants from different features can cancel or dominate each other unnoticed - that is
+    how the queen once preferred a cell inside an enemy's reach over a corner.
+  - The same things are computed several times in different shapes: distHead, flood fills, enemy reach,
+    Voronoi, regionVal loops, pocket checks, path BFS for the matching.
+  - Roles are decided in 4 places (hunter/guard/screen/defender slots, leaders, giant/heir, wall,
+    runners, zones) with different conditions.
+  - Two switches with the same name (MAJ_MIN_UNITS) silently overrode each other today.
+  Result: every change is tested alone, interacts unpredictably with the rest, and a 6-game test can
+  swing +-150 pearls. The fix is structure, not more switches.
+
+=====================================================================================================
+1. DESIGN PRINCIPLES
+=====================================================================================================
+  P1  Compute shared facts ONCE per turn into named layers (fields), then let behaviours read them.
+  P2  Behaviours PROPOSE goals with a priority and a reason; one ARBITER picks. No overwriting.
+  P3  ONE cost model for moves: named terms with documented scales (safety >> survival >> economy).
+      Every term can be logged, so a bad move can be explained from the replay.
+  P4  Team coordination stays IMPLICIT: every dragon runs the same deterministic planner on the same
+      shared knowledge (sonar) - no negotiation, which already works for pearls and packs.
+  P5  Strategy depends on MAP FEATURES (size, openness, portals, start fleet), never on map names:
+      one Map Profile picks parameter sets.
+  P6  Everything has a CPU budget; searches are "anytime" (stop at budget, keep best so far).
+  P7  Refactor in small steps that keep games IDENTICAL (seeded games must reproduce exactly), then add
+      strategies one at a time on the new structure.
+
+=====================================================================================================
+2. THE ARCHITECTURE (your diagram, made concrete)
+=====================================================================================================
+
+  Turn pipeline (every dragon, every turn):
+
+   [L0 PERCEPTION]  vision, own body, sonar in  ──►  WorldModel (memory)
+          │
+   [L1 MAP MODEL]   static topology (on map change) + dynamic fields (every turn)
+          │
+   [L2 SITUATION]   phase, majority, queens' status, threats, zones & territory
+          │
+   [L3 TEAM PLAN]   roles + zone quotas + targets, same result on every dragon
+          │
+   [L4 BEHAVIOURS]  role behaviour proposes Goals  ──►  ARBITER picks one Goal
+          │
+   [L5 MOTION]      candidate moves → safety filter → cost model → sprint/split → ACTION
+          │
+   [L6 COMMS]       message scheduler (4 slots/turn, priorities)  ──► sonar out
+
+  ---------------------------------------------------------------------------------------------------
+  L0  PERCEPTION & MEMORY  (module: world)           "What do I know?"  [your: Information Trust]
+  ---------------------------------------------------------------------------------------------------
+    MapKnowledge   edges (kelp/open/unknown), portals + pairs, symmetry, seen rounds
+    PearlBook      pearls, spawn tiles, refill timers (fountains), predicted spawns
+    EnemyBook      every enemy id: last cells, length (exact / partial / remembered), queen flag,
+                   confidence + age; queen-dead (seen / inferred)
+    FleetBook      teammates: cell, length, role, leader, last report round
+    Trust filter   message sanity: checksum (exists) + plausibility: a report that needs an enemy to
+                   move faster than its max reach since its last known cell is discarded; reports older
+                   than their TTL expire. (Team salt for the checksum: cheap, optional.)
+    Today: read_vision, update_body, read_sonar, apply_message, record_enemies, enemyLenMem, fleet.
+
+  ---------------------------------------------------------------------------------------------------
+  L1  MAP MODEL  (module: mapmodel)                  "What does the map look like?"
+  ---------------------------------------------------------------------------------------------------
+    Static (recomputed only when new edges are learned):
+      Topology     Tarjan bridges / articulation points / 2-edge-connected components on known water:
+                   which cells can be turned round in (on a loop), dead-end regions + their size and
+                   pearls, choke points between areas. (Your graph compression; used for safety and
+                   guard posts, NOT for pathfinding speed - BFS is already microseconds.)
+      MapProfile   size, kelp density, portal count, start fleet, maze-ness (share of tree cells) ->
+                   picks a parameter set (open / congested / maze / portal map). Replaces scattered
+                   openMap / N >= x checks.
+    Dynamic (every turn, computed once, read by everyone):
+      Density      2D prefix sums of spawn rate (and enemy sightings): richness of any box in O(1).
+                   (Your prefix-sum idea - the right tool here; replaces regionVal's loops.)
+      DistanceFields  my distHead (bodies blocking), Voronoi ours/theirs, enemy 1-turn and 2-turn
+                   reach (threat), time-aware occupancy (body segments free up over time).
+    Today: regionVal, compute_voronoi, compute_queen_threat, plan_bfs, flood, pocket helpers.
+
+  ---------------------------------------------------------------------------------------------------
+  L2  SITUATION  (module: situation)                 "What is safe? Where do we stand?"
+  ---------------------------------------------------------------------------------------------------
+    Phase machine  OPENING (multiply until majority) -> CONTEST (majority: hunt + hold zones)
+                   -> CONSOLIDATE (numbers -> length; queen / giant grow) -> ENDGAME (tiebreak safety,
+                   bunker). One place decides the phase from majority, round, switch, queens' status.
+    Majority       units vs estimated enemies (hysteresis).
+    Queens         ours: threat level, crowd, safe territory; theirs: alive / dead / probably dead.
+    Zones          rich areas (from Density + zone messages): richness, owner (Voronoi), teammates there,
+                   enemies there.
+    Today: compute_fleet_state pieces, tie_state, haveMajority, eqProbDead, zones.
+
+  ---------------------------------------------------------------------------------------------------
+  L3  TEAM PLAN  (module: commander, deterministic) "What should we do?"
+  ---------------------------------------------------------------------------------------------------
+    RoleAllocator  ONE function assigns every dragon's role from (phase, id slot, length, map profile):
+                   collector / zone-worker, hunter-pack, wall, guard / screen, defender, feeder,
+                   giant / heir, queen. Quotas per phase (e.g. OPENING: all collectors; CONTEST: x%
+                   hunters, guards when the queen is threatened...). Today these rules live in 4 places.
+    ZoneQuota      dragons per zone in proportion to richness (your dynamic allocation).
+    Assignment     pearls -> collectors (matching), prey -> packs (assign_prey), posts -> guards.
+                   Hungarian / min-cost flow is a drop-in replacement for the greedy matcher here
+                   (experiment - see section 3).
+    Today: hunter slots, leader election, giant/heir, wall, choose_pearl, assign_prey, choose_zone.
+
+  ---------------------------------------------------------------------------------------------------
+  L4  BEHAVIOURS + ARBITER  (module: behaviours)     "Where should I go?"
+  ---------------------------------------------------------------------------------------------------
+    Each role is a small behaviour that returns Goals: {cell, intent, priority, deadline, constraints}.
+      Collector: pearl / zone / camp / explore      Hunter: prey / lurk / strike
+      Wall: line position                           Guard: post / intercept / screen
+      Feeder: delivery tile                         Queen: survive > eat safely > rest/bunker
+    Reflexes (always checked first, highest priority): regicide strike, survival split, escape,
+    queen evade / flee, doomed.
+    ARBITER: picks the highest-priority feasible goal; ties by value. It records WHY in the replay
+    label, so every decision is explainable.  (Replaces the overwrite chain.)
+
+  ---------------------------------------------------------------------------------------------------
+  L5  MOTION  (module: motion)
+  ---------------------------------------------------------------------------------------------------
+    Candidates     4 moves (+ portal moves), each simulated once (body after move).
+    Safety filter  hard: walls, bodies, certain traps (topology: dead end the dragon cannot leave),
+                   enemy reach for the queen. Soft: lookahead (2-turn), corridor with enemies.
+    Cost model     named terms with fixed scale bands:
+                     band A (life):    certain death, inside enemy reach (queen), trap
+                     band B (safety):  two-turn exposure, corners near enemies, crowding the queen
+                     band C (goal):    path progress to the arbiter's goal, pearl eaten
+                     band D (style):   territory, spread from teammates, facing
+                   A term can never be outweighed by a lower band (fixes "corner beat threat").
+    Planners       sprint planner (free + paid steps; small DFS is fine - DP not needed),
+                   split planner (growth / survival / insurance / bunker trim), regicide paths.
+    Today: section 5 of decide, sprint_dfs, survival search, dive search, split blocks.
+
+  ---------------------------------------------------------------------------------------------------
+  L6  COMMS  (module: comms)
+  ---------------------------------------------------------------------------------------------------
+    Message registry (one table: type, bits, priority, repeat, TTL) and the 4-slot scheduler.
+    Today: msg_* builders, queue_fact, send_sonars.
+
+  Cross-cutting
+    Config: switches grouped per module in one header; unique names checked at compile time
+            (static_assert table) - no silent shadowing.
+    Budget: per-turn CPU budget split across L1 fields / L3 assignment / L5 searches.
+    Telemetry: QDEBUG-style logs per decision (goal chosen, top cost terms), off in the zip.
+    Files:  world.hpp, mapmodel.hpp, situation.hpp, commander.hpp, behaviours.hpp, motion.hpp,
+            comms.hpp, config.hpp, main.cpp (turn loop). bot.toml already compiles every .hpp/.cpp.
+
+=====================================================================================================
+3. EVERY STRATEGY -> WHERE IT LIVES, AND MY VERDICT
+=====================================================================================================
+  From Combined_Changes.txt
+  2D prefix sums ................ L1 Density.  BUILD - cheap, replaces regionVal loops, gives O(1)
+                                  richness/threat-density boxes for zones and queen safe areas.
+  Adversarial A* ................ L1 fields.   DROP as a pathfinder - speed is not our problem; its
+                                  real content ("don't race what the enemy wins") = Voronoi, done.
+  Zobrist hashing ............... DROP - loop history is 16 cells; a hash gains nothing. Keep the
+                                  idea for "same position repeating" if we ever need it.
+  Hungarian / min-cost flow ..... L3 Assignment. EXPERIMENT - path-distance matching (C) LOST pearls
+                                  today because the greedy+manhattan matcher spreads dragons by
+                                  accident. An optimal matcher must keep a spread term (zone quota).
+  Graph compression / Tarjan .... L1 Topology. BUILD for safety, choke points, guard posts, map
+                                  profile - NOT for pathfinding. (SCC is for directed graphs; the
+                                  grid is undirected -> bridges / articulation points.)
+  2D Fenwick / quadtree ......... DROP - superseded by prefix sums (rebuilt each turn, O(N)).
+  Bitboards ..................... L1/L5 as an ACCELERATOR only if a deeper queen search needs it.
+  Sprint DP ..................... DROP - sprints are <= 3 free steps; body shape makes (cell,step)
+                                  states inexact.
+  Adversarial sonar / trust ..... L0 Trust filter. BUILD the plausibility check (cheap); team salt
+                                  optional.
+  Body blocking / pinning ....... L4 Hunter/Guard behaviour. EXPERIMENT - BOX_QUEEN exists; extend to
+                                  "block the corridor mouth" using L1 choke points.
+  Choke-point costs for long
+  dragons ....................... L5 cost band B (exists partly: long-queen corridor penalty).
+  Topological leash ............. L2/L3 via MapProfile: leash, guard count, bunker choice per profile.
+  Feeder conduits (delivery
+  tiles) ........................ L4 Feeder behaviour + L1 Topology (a tile with a short water path to
+                                  her loop). P4 showed the problem: drops fell where she cannot go.
+  Enemy travel-time bidding ..... L1 Voronoi (DONE in v2.15.4) + L3 assignment uses it.
+
+  From your strategy messages (already in the code, they move into the structure)
+  Multiply until majority, zones, small dragons, hunt after majority ... L2 phase + L3 roles/quotas
+  Queen splits to 2 / explores alone (OFF: cost 6 wins) ................ L4 Queen behaviour, profile-
+                                                                         gated experiment
+  Moving wall, outposts, rear guard ..................................... L3 roles + L4 Wall/Guard
+  Giant / heir, feeding, bunker ......................................... L2 phase + L3 roles + L4
+  P3 two-turn safety, crowd flee, lengths memory ........................ L1 threat fields + L5 band A/B
+  Voronoi ............................................................... L1 fields (done)
+
+=====================================================================================================
+4. MIGRATION PLAN (each step verified before the next)
+=====================================================================================================
+  Step 1  Split main.cpp into the module files and group the switches - NO behaviour change.
+          Check: the 204 seeded games give byte-identical results.                 ~1-2 h
+  Step 2  WorldModel + FieldCache: compute distHead, Voronoi, threat maps, density once per turn into
+          one struct; all readers use it. No behaviour change (identical games); CPU drops.  ~2 h
+  Step 3  Goals + Arbiter: wrap each existing decide() block as a behaviour that returns a Goal with
+          the priority equal to its current position in the chain. Identical games first; then the
+          priorities become explicit and editable.                                  ~3-4 h
+  Step 4  RoleAllocator + phase machine: move the 4 role places into one. Near-identical (some
+          tie-breaks may change) -> 204-game check.                                 ~2 h
+  Step 5  Cost model bands: regroup the ~40 move terms into bands A-D with the same values first
+          (identical games), then fix the known cross-band conflicts.               ~2-3 h
+  Step 6  New pieces, one at a time, each with the 204 check:
+            a. Density prefix sums (+ zones read it)          d. Topology (Tarjan) + choke-point guards
+            b. Trust filter                                    e. Feeder delivery tiles
+            c. MapProfile parameter sets                       f. Matching experiment (with spread)
+  Total: roughly 2 days of work before new strategies; then each strategy is small.
+
+=====================================================================================================
+5. RISKS AND HOW WE HANDLE THEM
+=====================================================================================================
+  - A refactor that changes behaviour by accident  -> identical-game check after every step.
+  - CPU                                              -> fields computed once usually LOWERS cost;
+                                                        quick.sh CPU after every step.
+  - Ladder time lost during the refactor             -> v2.16.0 stays the submission until a refactored
+                                                        build is proven identical or better.
+  - Local tests do not predict the ladder            -> the arbiter + term logging makes ladder replays
+                                                        explain WHY a move was made, which is what we
+                                                        need to learn from the 1800-rated games.
+
+=====================================================================================================
+6. DECISIONS FOR YOU
+=====================================================================================================
+  1. Approve the layer / module split (sections 2 and 4).
+  2. Approve the verdicts in section 3 (build / experiment / drop).
+  3. Steps 1-5 first (pure restructuring, no strategy change), then strategies on top - or do you
+     want a strategy delivered in between?
