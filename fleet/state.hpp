@@ -47,6 +47,28 @@ struct Situation
 };
 Situation sit;
 
+// 7c: the map class from its size - known exactly and the same on every dragon, so team decisions can use it
+// (learned features such as the kelp share stay in sit.openMap). One place instead of six size thresholds.
+struct MapProfile
+{
+    bool small = false;     // N <= SMALL_MAP_CELLS: majority hunting, hunters may go after their queen
+    bool runners = false;   // N >= RUNNER_MIN_CELLS: explorer-role runners
+    bool wall = false;      // N >= WALL_MIN_CELLS: the moving wall
+    bool openSized = false; // N >= OPEN_MIN_CELLS: big enough to count as open when kelp is scarce
+    double rvFactor = 1.0;  // weight of the richness / centre pulls (40% at least on small maps)
+    int outposts = 2;       // how many outposts (2-8)
+};
+MapProfile mapProf;
+void set_map_profile()
+{
+    mapProf.small = N <= SMALL_MAP_CELLS;
+    mapProf.runners = N >= RUNNER_MIN_CELLS;
+    mapProf.wall = N >= WALL_MIN_CELLS;
+    mapProf.openSized = N >= OPEN_MIN_CELLS;
+    mapProf.rvFactor = std::clamp(static_cast<double>(N) / RV_FULL_CELLS, 0.4, 1.0);
+    mapProf.outposts = std::clamp(N / 250, 2, 8);
+}
+
 // L3: this dragon's roles.
 struct Duty
 {
@@ -63,6 +85,19 @@ struct Duty
     bool heir = false;       // enemy queen dead: the dragon that grows instead of our queen
 };
 Duty my;
+
+// 6f: the id-slot plan - every dragon has a slot 0-9 from its id (hunter_slot); this table says which slots take which
+// share role (the same on every dragon, no messages needed). Same shares as before, now in one place.
+struct SlotPlan
+{
+    bool hunter(int s) const { return s < HUNTER_SHARE; }
+    bool guard(int s) const { return s >= HUNTER_SHARE && s < HUNTER_SHARE + GUARD_SHARE; }
+    bool screen(int s) const { return s == HUNTER_SHARE; }       // the first guard slot screens
+    bool screen2(int s) const { return s == HUNTER_SHARE + 1; }  // a second screen in small fleets
+    bool defender(int s) const { return s == DEFENDER_SLOT; }
+    bool wall(int s) const { return s >= WALL_SLOT_LO && s <= WALL_SLOT_HI; }
+};
+constexpr SlotPlan kSlots{};
 
 bool wall_now();
 bool wall_slot(int id);
@@ -102,6 +137,8 @@ int campTile = -1, campArriveR = -1;  // F6: the tile we camp by, and since when
 std::vector<int> headHist;  // our head, last rounds (loop stall)
 bool miningTrip = false;    // v2.15: on a dead-end trip that paid >= 1 length when we went in
 int lastPearl = -1;         // the pearl this dragon went for last turn
+int lastGoal = -1, lastGoalR = -1; // 6c: last non-pearl goal and when
+int lastGoalIntent = -1; // 6c: its Intent
 int stallTarget = -1, stallBest = INF, stallRound = 0; // progress toward the current pearl
 int exploreGoal = -1, exploreSetRound = -1000;
 int claimTarget = -1, claimEta = 0;

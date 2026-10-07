@@ -22,7 +22,7 @@ std::vector<int> skipPearl; // round until which this dragon ignores the pearl (
 // Recomputed every 5 rounds.
 std::vector<float> regionVal;
 int regionValRound = -100;
-double rv_size_factor() { return std::clamp(static_cast<double>(N) / RV_FULL_CELLS, 0.4, 1.0); }
+double rv_size_factor() { return mapProf.rvFactor; }
 void update_region_value()
 {
     if (R - regionValRound < 5 && static_cast<int>(regionVal.size()) == N)
@@ -102,8 +102,42 @@ void compute_voronoi()
     for (auto const& e : enemyReps)
         if (!seen.count(e.id) && R - e.round <= VOR_REP_AGE)
             theirs.push_back(e.cell);
-    vor_bfs(ours, vorOurs);
-    vor_bfs(theirs, vorEnemy);
+    if (!VOR_TURNS)
+    {
+        vor_bfs(ours, vorOurs);
+        vor_bfs(theirs, vorEnemy);
+        return;
+    }
+    // 7h: arrival in TURNS - a dragon of length L covers ceil(L/4) cells a turn for free (speed classes 1, 2, 3+).
+    // Stored as "cells at my speed" so the rest of the code keeps comparing them with its own path lengths.
+    auto speed = [](int len) { return std::clamp((len + 3) / 4, 1, 3); };
+    std::vector<int> oursS[4], theirsS[4];
+    for (auto const& h : heads)
+        (h.mine ? oursS : theirsS)[speed(h.mine ? h.len : std::max(h.len, h.estLen))].push_back(h.cell);
+    if (!body.empty())
+        oursS[speed(L)].push_back(body[0]);
+    for (auto const& [id, st] : fleet)
+        if (!seen.count(id) && R - st.round <= VOR_REP_AGE)
+            oursS[speed(st.len)].push_back(st.cell);
+    for (auto const& e : enemyReps)
+        if (!seen.count(e.id) && R - e.round <= VOR_REP_AGE)
+            theirsS[speed(std::max(e.len, e.estLen))].push_back(e.cell);
+    int const mine = speed(L);
+    static std::vector<int> tmp;
+    auto build = [&](std::vector<int>* bySpeed, std::vector<int>& out) {
+        out.assign(N, INF);
+        for (int s = 1; s <= 3; s++)
+        {
+            if (bySpeed[s].empty())
+                continue;
+            vor_bfs(bySpeed[s], tmp);
+            for (int c = 0; c < N; c++)
+                if (tmp[c] < INF)
+                    out[c] = std::min(out[c], (tmp[c] + s - 1) / s * mine);
+        }
+    };
+    build(oursS, vorOurs);
+    build(theirsS, vorEnemy);
 }
 // Margin of a cell: > 0 we get there first by that many steps, < 0 they do.
 int vor_margin(int c)

@@ -508,13 +508,15 @@ bool apply_message(std::uint64_t m)
     switch (type)
     {
     case T_STATUS: {
-        int const id = b.get(14), len = b.get(10), cell = b.get(12), leader = b.get(1), round = b.get(9), eqDead = b.get(1);
+        int const id = b.get(14), len = b.get(10), cell = b.get(12), leader = b.get(1), round = b.get(9), eqDead = b.get(1), switchedBit = b.get(1);
         if (id == me || cell >= N || round > R)
             return false;
         // Q: the news that their queen is dead rides on every status (the dedicated message rarely reached our
         // queen: sonar runs along rows and columns and stops at the first dragon).
         if (EQ_STATUS_BIT && eqDead && !sit.enemyQueenDead)
             sit.enemyQueenDead = true;
+        if (SWITCH_STATUS_BIT && switchedBit && !sit.switched && R >= SW_LO)
+            sit.switched = true; // 6e: the fleet switches together (same rule as T_PHASE)
         if (id <= 1 && me > 1 && !queenSeen) // only teammates speak our protocol, so this is our queen
         {
             queenId = id;
@@ -613,6 +615,22 @@ bool apply_message(std::uint64_t m)
         set_symmetry(k);
         return true;
     }
+    case T_ROLE: {
+        int const role = b.get(2), id = b.get(14), len = b.get(10), round = b.get(9);
+        if (role > CR_HEIR || id == me || round > R || R - round > CLAIM_TTL)
+            return false;
+        auto& book = roleClaims[role];
+        auto const it = book.find(id);
+        if (it != book.end() && it->second.round >= round)
+            return false;
+        book[id] = {len, round};
+        // Pass it on, at most once per CLAIM_RELAY rounds per claimant (the fleet must hear it, not drown in it).
+        auto& rel = claimRelayed[role][id];
+        if (rel != 0 && R - rel < CLAIM_RELAY)
+            return false;
+        rel = R;
+        return true;
+    }
     case T_ZONE: {
         int const cell = b.get(12), round = b.get(9), tiles = b.get(6);
         if (cell >= N || round > R || R - round > 60)
@@ -707,6 +725,8 @@ void read_sonar(Controller& ct)
                 else if (GIANT && ((payload >> 36) & 1) && R - round <= 4)
                     prio = 35; // leaders (the giant among them) are fed too
             }
+            if (ROLE_CLAIMS && typed && type == T_ROLE)
+                prio = 50; // one-of-a-kind roles: the claim has to cross the fleet to work
             if (DYN_ALLOC && typed && type == T_PHASE)
                 prio = 40; // the whole fleet must switch together
             if (BUNKER_GUARDS && typed && type == T_BUNKER)

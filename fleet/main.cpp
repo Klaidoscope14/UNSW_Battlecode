@@ -92,6 +92,7 @@ void init_world(Controller& ct, Game& game)
     W = w;
     H = h;
     N = W * H;
+    set_map_profile();
     me = ct.get_id();
     myTeam = ct.get_team().value;
     unitLimit = game.get_unit_limit();
@@ -191,6 +192,16 @@ int main()
 
             decide(ct);
 #ifdef QDIAG
+            // Debug (6d): who believes it holds a one-of-a-kind role this round.
+            if (my.giant || my.heir || (my.leader && !amQueen))
+                if (char const* df = std::getenv("FLEET_DIAG"))
+                    if (std::FILE* f = std::fopen(df, "a"))
+                    {
+                        std::fprintf(f, "G %c %d id%d giant%d heir%d leader%d L%d claimsG%d betterG%d claimsL%d betterL%d\n", myTeam == Team::A ? 'A' : 'B', R, me,
+                                     my.giant ? 1 : 0, my.heir ? 1 : 0, my.leader ? 1 : 0, L, static_cast<int>(roleClaims[CR_GIANT].size()),
+                                     better_claims(CR_GIANT, L), static_cast<int>(roleClaims[CR_LEADER].size()), better_claims(CR_LEADER, L));
+                        std::fclose(f);
+                    }
             // Debug (item Q): every dragon notes the round it first learns their queen is dead.
             static bool eqKnown = false;
             if (sit.enemyQueenDead && !eqKnown)

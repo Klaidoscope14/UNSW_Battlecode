@@ -23,6 +23,18 @@ bool growth_open() { return DYN_ALLOC ? !sit.switched : R < EXP_END; }
 // Fleet floor once dragons feed the queen: more enemies, more dragons kept.
 int cons_floor() { return DYN_ALLOC ? 10 + std::min(10, sit.pressureMax / 3) : CONSOL_MIN_UNITS; }
 
+// 6d: fresh claims for a role that rank above a dragon of length len (longer, or as long with a lower id).
+int better_claims(int role, int len)
+{
+    if (!ROLE_CLAIMS)
+        return 0;
+    int k = 0;
+    for (auto const& [id, c] : roleClaims[role])
+        if (id != me && id != queenId && R - c.round <= CLAIM_TTL && (c.len > len || (c.len == len && id < me)))
+            k++;
+    return k;
+}
+
 void compute_fleet_state()
 {
     int const head = body[0];
@@ -135,17 +147,17 @@ void compute_fleet_state()
         bool const active = HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND &&
                             !(HUNT_GATE && (sit.survival || sit.outnumbered) && !sit.ourQueenDead);
         int const slot = static_cast<int>((hh >> 13) % 10);
-        my.hunterSlot = !amQueen && slot < HUNTER_SHARE;
-        my.hunter = active && !amQueen && !my.leader && slot < HUNTER_SHARE && !sit.openPlan; // OPEN_PLAN: multiply first
+        my.hunterSlot = !amQueen && kSlots.hunter(slot);
+        my.hunter = active && !amQueen && !my.leader && kSlots.hunter(slot) && !sit.openPlan; // OPEN_PLAN: multiply first
         // Guards: their own slice of the fleet; once the enemy queen is dead
         // the hunters come home too.
         my.guard = GUARDS && !amQueen && !my.leader && !sit.ourQueenDead && !my.hunter &&
-                  ((slot >= HUNTER_SHARE && slot < HUNTER_SHARE + GUARD_SHARE) || (sit.enemyQueenDead && slot < HUNTER_SHARE)) &&
+                  (kSlots.guard(slot) || (sit.enemyQueenDead && kSlots.hunter(slot))) &&
                   (GUARD_MIN_UNITS == 0 || sit.enemyQueenDead || (units >= GUARD_MIN_UNITS && !sit.expansion)) && units > GUARD_FLEET_MIN &&
                   (R >= OPEN_FARM_ROUND || sit.enemyQueenDead);
         my.screen = SCREENS && my.guard &&
-                   (slot == HUNTER_SHARE || (SCREENS_MORE && units < 20 && slot == HUNTER_SHARE + 1 && (me & 1)));
-        my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && slot == DEFENDER_SLOT && R >= HUNT_START;
+                   (kSlots.screen(slot) || (SCREENS_MORE && units < 20 && kSlots.screen2(slot) && (me & 1)));
+        my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && kSlots.defender(slot) && R >= HUNT_START;
     }
     my.wall = false; // set below once the leader election is done
 
@@ -162,12 +174,12 @@ void compute_fleet_state()
         for (auto const& [id, s] : fleet)
             if (id != me && id != queenId && (s.leader || GIANT_ONE) && R - s.round <= 30 && (s.len > L || (s.len == L && id < me)))
                 longer++;
-        if (longer >= LEADER_COUNT || (GIANT_ONE && !my.roleLeader && L < LEADER_MIN_LEN - 1))
+        if (longer >= LEADER_COUNT || better_claims(CR_LEADER, L) >= LEADER_COUNT || (GIANT_ONE && !my.roleLeader && L < LEADER_MIN_LEN - 1))
             my.leader = false;
     }
 
     // Leader election (section 11): the longest dragons we know of.
-    if (sit.transitioned && !sit.expansion && !my.leader && L >= (GIANT_ONE ? LEADER_MIN_LEN : 3))
+    if (sit.transitioned && !sit.expansion && !my.leader && L >= (GIANT_ONE ? LEADER_MIN_LEN : 3) && (!ROLES_AFTER_SWITCH || sit.switched))
     {
         int freshLeaders = 0;
         std::vector<std::pair<int, int>> ranking{{-L, me}};
@@ -180,7 +192,7 @@ void compute_fleet_state()
             else
                 ranking.push_back({-s.len, id});
         }
-        int const slots = LEADER_COUNT - freshLeaders;
+        int const slots = LEADER_COUNT - std::max(freshLeaders, better_claims(CR_LEADER, L)); // 6d: claims heard count too
         std::sort(ranking.begin(), ranking.end());
         for (int i = 0; i < slots && i < static_cast<int>(ranking.size()); i++)
             if (ranking[i].second == me)
@@ -196,6 +208,8 @@ void compute_fleet_state()
         for (auto const& [id, s] : fleet)
             if (id != me && id != queenId && R - s.round <= 10 && (s.len > L || (s.len == L && id < me)))
                 my.heir = false;
+        if (better_claims(CR_HEIR, L) > 0)
+            my.heir = false; // 6d: a better heir has claimed it
         if (my.heir)
             my.leader = true;
     }
@@ -203,7 +217,8 @@ void compute_fleet_state()
     // P5 giant: from GIANT_ROUND the longest of the rest stops splitting and
     // grows on every map, so the queen is never our only long dragon.
     my.giant = false;
-    if (GIANT_ALL && R >= GIANT_ROUND && !amQueen && !sit.ourQueenDead && L >= GIANT_MIN_LEN && !my.heir && !(GIANT_ONE && units < GIANT_MIN_UNITS))
+    if (GIANT_ALL && R >= GIANT_ROUND && (!ROLES_AFTER_SWITCH || sit.switched) && !amQueen && !sit.ourQueenDead && L >= GIANT_MIN_LEN && !my.heir &&
+        !(GIANT_ONE && units < GIANT_MIN_UNITS))
     {
         my.giant = true;
         for (auto const& [id, s] : fleet)
@@ -216,6 +231,8 @@ void compute_fleet_state()
             if (GIANT_ONE && s.leader && R - s.round <= 30 && (s.len > L || (s.len == L && id < me)))
                 my.giant = false;
         }
+        if (better_claims(CR_GIANT, L) > 0)
+            my.giant = false; // 6d: a better giant has claimed it
         if (my.giant)
             my.leader = true;
     }
@@ -227,6 +244,16 @@ void compute_fleet_state()
             my.leader = false;
         my.roleLeader = my.giant || my.heir;
     }
+    // 6d: holders re-announce their roles every 3 rounds (staggered by id).
+    if (ROLE_CLAIMS && !amQueen && R % 3 == me % 3)
+    {
+        if (my.giant)
+            queue_fact(msg_role(CR_GIANT, me, L, R), 55, 1);
+        if (my.heir)
+            queue_fact(msg_role(CR_HEIR, me, L, R), 55, 1);
+        if (my.leader)
+            queue_fact(msg_role(CR_LEADER, me, L, R), 50, 1);
+    }
 
     my.wall = wall_now() && !amQueen && !my.leader && !my.hunter && !my.guard && !my.defender && wall_slot(me) && L >= WALL_MIN_LEN;
 
@@ -234,7 +261,7 @@ void compute_fleet_state()
     // long dragons do not trap themselves, so the fleet turns into length.
     // Small or kelp-dense maps keep their numbers.
     sit.openMap = sit.consolidate = false;
-    if (N >= OPEN_MIN_CELLS)
+    if (mapProf.openSized)
     {
         int known = 0, kelp = 0;
         for (int code = 0; code < 2 * N; code++)
@@ -250,7 +277,7 @@ void compute_fleet_state()
         sit.consolidate = sit.switched; // every map: after the switch, length
 
     // Majority on a smaller map: hunt them down, win by elimination.
-    sit.majorityHunt = MAJ_HUNT && N <= SMALL_MAP_CELLS && !sit.survival && sit.distinctEnemies >= 1 && units >= MAJ_MIN_UNITS &&
+    sit.majorityHunt = MAJ_HUNT && mapProf.small && !sit.survival && sit.distinctEnemies >= 1 && units >= MAJ_MIN_UNITS &&
                    units * 10 >= MAJ_RATIO_X10 * sit.enemyEst;
 
     // Modes (sections 13-15).

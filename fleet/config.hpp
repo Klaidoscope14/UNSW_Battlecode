@@ -189,6 +189,10 @@
 #ifndef TARGET_COMMIT
 #define TARGET_COMMIT 1 // keep the current pearl unless another is clearly closer
 #endif
+#ifndef INTENT_MEMORY
+#define INTENT_MEMORY 0 // 6c: zone / outpost / camp / explore / wall goals are kept unless a new one is clearly closer;
+                        // 1 = always (193-11, Qd 33, prot 81-3: slow to react), 2 = only while no enemy head is in view
+#endif
 #ifndef COMMIT_MARGIN
 #define COMMIT_MARGIN 4 // ... by this many steps and by 30%
 #endif
@@ -291,6 +295,9 @@
 #ifndef VORONOI
 #define VORONOI 1 // who reaches each cell first, by path: pearl contests, camping, idle exploring, the queen's pearls
 #endif
+#ifndef VOR_TURNS
+#define VOR_TURNS 0 // 7h: territory by arrival TURN (cells / free steps per turn), not by cells
+#endif
 #ifndef VOR_REP_AGE
 #define VOR_REP_AGE 3 // position reports this fresh (ours and theirs) seed the fields
 #endif
@@ -299,6 +306,12 @@
 #endif
 #ifndef VOR_DEEP_PEN
 #define VOR_DEEP_PEN 20.0 // idle exploring: cost of a cell deep in their territory (they arrive 4+ sooner)
+#endif
+#ifndef MATCH_SWAP
+#define MATCH_SWAP 0 // 7i: after the greedy matching, swap pearls with a nearby teammate when the pair's total cost drops
+#endif
+#ifndef MATCH_SWAP_RANGE
+#define MATCH_SWAP_RANGE 10
 #endif
 #ifndef MATCH_PATHS
 #define MATCH_PATHS 0 // (tested, OFF: opening pearls fell - UNSW 555 -> 426/478, Islands 358 -> 332/292) teammates' cost to a pearl = path distance (bounded BFS), not manhattan
@@ -312,6 +325,9 @@
 #ifndef ZONES
 #define ZONES 1 // pearl-rich zones (own spawn knowledge + T_ZONE sonar reports); collectors spread over them in
                 // proportion to richness: value = tiles / (teammates there + 1) - ZONE_DIST_W * travel
+#endif
+#ifndef DENSITY_BOX
+#define DENSITY_BOX 0 // (OFF for v3.2.0: alone 195-9 Portals -3; in the combined build 194-10, prot 80-4) 7a: spawn-tile counts by 2D prefix sums over a box instead of the radius-r diamond loop
 #endif
 #ifndef ZONE_TILES
 #define ZONE_TILES 4 // spawn tiles within RV_RAD that make a zone worth reporting
@@ -585,7 +601,7 @@
 #define LOOK2_QUEEN_REACH 6 // her own next-turn reach considered (free + paid steps)
 #endif
 #ifndef QUEEN_CROWD
-#define QUEEN_CROWD 3 // F5: this many enemy heads within CROWD_RAD of the queen: no pearls, no rest - get to open water (0 = off)
+#define QUEEN_CROWD 2 // Q4: was 3 (fled too late, cornered: 196-8, Qd 38 -> 36, head-on 19 -> 17) - F5: this many enemy heads within CROWD_RAD of the queen: no pearls, no rest - get to open water (0 = off)
 #endif
 #ifndef CROWD_RAD
 #define CROWD_RAD 6
@@ -602,6 +618,10 @@
 
 #ifndef TOPO_EVERY
 #define TOPO_EVERY 1 // 7b/3c: topology rebuilt at most every this many rounds when new edges are known (CPU)
+#endif
+#ifndef QUEEN_TOPO_LEASH
+#define QUEEN_TOPO_LEASH 0 // 7d: the queen may take pearls up to 2 x her leash from home where the pearl's loop region
+                           // can hold her (topology) and we arrive first by 2+ (Voronoi)
 #endif
 #ifndef TOPO_LOOP
 #define TOPO_LOOP 1 // 7b: queens too long for the k x k ring test (L >= 16) need a loop region longer than them nearby
@@ -830,6 +850,12 @@
 #ifndef GIANT_PREY_MIN
 #define GIANT_PREY_MIN 10
 #endif
+#ifndef CORK
+#define CORK 1 // (locally identical: their queen is rarely seen; kept for the ladder) 7g: their queen in a corridor with one way out: take a corridor cell before she can leave
+#endif
+#ifndef CORK_RANGE
+#define CORK_RANGE 12
+#endif
 #ifndef BOX_QUEEN
 #define BOX_QUEEN 1 // 33: a dragon that sees their queen but cannot strike takes her free cells
 #endif
@@ -904,6 +930,12 @@
 #ifndef GUARD_MIN_PEN
 #define GUARD_MIN_PEN 60000 // per step inside GUARD_MIN
 #endif
+#ifndef CHOKE_GUARDS
+#define CHOKE_GUARDS 1 // (user: keep; path search fixed to plan through unexplored water) 7j: idle guards hold the first bridge (topology) on the queen's way toward the enemy side
+#endif
+#ifndef CHOKE_RANGE
+#define CHOKE_RANGE 10
+#endif
 #ifndef GUARD_INTERCEPT
 #define GUARD_INTERCEPT 6 // enemy heads this close to the queen are intercepted
 #endif
@@ -933,6 +965,9 @@
 #endif
 #ifndef EQ_INFER_UNSEEN
 #define EQ_INFER_UNSEEN 0 // Q2a: EQ_INFER also when their queen was never seen at all (she died unseen in 5 of 7 test games)
+#endif
+#ifndef SWITCH_STATUS_BIT
+#define SWITCH_STATUS_BIT 0 // 6e: every STATUS carries the numbers -> length switch (today only T_PHASE does)
 #endif
 #ifndef EQ_STATUS_BIT
 #define EQ_STATUS_BIT 1 // Q: every STATUS message carries "their queen is dead" (in 7 test games 47-90 of our dragons
@@ -1000,6 +1035,22 @@
 #ifndef GIANT_MIN_LEN
 #define GIANT_MIN_LEN 5
 #endif
+#ifndef ROLE_CLAIMS
+#define ROLE_CLAIMS 0 // 6d (tested, OFF): giant / heir / leader holders announce their role (T_ROLE, relayed). Claims did
+                      // not spread: on Around UNSW most giants heard 0 claims in 100 rounds (sonar stops at kelp and at the
+                      // first dragon), still up to 16 giants and ~11 non-queen leaders at once
+#endif
+#ifndef ROLES_AFTER_SWITCH
+#define ROLES_AFTER_SWITCH 0 // 6d' (tested, OFF: 196-8, Qd 40, Portals 81-3): giants and elected (non-queen) leaders only after the numbers -> length switch: before
+                             // it they stop long dragons from splitting while the fleet should still grow (up to 16
+                             // giants / 26 leaders at once on big maps; the switch is fleet-wide via T_PHASE)
+#endif
+#ifndef CLAIM_TTL
+#define CLAIM_TTL 20 // a claim not renewed for this long is forgotten
+#endif
+#ifndef CLAIM_RELAY
+#define CLAIM_RELAY 10 // a dragon passes one claimant's claim on at most once per this many rounds
+#endif
 #ifndef GIANT_ONE
 #define GIANT_ONE 1 // F1: one giant/heir, only with GIANT_MIN_UNITS dragons; leaving the role drops the leader flag
 #endif
@@ -1008,6 +1059,12 @@
 #endif
 #ifndef FEED_FIX
 #define FEED_FIX 1 // P4 (ladder trial; locally more queen deaths, 0 = v2.14.2): feeders die only where she can walk to the drop; drops near her are always hers; short queens fed earlier
+#endif
+#ifndef FEED_DELIVERY
+#define FEED_DELIVERY 1 // (passed: 198-6, Qd 38, prot 84-0) 7e: a feeder dies only when 2/3 of its drop cells lie within FEED_DROP_DIST water steps of her head
+#endif
+#ifndef FEED_DROP_DIST
+#define FEED_DROP_DIST 5
 #endif
 #ifndef FEED_PATH
 #define FEED_PATH 3 // feeder head at most this many water steps from her head (straight-line distance put drops behind kelp)

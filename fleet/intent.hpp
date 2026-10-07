@@ -36,10 +36,21 @@ enum Intent
     I_CAMP,
     I_ZONE,
     I_OUTPOST,
+    I_CORK,
 };
+// 6b: the pearl leash of each role - a role's duty replaces the pearl goal unless the pearl is at most this close
+// (one table instead of literals spread over the target steps; same values as before).
+struct PearlLeash
+{
+    int hunt = 4, majHunt = 2, feed = 6, pack = 2, wall = 2, screen = 3, guard = 4, defender = 10;
+    int queenAfterTheirs = 3; // our queen once theirs is dead: no pearl trips beyond this
+    int zone = ZONE_OVERRIDE, scoutMargin = SCOUT_PEARL_MARGIN;
+};
+constexpr PearlLeash kLeash{};
+
 char const* intent_name(Intent i)
 {
-    static char const* const names[] = {"explore", "pearl", "late-safe", "evade", "flee", "hunt", "hunt-queen", "feed", "hunter", "pack", "lurk", "regroup", "wall", "intercept", "post", "screen", "guard", "guard-line", "rescue", "bunker", "rest", "home", "portal", "push", "defend", "camp", "zone", "outpost"};
+    static char const* const names[] = {"explore", "pearl", "late-safe", "evade", "flee", "hunt", "hunt-queen", "feed", "hunter", "pack", "lurk", "regroup", "wall", "intercept", "post", "screen", "guard", "guard-line", "rescue", "bunker", "rest", "home", "portal", "push", "defend", "camp", "zone", "outpost", "cork"};
     return names[i];
 }
 
@@ -89,7 +100,14 @@ std::vector<PearlCand> gather_pearls()
         if (amQueen && QUEEN_HOME && !queenStarvingG && !herDrop)
         {
             if (ourQueenSpawn >= 0 && manhattan(c, ourQueenSpawn) > queenLeash)
-                continue;
+            {
+                // 7d: a little further out is fine where she can still turn round (a loop region longer than
+                // her) and we get there first.
+                int const far = manhattan(c, ourQueenSpawn);
+                bool const roomy = QUEEN_TOPO_LEASH && far <= 2 * queenLeash && topo_room(c, L) && vor_margin(c) >= 2;
+                if (!roomy)
+                    continue;
+            }
             bool clear = true;
             for (auto const& h : heads)
                 if (!h.mine && manhattan(h.cell, c) <= QUEEN_PEARL_CLEAR)
@@ -174,8 +192,33 @@ std::vector<PearlCand> gather_pearls()
 
 // F6: is the map centre worth pulling toward? Yes while most of it is
 // unseen; once seen, only if it holds spawn tiles (Australia's is empty water).
+// 7a: spawn-tile density by 2D prefix sums, rebuilt once a turn: any box count in O(1) (clipped at the map edge
+// like the diamond loop below).
+std::vector<int> densP;
+int densRound = -1;
+int dens_box(int cx, int cy, int r)
+{
+    if (densRound != R || static_cast<int>(densP.size()) != (W + 1) * (H + 1))
+    {
+        densRound = R;
+        densP.assign((W + 1) * (H + 1), 0);
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                int const t = y * W + x;
+                int const v = nextSpawn[t] >= 0 || pearlState[t] != 0 || gapHi[t] > 0;
+                densP[(y + 1) * (W + 1) + x + 1] = v + densP[y * (W + 1) + x + 1] + densP[(y + 1) * (W + 1) + x] - densP[y * (W + 1) + x];
+            }
+    }
+    int const x0 = std::max(0, cx - r), x1 = std::min(W - 1, cx + r), y0 = std::max(0, cy - r), y1 = std::min(H - 1, cy + r);
+    auto P = [](int y, int x) { return densP[y * (W + 1) + x]; };
+    return P(y1 + 1, x1 + 1) - P(y0, x1 + 1) - P(y1 + 1, x0) + P(y0, x0);
+}
+
 int spawn_tiles_near(int c, int r)
 {
+    if (DENSITY_BOX)
+        return dens_box(c % W, c / W, std::max(1, r - 1)); // a (2r-1)^2 box: about the diamond's area
     int n = 0;
     int const cx = c % W, cy = c / W;
     for (int dy = -r; dy <= r; dy++)
@@ -337,7 +380,7 @@ int choose_outpost()
         outpostRound = R;
         update_region_value();
         outposts.clear();
-        int const K = std::clamp(N / 250, 2, 8);
+        int const K = mapProf.outposts;
         std::vector<int> cand;
         for (int c = 0; c < N; c++)
             if (regionVal[c] >= OUTPOST_MIN_RV && seenRound[c] >= 0 && (OUTPOST_MIN_MARGIN <= -99 || halfMargin(c) >= OUTPOST_MIN_MARGIN))
@@ -576,6 +619,59 @@ int choose_flee()
         }
     }
     return best;
+}
+
+// 7j: chokepoint post - the first bridge (topology) on the queen's shortest way toward the enemy side, within
+// CHOKE_RANGE steps of her: the cell on her side of it. One guard there sees (and can block) everything that comes
+// through. -1 when her way out has no bridge that close.
+int choke_post_search(int qCell);
+int choke_post(int qCell)
+{
+    static int cacheR = -1, cacheQ = -1, cacheV = -1; // once per turn
+    if (cacheR != R || cacheQ != qCell)
+    {
+        cacheR = R;
+        cacheQ = qCell;
+        cacheV = choke_post_search(qCell);
+    }
+    return cacheV;
+}
+int choke_post_search(int qCell)
+{
+    int const es = enemy_spawn_guess();
+    if (qCell < 0 || es < 0)
+        return -1;
+    topo_refresh();
+    static std::vector<int> par, q;
+    par.assign(N, -2);
+    q.assign(1, qCell);
+    par[qCell] = -1;
+    int hit = -1;
+    for (std::size_t i = 0; i < q.size() && hit < 0; i++)
+        for (int d = 0; d < 4; d++)
+        {
+            int const n = step_open(q[i], d); // their side is mostly unexplored: plan through it (only bridges need known edges)
+            if (n < 0 || par[n] != -2)
+                continue;
+            par[n] = q[i];
+            if (n == es || manhattan(n, es) <= 2)
+            {
+                hit = n;
+                break;
+            }
+            q.push_back(n);
+        }
+    if (hit < 0)
+        return -1;
+    std::vector<int> path; // queen -> enemy side
+    for (int c = hit; c != -1; c = par[c])
+        path.push_back(c);
+    std::reverse(path.begin(), path.end());
+    for (int i = 0; i + 1 < static_cast<int>(path.size()) && i < CHOKE_RANGE; i++)
+        for (int d = 0; d < 4; d++)
+            if (cross(path[i], d) == path[i + 1] && cross(path[i], d) >= 0 && topo.bridge[edge_key(path[i], d)])
+                return i >= 2 ? path[i] : -1; // not right next to her: a guard there would box her in
+    return -1;
 }
 
 // Screen post: a cell SCREEN_MIN..SCREEN_MAX steps from the queen along her

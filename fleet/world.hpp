@@ -178,6 +178,16 @@ void remember_enemy_len(int id, int len, bool exact)
         it->second = {std::max(it->second.len, len), R, it->second.exact && len <= it->second.len};
 }
 
+// 6d: role claims heard (giant / heir / leader): claimant id -> its length and the round of the claim. A dragon keeps
+// a one-of-a-kind role only while fewer than the role's slots of fresh claims rank above it.
+enum ClaimRole { CR_LEADER = 0, CR_GIANT = 1, CR_HEIR = 2 };
+struct RoleClaim
+{
+    int len, round;
+};
+std::unordered_map<int, RoleClaim> roleClaims[3];
+std::unordered_map<int, int> claimRelayed[3]; // claimant id -> round we last passed its claim on
+
 struct Danger
 {
     int cell, round, cause; // cause 1 = enemy involved, 2 = hazard / trap

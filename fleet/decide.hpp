@@ -1052,7 +1052,7 @@ bool tg_hunt(Controller& ct)
     huntOk = allIn || !(HUNT_GATE && (sit.survival || sit.outnumbered));
     // Majority on a smaller map: every spare dragon hunts, any enemy will do.
     bool const majHunter = sit.majorityHunt && !amQueen && !my.leader && !my.guard;
-    if ((hunter && huntOk) || majHunter ? (target < 0 || distHead[target] > (majHunter ? 2 : 4)) : false)
+    if ((hunter && huntOk) || majHunter ? (target < 0 || distHead[target] > (majHunter ? kLeash.majHunt : kLeash.hunt)) : false)
     {
         int best = -1, bestD = majHunter ? 24 : 16;
         for (auto const& e : enemyReps)
@@ -1124,6 +1124,76 @@ bool tg_hunt_queen(Controller& ct)
             }
         }
     }
+    return false;
+}
+
+// Target (7g): cork - their queen is in a corridor with one way out to open water: take a cell of that corridor
+// before she can leave it (our body then seals her in; any head-on with her is a trade we always want).
+bool tg_cork(Controller& ct)
+{
+    auto& head = tn.head;
+    auto& target = tn.target;
+    auto& why = tn.why;
+    if (!CORK || amQueen || my.leader || sit.enemyQueenDead)
+        return false;
+    int e = -1, eLen = 0;
+    for (auto const& h : heads)
+        if (!h.mine && h.id == enemyQueenId)
+        {
+            e = h.cell;
+            eLen = std::max(h.len, h.estLen);
+        }
+    if (e >= 0)
+        DIAG("cork-queen-seen");
+    if (e < 0 || topo_room(e, eLen))
+        return false; // not seen, or she can turn round where she is
+    DIAG("cork-queen-in-corridor");
+    int exitDir = -1, exits = 0;
+    for (int d = 0; d < 4; d++)
+    {
+        int const n = cross(e, d);
+        if (n < 0 || (vis[n] && occId[n] >= 0))
+            continue;
+        Branch b;
+        bool const bridge = topo_beyond(e, d, b);
+        if (!bridge || b.frontier || b.maxCap > eLen)
+        {
+            exits++;
+            exitDir = d;
+        }
+    }
+    if (exits != 1)
+        return false;
+    // Walk the corridor out from her head; the first cell we reach a turn sooner than she can is the cork.
+    int const herSpeed = std::max(1, (eLen + 3) / 4), mySpeed = std::max(1, free_steps());
+    int prev = e, c = cross(e, exitDir), best = -1;
+    for (int k = 1; k <= CORK_RANGE && c >= 0; k++)
+    {
+        if (distHead[c] < INF && (distHead[c] + mySpeed - 1) / mySpeed + 1 <= (k + herSpeed - 1) / herSpeed)
+        {
+            best = c;
+            break;
+        }
+        int next = -1, ways = 0;
+        for (int d = 0; d < 4; d++)
+        {
+            int const n = cross(c, d);
+            if (n >= 0 && n != prev)
+            {
+                ways++;
+                next = n;
+            }
+        }
+        if (ways != 1)
+            break; // the corridor ends: open water, no cork
+        prev = c;
+        c = next;
+    }
+    if (best < 0 || best == head)
+        return false;
+    DIAG("cork-target");
+    target = best;
+    why = I_CORK;
     return false;
 }
 
@@ -1249,7 +1319,7 @@ bool tg_feed(Controller& ct)
                 if (h.mine && h.id != me && h.id != feedId && manhattan(h.cell, feedLeader) <= 5)
                     crowd++;
         bool const waitTurn = feedLeader >= 0 && crowd >= FEED_CROWD && manhattan(head, feedLeader) > 4;
-        if (feedLeader >= 0 && !waitTurn && (target < 0 || distHead[target] > 6))
+        if (feedLeader >= 0 && !waitTurn && (target < 0 || distHead[target] > kLeash.feed))
         {
             target = feedLeader;
             why = I_FEED;
@@ -1269,7 +1339,7 @@ bool tg_pack(Controller& ct)
     // Packs: go for the shared prey; the first one there waits a little for
     // a mate so the pack arrives together (alone, it just goes in).
     if (packer && !feedPhase && (L >= HUNTER_LEN || sit.ourQueenDead || my.wall) && myPrey >= 0 &&
-        (target < 0 || why != I_PEARL || distHead[target] > 2))
+        (target < 0 || why != I_PEARL || distHead[target] > kLeash.pack))
     {
         Prey const& pr = preyList[myPrey];
         if (dist_to(distHead, pr.cell) < INF)
@@ -1341,7 +1411,7 @@ bool tg_wall(Controller& ct)
     auto& why = tn.why;
     auto& feedPhase = tn.feedPhase;
     // P8 wall: no prey known - the wall advances on their home, side by side.
-    if (my.wall && packer && !feedPhase && myPrey < 0 && (target < 0 || why != I_PEARL || distHead[target] > 2))
+    if (my.wall && packer && !feedPhase && myPrey < 0 && (target < 0 || why != I_PEARL || distHead[target] > kLeash.wall))
     {
         int const g = wall_goal();
         if (g >= 0)
@@ -1504,7 +1574,20 @@ bool tg_guard(Controller& ct)
                     target = post;
                     why = I_SCREEN;
                 }
-                else if (target >= 0 && distHead[target] > 3)
+                else if (target >= 0 && distHead[target] > kLeash.screen)
+                    target = -1;
+            }
+            else if (CHOKE_GUARDS && !my.screen && (DIAG("guard-branch"), choke_post(qCellG) >= 0) && distHead[choke_post(qCellG)] < INF)
+            {
+                DIAG("choke-used");
+                // 7j: hold the chokepoint on her way to the enemy side (guards circle near it).
+                int const post = choke_post(qCellG);
+                if (manhattan(head, post) > 1)
+                {
+                    target = post;
+                    why = I_GUARD;
+                }
+                else if (target >= 0 && distHead[target] > kLeash.screen)
                     target = -1;
             }
             else if (manhattan(head, qCellG) > GUARD_RING && distHead[qCellG] < INF)
@@ -1514,7 +1597,7 @@ bool tg_guard(Controller& ct)
             }
             else
             {
-                if (target >= 0 && distHead[target] > 4)
+                if (target >= 0 && distHead[target] > kLeash.guard)
                     target = -1; // stay around here; no long trips while on duty
                 // Line up with her: a ping only reaches a dragon on the same
                 // row or column, so a guard there can pass her its reports.
@@ -1605,7 +1688,7 @@ bool tg_queen_bunker(Controller& ct)
     auto& inBox = tn.inBox;
     // Once the enemy queen is dead ours only has to stay alive: no long
     // trips for pearls, the guards come to her.
-    if (GUARDS && amQueen && sit.enemyQueenDead && target >= 0 && distHead[target] > 3)
+    if (GUARDS && amQueen && sit.enemyQueenDead && target >= 0 && distHead[target] > kLeash.queenAfterTheirs)
         target = -1;
 
     // Bunker: head for the chosen box, then circle it.
@@ -1731,7 +1814,7 @@ bool tg_portal(Controller& ct)
     {
         int pd = -1;
         int const pg = choose_portal_goal(pd);
-        bool take = pg >= 0 && (target < 0 || why != I_PEARL || distHead[pg] + SCOUT_PEARL_MARGIN <= distHead[target]);
+        bool take = pg >= 0 && (target < 0 || why != I_PEARL || distHead[pg] + kLeash.scoutMargin <= distHead[target]);
         if (!PORTAL_SCOUTS)
             take = take && target < 0 && my.role == ROLE_PORTAL;
         if (take)
@@ -1791,7 +1874,7 @@ bool tg_defend(Controller& ct)
     auto& why = tn.why;
     auto& feedPhase = tn.feedPhase;
     if (my.defender && !feedPhase && why != I_INTERCEPT &&
-        (target < 0 || halfMargin(target) <= 0 || distHead[target] > 10))
+        (target < 0 || halfMargin(target) <= 0 || distHead[target] > kLeash.defender))
     {
         int const dg = choose_camp_goal(true);
         if (dg >= 0)
@@ -1831,7 +1914,7 @@ bool tg_zone(Controller& ct)
     // OPEN_PLAN zones: idle collectors, and collectors whose pearl is far,
     // go to the zone that needs them most (allocation by richness).
     if (ZONES && !amQueen && !my.leader && !my.guard && !my.hunter && !my.wall && !my.defender &&
-        ((target < 0 && why == I_EXPLORE) || (why == I_PEARL && target >= 0 && distHead[target] > ZONE_OVERRIDE)))
+        ((target < 0 && why == I_EXPLORE) || (why == I_PEARL && target >= 0 && distHead[target] > kLeash.zone)))
     {
         int const z = choose_zone();
         if (z >= 0 && manhattan(head, z) > 2 && (target < 0 || distHead[z] + 2 < distHead[target]))
@@ -1892,6 +1975,27 @@ bool commit_target(Controller& ct)
 {
     auto& target = tn.target;
     auto& why = tn.why;
+    // 6c: intent memory - a zone / outpost / camp / explore / wall goal is kept while it is still the same kind of
+    // goal and reachable, unless the new one is clearly closer (4+ steps and 30%); stops goal flip-flops.
+    bool enemyInSight = false;
+    for (auto const& h : heads)
+        enemyInSight = enemyInSight || !h.mine;
+    // INTENT_MEMORY 2 (user): only while no enemy head is in view - with one in sight the dragon reacts at once.
+    if (INTENT_MEMORY && !amQueen)
+    {
+        bool const sticky = (why == I_ZONE || why == I_OUTPOST || why == I_CAMP || why == I_EXPLORE || why == I_WALL) &&
+                            !(INTENT_MEMORY == 2 && enemyInSight);
+        if (sticky && why == lastGoalIntent && lastGoal >= 0 && lastGoal != target && target >= 0 && distHead[lastGoal] < INF &&
+            lastGoal != body[0] && R - lastGoalR <= 1)
+        {
+            int const dOld = distHead[lastGoal], dNew = distHead[target];
+            if (!(dNew + COMMIT_MARGIN <= dOld && dNew * 10 <= dOld * 7))
+                target = lastGoal;
+        }
+        lastGoal = sticky ? target : -1;
+        lastGoalIntent = why;
+        lastGoalR = R;
+    }
     // v2.14 loop stall: circling one 2x2 for rounds without eating while the
     // pearl stays out of reach (a maze target that keeps flipping): drop it.
     if (LOOP_STALL && why == I_PEARL && target >= 0 && distHead[target] > 3 && R - lastEatR >= LOOP_STALL_ROUNDS &&
@@ -2007,6 +2111,24 @@ bool feed_sacrifice(Controller& ct)
             auto const ls = fleet.find(feedId);
             close = ls != fleet.end() && R - ls->second.round <= 2 && cheb(ls->second.cell, head) <= 4;
         }
+        // 7e: delivery - the pearls fall on our head and every second segment; die only when most of them land
+        // within a few water steps of her head (else keep closing in).
+        if (FEED_DELIVERY && close && inView)
+        {
+            int fc = -1;
+            for (auto const& h : heads)
+                if (h.mine && h.id == feedId)
+                    fc = h.cell;
+            queen_dist_bfs(fc, FEED_DROP_DIST + 1);
+            int drops = 0, good = 0;
+            for (int i = 0; i < static_cast<int>(body.size()) && i < L; i += 2)
+            {
+                drops++;
+                good += qDist[body[i]] <= FEED_DROP_DIST;
+            }
+            if (good * 3 < drops * 2)
+                close = false;
+        }
         // Squeeze into the neck: the body turns into pearls next to the leader.
         if (close && body.size() >= 2)
             for (int d = 0; d < 4; d++)
@@ -2050,7 +2172,7 @@ bool plan_split(Controller& ct)
     bool const calm = !nextToEnemy && !inDeadEnd;
     // Runners: on big maps a share of the fleet stays long enough for two
     // free steps a turn, covers distance, and buds off children of 3+.
-    bool const isRunner = (RUNNERS && !sit.openPlan && !amQueen && !my.leader && !my.guard && !my.hunter && my.role == ROLE_EXPLORER && N >= RUNNER_MIN_CELLS &&
+    bool const isRunner = (RUNNERS && !sit.openPlan && !amQueen && !my.leader && !my.guard && !my.hunter && my.role == ROLE_EXPLORER && mapProf.runners &&
                            growth_open()) ||
                           my.defender; // defenders stay medium length too: a 2-long blocker is easily stepped round
     int const growChild = isRunner ? L - RUNNER_KEEP : L / 2;
@@ -2804,6 +2926,7 @@ void decide(Controller& ct)
         tg_queen_caution,
         tg_hunt,
         tg_hunt_queen,
+        tg_cork,
         tg_feed,
         tg_pack,
         tg_wall,

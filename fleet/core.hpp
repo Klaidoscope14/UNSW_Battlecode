@@ -58,6 +58,20 @@ std::mt19937 rng;
 // appends "round id length head action sonars | note" to <dir>/<team><id>.txt.
 // tools/testing/trace.py compares two builds turn by turn. Off in the judge.
 std::FILE* traceF = nullptr;
+#ifdef QDIAG
+void diag_note(char const* what) // debug: one line per event (FLEET_DIAG)
+{
+    if (char const* df = std::getenv("FLEET_DIAG"))
+        if (std::FILE* f = std::fopen(df, "a"))
+        {
+            std::fprintf(f, "N %s\n", what);
+            std::fclose(f);
+        }
+}
+#define DIAG(x) diag_note(x)
+#else
+#define DIAG(x) ((void)0)
+#endif
 std::string traceAct = "fallback";
 
 } // namespace

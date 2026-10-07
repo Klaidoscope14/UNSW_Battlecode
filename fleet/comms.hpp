@@ -26,6 +26,7 @@ enum MsgType
     T_PHASE = 12,
     T_BUNKER = 13,
     T_ZONE = 14,
+    T_ROLE = 15, // 6d: a one-of-a-kind role claim (giant, heir, leader)
 };
 
 struct BitW
@@ -97,7 +98,7 @@ int layout_bits(int type, std::uint64_t payload)
 {
     switch (type)
     {
-    case T_STATUS: return 47;
+    case T_STATUS: return 48;
     case T_PEARL: return 1 + (static_cast<int>(payload & 1) + 1) * 23;
     case T_PORTAL: return 26;
     case T_KELP: return 2 + static_cast<int>(payload & 3) * 13;
@@ -111,6 +112,7 @@ int layout_bits(int type, std::uint64_t payload)
     case T_PHASE: return 16;
     case T_BUNKER: return 21;
     case T_ZONE: return 27;
+    case T_ROLE: return 35;
     default: return -1; // not a type we send
     }
 }
@@ -223,6 +225,7 @@ std::uint64_t msg_status()
     b.put(my.leader ? 1 : 0, 1);
     b.put(R, 9);
     b.put(EQ_STATUS_BIT && sit.enemyQueenDead ? 1 : 0, 1); // Q: every status carries "their queen is dead"
+    b.put(SWITCH_STATUS_BIT && sit.switched ? 1 : 0, 1);   // 6e: ...and "we switched from numbers to length"
     return pack(T_STATUS, b.v);
 }
 std::uint64_t msg_portal(int a, int c)
@@ -277,6 +280,16 @@ std::uint64_t msg_qspawn(int cell)
     return pack(T_QSPAWN, b.v);
 }
 // OPEN_PLAN zones: a pearl-rich spot and how many spawn tiles it has.
+// 6d: "I hold this role at this length" (relayed so the whole fleet hears it; the best-ranked claims win).
+std::uint64_t msg_role(int role, int id, int len, int round)
+{
+    BitW b;
+    b.put(role, 2);
+    b.put(id, 14);
+    b.put(std::min(len, 1023), 10);
+    b.put(round, 9);
+    return pack(T_ROLE, b.v);
+}
 std::uint64_t msg_zone(int cell, int tiles)
 {
     BitW b;

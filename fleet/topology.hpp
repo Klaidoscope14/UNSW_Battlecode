@@ -445,6 +445,14 @@ bool topo_beyond(int from, int d, Branch& out)
     return true;
 }
 
+// 7d: the loop region of cell c can hold a dragon of length len (it can circle and turn round there).
+bool topo_room(int c, int len)
+{
+    topo_refresh();
+    int const cap = topo.cap[topo.comp[c]];
+    return cap >= 4 && cap >= len + 1;
+}
+
 // A known trap for a dragon of length len: the step crosses a bridge into a
 // fully explored branch that has no loop longer than the dragon.
 bool topo_trap(int from, int d, int len)

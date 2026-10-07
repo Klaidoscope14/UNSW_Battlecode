@@ -138,6 +138,7 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
     }
     std::sort(pairs.begin(), pairs.end(), [](Pair const& a, Pair const& b) { return a.cost < b.cost; });
     std::vector<char> agentUsed(agents.size(), 0), pearlUsed(pearls.size(), 0);
+    std::vector<int> assigned(agents.size(), -1);
     for (auto const& pr : pairs)
     {
         if (pearlUsed[pr.pearl] || (pr.agent >= 0 && agentUsed[pr.agent]))
@@ -146,10 +147,43 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
         if (pr.agent < 0)
             continue;
         agentUsed[pr.agent] = 1;
-        if (agents[pr.agent].id == me)
+        assigned[pr.agent] = pr.pearl;
+        if (agents[pr.agent].id == me && !MATCH_SWAP)
             return pr.pearl;
     }
-    return -1;
+    if (!MATCH_SWAP || assigned[0] < 0)
+        return assigned[0];
+    // 7i: local improvement - swap pearls with a nearby teammate when that lowers the pair's total cost (every
+    // dragon computes the same swap from the same picture, so both sides agree).
+    std::unordered_map<long long, double> cost;
+    for (auto const& pr : pairs)
+        if (pr.agent >= 0)
+        {
+            long long const k = static_cast<long long>(pr.agent) * 1000 + pr.pearl;
+            auto const it = cost.find(k);
+            if (it == cost.end() || pr.cost < it->second)
+                cost[k] = pr.cost;
+        }
+    auto c = [&](int a, int p) {
+        auto const it = cost.find(static_cast<long long>(a) * 1000 + p);
+        return it == cost.end() ? 1e18 : it->second;
+    };
+    int const pm = assigned[0];
+    int best = pm;
+    double bestGain = 1.0; // at least a step's worth
+    for (int j = 1; j < static_cast<int>(agents.size()); j++)
+    {
+        int const pj = assigned[j];
+        if (pj < 0 || manhattan(agents[0].cell, agents[j].cell) > MATCH_SWAP_RANGE)
+            continue;
+        double const gain = c(0, pm) + c(j, pj) - c(0, pj) - c(j, pm);
+        if (gain > bestGain)
+        {
+            bestGain = gain;
+            best = pj;
+        }
+    }
+    return best;
 }
 
 // Packs: hunters (and, once our queen is dead, every small dragon) share out
@@ -168,11 +202,11 @@ bool hunts_now()
 
 // P8 wall: when it forms (later on bigger maps) and who is in it.
 int wall_round() { return std::min(260, 120 + N / 40); }
-bool wall_now() { return WALL && HUNTERS && !sit.openPlan && N >= WALL_MIN_CELLS && R >= wall_round() && units >= WALL_FORM_RATIO * est_enemy_units(); }
+bool wall_now() { return WALL && HUNTERS && !sit.openPlan && mapProf.wall && R >= wall_round() && units >= WALL_FORM_RATIO * est_enemy_units(); }
 bool wall_slot(int id)
 {
     int const sl = hunter_slot(id);
-    return sl >= WALL_SLOT_LO && sl <= WALL_SLOT_HI;
+    return kSlots.wall(sl);
 }
 
 // Would teammate `id` (length len) be in a pack right now?
@@ -184,7 +218,7 @@ bool pack_member(int id, int len, bool leader)
         return true;
     if (wall_now() && wall_slot(id) && len >= WALL_MIN_LEN)
         return true;
-    return hunts_now() && hunter_slot(id) < HUNTER_SHARE && len >= HUNTER_LEN;
+    return hunts_now() && kSlots.hunter(hunter_slot(id)) && len >= HUNTER_LEN;
 }
 
 struct Prey
@@ -208,7 +242,7 @@ void assign_prey()
     int qt = sit.enemyQueenDead || giantHunt ? -1 : enemy_queen_target();
     // Big map, her position not seen lately: she hides at home among her
     // swarm, and the long walk there only feeds it (ladder: never reached).
-    if (HUNT_FAR_SMALL && qt >= 0 && N > SMALL_MAP_CELLS && !sit.ourQueenDead && R - sit.lastEqSeenR > HUNT_FRESH)
+    if (HUNT_FAR_SMALL && qt >= 0 && !mapProf.small && !sit.ourQueenDead && R - sit.lastEqSeenR > HUNT_FRESH)
         qt = -1;
     if (qt >= 0)
         preyList.push_back({qt, enemyQueenId, 0, true});
