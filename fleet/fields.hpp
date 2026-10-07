@@ -149,7 +149,7 @@ int vor_margin(int c)
 
 // Sprints: the first ceil(L/4) steps of a turn are free.
 int free_steps() { return (L + 3) / 4; }
-int enemy_reach(HeadInfo const& h) { return std::max(1, (h.len + 3) / 4); }
+int enemy_reach(HeadInfo const& h) { return std::max(1, ((REACH_EST ? std::max(h.len, h.estLen) : h.len) + 3) / 4); }
 
 // Danger of ending a turn on cell n: next to a teammate head, or where an
 // enemy head can reach us (leaders assume the enemy sprints its free steps).

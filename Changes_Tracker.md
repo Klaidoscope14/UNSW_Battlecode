@@ -24,6 +24,7 @@ Acceptance rule: at most one extra loss on the protected maps, no rise in queen 
 | 7g | Cork (`CORK` ON): locally identical — their queen is rarely seen; kept for the ladder | 196-8, Qd 36 (no game changed) |
 | Q4 | The queen flees a crowd from 2 enemy heads within 6 (`QUEEN_CROWD` 3 → 2): she was cornered by 3-5 heads | 196-8, **Qd 36** (head-on 19 → 17), prot 83-1 |
 | — | `tools/make_zip.py` (multi-file or `--single`), checked by unzip + sandbox | tool |
+| v3.3.0 | Contradiction fixes (Battlecode_contradictions_final.md): A1 `ROLE_ORDER_FIX`, A3/A4/A7 `INTENT_GUARDS`, A6 `REACH_EST`, plus stage 1 clean-up (identical) | one suite (user: ship fast): 196-8, Qd 40, prot 84-0 |
 
 ## Full track — still to do
 

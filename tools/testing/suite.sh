@@ -12,7 +12,7 @@ B="$T/work/$NAME"; rm -rf "$B"; mkdir -p "$B"; cp "$ROOT/fleet/bot.toml" "$ROOT"
 cd "$ROOT"
 if ! unswbc run maps/default_small.map "$B" "$T/sparring/vib2" --seed 1 --no-replay > "$B/build.log" 2>&1; then echo "BUILD/RUN FAILED - see $B/build.log"; exit 1; fi
 grep -iE "error:" "$B/build.log" && { echo "BUILD FAILED"; exit 1; }
-caffeinate -i python3 "$T/bench.py" --seed0 "${SEED0:-1}" --seeds 2 -j 8 --bot "$B" \
+caffeinate -i python3 "$T/bench.py" --seed0 "${SEED0:-1}" --seeds 2 -j 6 --bot "$B" \
   --opps "$T/sparring/vib2,$T/sparring/swarm2,$T/sparring/fleet11" \
   --maps australia,autarky,default,devil,dilemma,islands,maze,portals,queen_of_spades,schooltime,slithery_fight,stripes,tower_defense,trauma,trophy,unsw,weakhold \
   > "$OUT" 2>&1

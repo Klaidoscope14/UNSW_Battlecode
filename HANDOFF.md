@@ -57,7 +57,8 @@ Read this first, then `Architecture_Plan.txt` (the agreed next job) and `Combine
 ## Versions
 | zip | content |
 |---|---|
-| `fleet-v3.2.0.zip` | **latest build** (2026-10-07): restructured code + topology, encrypted sonar, B1b, Q1, Q4, 7e, 7j, 7g. Local 196-8, Qd 36, protected 84-0. See Changes_Tracker.md |
+| `fleet-v3.3.0.zip` | **latest build** (2026-10-07): v3.2.0 + contradiction fixes - stage 1 clean-up (comments, orphan TIE_MARGIN, consolidate code path; trace identical) + ROLE_ORDER_FIX, INTENT_GUARDS, REACH_EST (all 1). One suite: 196-8, Qd 40, protected 84-0. CPU max 44.6M. Contact search (R1) included but OFF. See Battlecode_contradictions_final.md |
+| `fleet-v3.2.0.zip` | previous build (2026-10-07): restructured code + topology, encrypted sonar, B1b, Q1, Q4, 7e, 7j, 7g. Local 196-8, Qd 36, protected 84-0. See Changes_Tracker.md |
 | `fleet-v2.16.0.zip` | previous submission (197-7, Qd 44, protected 84-0) |
 | `fleet-v2.15.5.zip` | fallback (before the opening plan) |
 | 2.15.3 / 2.15.4 | older steps (F6/F7, Voronoi) |

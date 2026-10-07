@@ -4,6 +4,14 @@ queen died, with fleet/ built with the given #defines (bot in work/NAME), and re
 (round, cause) and the new result. Games are deterministic, so with no defines the same deaths come back."""
 import os, re, sys, subprocess, shutil, glob, collections
 from concurrent.futures import ThreadPoolExecutor
+
+class _R:  # stand-in result for a game that hung (killed at the timeout)
+    stdout = ''; stderr = 'timeout'
+def run_to(cmd, **kw):
+    try:
+        return subprocess.run(cmd, **kw)
+    except subprocess.TimeoutExpired:
+        return _R()
 T = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(T))
 env = dict(os.environ, PATH=os.path.expanduser('~/.local/bin') + ':' + os.environ['PATH'], UNSWBC_NO_UPDATE='1')
 base, name = sys.argv[1:3]; defs = sys.argv[3:]
@@ -20,7 +28,7 @@ def play(g):
     opp, mp, side, seed = g[:4]
     a, b = (B, f'{T}/sparring/{opp}') if side == 'A' else (f'{T}/sparring/{opp}', B)
     for _ in range(3):
-        r = subprocess.run(['unswbc', 'run', f'maps/{mp}.map', a, b, '--seed', str(seed), '--no-replay'], cwd=ROOT, env=env, capture_output=True, text=True)
+        r = run_to(['unswbc', 'run', f'maps/{mp}.map', a, b, '--seed', str(seed), '--no-replay'], cwd=ROOT, env=env, capture_output=True, text=True, timeout=600)
         txt = r.stdout + r.stderr
         if 'wins after' in txt or 'draw' in txt.lower(): break
     w = re.search(r'team (A|B) wins after (\d+) rounds \(([^)]*)\)', txt)
@@ -28,7 +36,7 @@ def play(g):
     q = '0' if side == 'A' else '1'
     qm = re.search(r'round (\d+): bot %s \(team %s\) died: (.*)' % (q, side), txt)
     return g, res, (int(qm.group(1)), qm.group(2).strip()) if qm else None
-with ThreadPoolExecutor(8) as ex: res = list(ex.map(play, games))
+with ThreadPoolExecutor(6) as ex: res = list(ex.map(play, games))  # <= 6 games (user process limit 1333)
 c = collections.Counter()
 for g, r, qd in res:
     c['games'] += 1; c['still_dies'] += qd is not None; c['W'] += r == 'W'; c['was_W'] += g[4] == 'W'

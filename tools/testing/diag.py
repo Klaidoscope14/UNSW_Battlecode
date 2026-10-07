@@ -5,6 +5,14 @@ the matching .out (who died when: the truth the diagnostics are checked against)
 "suite" for the 17 suite maps / 3 sparring bots. Set QDIAG_ALL=1 to log the queen every turn (big files)."""
 import os, sys, subprocess, shutil, glob
 from concurrent.futures import ThreadPoolExecutor
+
+class _R:  # stand-in result for a game that hung (killed at the timeout)
+    stdout = ''; stderr = 'timeout'
+def run_to(cmd, **kw):
+    try:
+        return subprocess.run(cmd, **kw)
+    except subprocess.TimeoutExpired:
+        return _R()
 T = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(T))
 env = dict(os.environ, PATH=os.path.expanduser('~/.local/bin') + ':' + os.environ['PATH'], UNSWBC_NO_UPDATE='1')
 SUITE_MAPS = 'australia,autarky,default,devil,dilemma,islands,maze,portals,queen_of_spades,schooltime,slithery_fight,stripes,tower_defense,trauma,trophy,unsw,weakhold'
@@ -22,8 +30,8 @@ def play(j):
     a, b = (B, f'{T}/sparring/{o}') if side == 'A' else (f'{T}/sparring/{o}', B)
     for _ in range(3):  # an engine error under load: play it again
         open(base + '.diag', 'w').close()
-        r = subprocess.run(['unswbc', 'run', f'maps/{m}.map', a, b, '--seed', str(sd), '--no-replay'], cwd=ROOT, env=dict(env, FLEET_DIAG=base + '.diag'), capture_output=True, text=True)
+        r = run_to(['unswbc', 'run', f'maps/{m}.map', a, b, '--seed', str(sd), '--no-replay'], cwd=ROOT, env=dict(env, FLEET_DIAG=base + '.diag'), capture_output=True, text=True, timeout=600)
         if 'wins after' in r.stdout + r.stderr or 'draw' in (r.stdout + r.stderr).lower(): break
     open(base + '.out', 'w').write(r.stdout + r.stderr)
-with ThreadPoolExecutor(8) as ex: list(ex.map(play, jobs))
+with ThreadPoolExecutor(6) as ex: list(ex.map(play, jobs))  # <= 6 games: the user process limit is 1333 and each dragon is a process
 print('done', len(jobs))

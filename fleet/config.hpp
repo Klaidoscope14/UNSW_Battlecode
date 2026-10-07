@@ -28,10 +28,10 @@
 #define EXPANSION 1 // numbers first: everyone (queen included) splits from round 0 up to a denser cap
 #endif
 #ifndef EXP_DENSITY
-#define EXP_DENSITY 12 // expansion cap: one dragon per this many tiles (64 at most)
+#define EXP_DENSITY 12 // (only with DYN_ALLOC 0; DYN_DENSITY applies) expansion cap: one dragon per this many tiles (64 at most)
 #endif
 #ifndef EXP_END
-#define EXP_END 350 // after this round the normal SPLIT_DENSITY cap applies again
+#define EXP_END 350 // (only with DYN_ALLOC 0; growth ends at the switch) after this round the normal SPLIT_DENSITY cap applies again
 #endif
 #ifndef FAST_OPEN
 #define FAST_OPEN 1 // 2.1: hunters split at EARLY_SPLIT_MIN_LEN too while the fleet is still expanding
@@ -100,8 +100,8 @@
 #define LEADER_MIN_LEN 6 // F1: a dragon elects itself leader only from this length (big maps had ~30 leaders, some L2)
 #endif
 #ifndef OPEN_PLAN
-#define OPEN_PLAN 1 // until we have the majority: no hunters / wall / runners (all collect and split at 4), the queen
-                    // splits down to 2 and explores when no teammate is near her; hunting starts with the majority
+#define OPEN_PLAN 1 // until we have the majority: no hunters / wall / runners (all collect and split at 4); hunting
+                    // starts with the majority. (The queen part - split to 2, explore alone - is OPEN_QUEEN, OFF.)
 #endif
 #ifndef OPEN_MAJ_UNITS
 #define OPEN_MAJ_UNITS 8 // OPEN_PLAN majority needs at least this many dragons
@@ -157,10 +157,10 @@
 // SITUATION: PHASES, STRENGTH, MAP CLASS
 // ====================================================================================================
 #ifndef CONSOLIDATE
-#define CONSOLIDATE 1 // big open maps: from CONSOL_ROUND no optional splits, spare dragons feed the queen (length wins there)
+#define CONSOLIDATE 1 // (only with DYN_ALLOC 0; with it every map consolidates at the switch) big open maps: from CONSOL_ROUND no optional splits, spare dragons feed the queen (length wins there)
 #endif
 #ifndef CONSOL_ROUND
-#define CONSOL_ROUND 350
+#define CONSOL_ROUND 350 // (only with DYN_ALLOC 0)
 #endif
 #ifndef OPEN_MIN_CELLS
 #define OPEN_MIN_CELLS 1000 // smaller maps are congested: numbers matter more than length
@@ -169,13 +169,10 @@
 #define OPEN_KELP_MAX 0.20 // share of known edges that are kelp above which a map counts as congested
 #endif
 #ifndef CONSOL_MIN_UNITS
-#define CONSOL_MIN_UNITS 10 // never feed the fleet below this (elimination)
+#define CONSOL_MIN_UNITS 10 // (only with DYN_ALLOC 0; cons_floor() uses the enemy count) never feed the fleet below this (elimination)
 #endif
 #ifndef TIE_TRACK
 #define TIE_TRACK 1 // 27: running guess of the round-500 tiebreaks steers feeding
-#endif
-#ifndef TIE_MARGIN
-#define TIE_MARGIN 5 // lead that counts as safe on queen / longest length
 #endif
 #ifndef SAFE_TRADES
 #define SAFE_TRADES 1 // no snipes / packs / pushes / even trades while outnumbered or in survival mode
@@ -683,6 +680,18 @@
 #ifndef CS_MARGIN
 #define CS_MARGIN 200000.0 // R8 trigger: ...and (<= 1 fully safe move, or 2+ heads within 6, or best - second < this)
 #endif
+#ifndef ROLE_ORDER_FIX
+#define ROLE_ORDER_FIX 1 // A1 (v3.3.0): hunter / guard / screen / defender are derived AFTER the leader election, heir
+                         // and giant (they used last turn's leader flag and amQueen)
+#endif
+#ifndef INTENT_GUARDS
+#define INTENT_GUARDS 1 // A3 / A4 / A7 (v3.3.0): later target steps no longer overwrite a guard's post (explore), a
+                        // cork (pack, feed) or a pack regroup (portal, push, defend)
+#endif
+#ifndef REACH_EST
+#define REACH_EST 1 // A6 (v3.3.0): leaders judge an enemy's free-step reach from its estimated length (body partly out of
+                    // view), as the queen does - it used the visible part only
+#endif
 #ifndef QUEEN_CROWD
 #define QUEEN_CROWD 2 // Q4: was 3 (fled too late, cornered: 196-8, Qd 38 -> 36, head-on 19 -> 17) - F5: this many enemy heads within CROWD_RAD of the queen: no pearls, no rest - get to open water (0 = off)
 #endif
@@ -714,10 +723,10 @@
 // QUEEN: HOME, GROWTH, BUNKER
 // ====================================================================================================
 #ifndef QUEEN_SEED_UNITS
-#define QUEEN_SEED_UNITS 3 // the queen may split off 2 only while the team is this small
+#define QUEEN_SEED_UNITS 3 // (only with EXPANSION 0) the queen may split off 2 only while the team is this small
 #endif
 #ifndef QUEEN_GROW_ROUND
-#define QUEEN_GROW_ROUND 225 // enemy queen still alive by now: our queen stops splitting and grows
+#define QUEEN_GROW_ROUND 225 // (only with DYN_ALLOC 0; she grows from the switch) enemy queen still alive by now: our queen stops splitting and grows
 #endif
 #ifndef BUNKER
 #define BUNKER 1 // enemy queen dead: ours trims to length 2 and circles a sheltered 2x2 with no pearls
@@ -786,7 +795,8 @@
 #define EQ_INFER_ROUND 150
 #endif
 #ifndef QUEEN_FIRST_SPLIT
-#define QUEEN_FIRST_SPLIT 1 // F3: with <= 3 dragons the queen may split at length 4 (keeps 2)
+#define QUEEN_FIRST_SPLIT 1 // F3: with <= 3 dragons the queen may split at length 4 (keeps 2) - at the start her own
+                            // dragons within 3 block it (`crowded`); unblocking it was tested as QUEEN_START_SPLIT: worse
 #endif
 #ifndef OPEN_QUEEN
 #define OPEN_QUEEN 0 // (tested OFF: 191-13 vs 197-7 without it, same queen deaths) OPEN_PLAN queen part: splits down to 2 and explores when no teammate is near
@@ -800,7 +810,7 @@
                       // queen at length 2 on pocket maps - revisit once P3 (queen two-move safety) is in.
 #endif
 #ifndef ADAPT_SPLIT
-#define ADAPT_SPLIT 1 // in the opening the queen splits at length 4 (no QUEEN_MIN_KEEP / QUEEN_SPLIT_UNITS)
+#define ADAPT_SPLIT 1 // (no effect: needs QUEEN_ADAPT, which is OFF) in the opening the queen splits at length 4
 #endif
 #ifndef ADAPT_FLEET
 #define ADAPT_FLEET 6 // the opening lasts until the fleet first has this many dragons...

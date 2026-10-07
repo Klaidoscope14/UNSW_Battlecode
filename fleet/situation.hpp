@@ -140,26 +140,34 @@ void compute_fleet_state()
             sit.majority = false;
         sit.openPlan = OPEN_PLAN && !sit.majority && !sit.switched && R < OPEN_PLAN_END;
     }
-    // Hunters: a fixed share of the fleet (by id) goes after the enemy queen
-    // once the opening is over. The queen and the leaders never hunt.
+    // Duties (hunter / guard / screen / defender) from the leader flag and amQueen. A1: with ROLE_ORDER_FIX they are
+    // derived after the election below (they used last turn's values); my.wall comes after them either way.
+    auto derive_duties = [&]()
     {
-        std::uint32_t const hh = static_cast<std::uint32_t>(me) * 2246822519u + 3266489917u;
-        bool const active = HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND &&
-                            !(HUNT_GATE && (sit.survival || sit.outnumbered) && !sit.ourQueenDead);
-        int const slot = static_cast<int>((hh >> 13) % 10);
-        my.hunterSlot = !amQueen && kSlots.hunter(slot);
-        my.hunter = active && !amQueen && !my.leader && kSlots.hunter(slot) && !sit.openPlan; // OPEN_PLAN: multiply first
-        // Guards: their own slice of the fleet; once the enemy queen is dead
-        // the hunters come home too.
-        my.guard = GUARDS && !amQueen && !my.leader && !sit.ourQueenDead && !my.hunter &&
-                  (kSlots.guard(slot) || (sit.enemyQueenDead && kSlots.hunter(slot))) &&
-                  (GUARD_MIN_UNITS == 0 || sit.enemyQueenDead || (units >= GUARD_MIN_UNITS && !sit.expansion)) && units > GUARD_FLEET_MIN &&
-                  (R >= OPEN_FARM_ROUND || sit.enemyQueenDead);
-        my.screen = SCREENS && my.guard &&
-                   (kSlots.screen(slot) || (SCREENS_MORE && units < 20 && kSlots.screen2(slot) && (me & 1)));
-        my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && kSlots.defender(slot) && R >= HUNT_START;
-    }
+        // Hunters: a fixed share of the fleet (by id) goes after the enemy queen
+        // once the opening is over. The queen and the leaders never hunt.
+        {
+            std::uint32_t const hh = static_cast<std::uint32_t>(me) * 2246822519u + 3266489917u;
+            bool const active = HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND &&
+                                !(HUNT_GATE && (sit.survival || sit.outnumbered) && !sit.ourQueenDead);
+            int const slot = static_cast<int>((hh >> 13) % 10);
+            my.hunterSlot = !amQueen && kSlots.hunter(slot);
+            my.hunter = active && !amQueen && !my.leader && kSlots.hunter(slot) && !sit.openPlan; // OPEN_PLAN: multiply first
+            // Guards: their own slice of the fleet; once the enemy queen is dead
+            // the hunters come home too.
+            my.guard = GUARDS && !amQueen && !my.leader && !sit.ourQueenDead && !my.hunter &&
+                      (kSlots.guard(slot) || (sit.enemyQueenDead && kSlots.hunter(slot))) &&
+                      (GUARD_MIN_UNITS == 0 || sit.enemyQueenDead || (units >= GUARD_MIN_UNITS && !sit.expansion)) && units > GUARD_FLEET_MIN &&
+                      (R >= OPEN_FARM_ROUND || sit.enemyQueenDead);
+            my.screen = SCREENS && my.guard &&
+                       (kSlots.screen(slot) || (SCREENS_MORE && units < 20 && kSlots.screen2(slot) && (me & 1)));
+            my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && kSlots.defender(slot) && R >= HUNT_START;
+        }
+    };
+    if (!ROLE_ORDER_FIX)
+        derive_duties();
     my.wall = false; // set below once the leader election is done
+    [[maybe_unused]] bool const leaderBefore = my.leader; // audit #1 (QDIAG): did the election below change it?
 
     // Too many leaders (they could not hear each other at election time):
     // step down if enough longer leaders are known.
@@ -259,11 +267,19 @@ void compute_fleet_state()
             queue_fact(msg_role(CR_LEADER, me, L, R), 50, 1);
     }
 
+    if (ROLE_ORDER_FIX)
+        derive_duties();
     my.wall = wall_now() && !amQueen && !my.leader && !my.hunter && !my.guard && !my.defender && wall_slot(me) && L >= WALL_MIN_LEN;
+#ifdef QDIAG
+    // Audit #1: hunter / guard / defender were set from last turn's leader flag; count the turns it changed after.
+    if (!amQueen && my.leader != leaderBefore)
+        DIAG(my.leader ? ((my.hunter || my.guard || my.defender) ? "role-lag promoted-with-duty" : "role-lag promoted")
+                       : "role-lag demoted");
+#endif
 
-    // Big open map late in the game: length decides the tiebreaks there and
-    // long dragons do not trap themselves, so the fleet turns into length.
-    // Small or kelp-dense maps keep their numbers.
+    // DYN_ALLOC (on): every map turns its fleet into length at the numbers -> length switch.
+    // DYN_ALLOC 0 (older rule): only big open maps do, from CONSOL_ROUND; small or kelp-dense maps keep their numbers.
+    // sit.openMap is computed either way (half splits, cap feeding and feeding use it).
     sit.openMap = sit.consolidate = false;
     if (mapProf.openSized)
     {
@@ -275,7 +291,8 @@ void compute_fleet_state()
                 kelp += edgeType[code] == E_KELP;
             }
         sit.openMap = known > 0 && kelp <= OPEN_KELP_MAX * known;
-        sit.consolidate = CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND;
+        if (!DYN_ALLOC)
+            sit.consolidate = CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND;
     }
     if (DYN_ALLOC)
         sit.consolidate = sit.switched; // every map: after the switch, length

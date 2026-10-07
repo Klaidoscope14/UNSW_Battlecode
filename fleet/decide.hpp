@@ -38,7 +38,7 @@ struct Turn
     int portalDir{};
     Intent why{};
     int pi{};
-    bool hunter{};
+    bool opportunist{}; // tg_hunt's short-range hunter (combat role or outnumbering); not my.hunter (pack slot)
     bool huntOk{};
     int feedId{};
     int feedLeader{};
@@ -1063,17 +1063,17 @@ bool tg_hunt(Controller& ct)
     auto& allIn = tn.allIn;
     auto& target = tn.target;
     auto& why = tn.why;
-    auto& hunter = tn.hunter;
+    auto& opportunist = tn.opportunist;
     auto& huntOk = tn.huntOk;
     // Combat dragons hunt enemies, preferring the ones near our leaders. When
     // we clearly outnumber them, small dragons also hunt the long enemies.
     bool const outnumber = units > sit.enemyEst + 3 && sit.distinctEnemies > 0;
-    hunter = !my.leader && ((sit.mode == MODE_COMBAT && my.role == ROLE_COMBAT) || (outnumber && L <= 5));
+    opportunist = !my.leader && ((sit.mode == MODE_COMBAT && my.role == ROLE_COMBAT) || (outnumber && L <= 5));
     // v2.12 gate, also for this chase: never while outnumbered or in survival mode.
     huntOk = allIn || !(HUNT_GATE && (sit.survival || sit.outnumbered));
     // Majority on a smaller map: every spare dragon hunts, any enemy will do.
     bool const majHunter = sit.majorityHunt && !amQueen && !my.leader && !my.guard;
-    if ((hunter && huntOk) || majHunter ? (target < 0 || distHead[target] > (majHunter ? kLeash.majHunt : kLeash.hunt)) : false)
+    if ((opportunist && huntOk) || majHunter ? (target < 0 || distHead[target] > (majHunter ? kLeash.majHunt : kLeash.hunt)) : false)
     {
         int best = -1, bestD = majHunter ? 24 : 16;
         for (auto const& e : enemyReps)
@@ -1121,7 +1121,7 @@ bool tg_hunt_queen(Controller& ct)
     auto& allIn = tn.allIn;
     auto& target = tn.target;
     auto& why = tn.why;
-    auto& hunter = tn.hunter;
+    auto& opportunist = tn.opportunist;
     auto& huntOk = tn.huntOk;
     // The enemy queen decides the game: chase her when she is close, always
     // for combat dragons, and with everyone once our own queen is gone.
@@ -1138,7 +1138,7 @@ bool tg_hunt_queen(Controller& ct)
         {
             int const dq = dist_to(distHead, qc);
             int const range = allIn ? 60 : HUNT_QUEEN_RANGE;
-            if (dq <= range && (dq <= 6 || allIn || (huntOk && R >= OPEN_FARM_ROUND && (my.role == ROLE_COMBAT || hunter))))
+            if (dq <= range && (dq <= 6 || allIn || (huntOk && R >= OPEN_FARM_ROUND && (my.role == ROLE_COMBAT || opportunist))))
             {
                 target = qc;
                 why = I_HUNT_QUEEN;
@@ -1340,7 +1340,7 @@ bool tg_feed(Controller& ct)
                 if (h.mine && h.id != me && h.id != feedId && manhattan(h.cell, feedLeader) <= 5)
                     crowd++;
         bool const waitTurn = feedLeader >= 0 && crowd >= FEED_CROWD && manhattan(head, feedLeader) > 4;
-        if (feedLeader >= 0 && !waitTurn && (target < 0 || distHead[target] > kLeash.feed))
+        if (feedLeader >= 0 && !waitTurn && (target < 0 || distHead[target] > kLeash.feed) && !(INTENT_GUARDS && why == I_CORK))
         {
             target = feedLeader;
             why = I_FEED;
@@ -1359,7 +1359,7 @@ bool tg_pack(Controller& ct)
     auto& feedPhase = tn.feedPhase;
     // Packs: go for the shared prey; the first one there waits a little for
     // a mate so the pack arrives together (alone, it just goes in).
-    if (packer && !feedPhase && (L >= HUNTER_LEN || sit.ourQueenDead || my.wall) && myPrey >= 0 &&
+    if (packer && !feedPhase && (L >= HUNTER_LEN || sit.ourQueenDead || my.wall) && myPrey >= 0 && !(INTENT_GUARDS && why == I_CORK) &&
         (target < 0 || why != I_PEARL || distHead[target] > kLeash.pack))
     {
         Prey const& pr = preyList[myPrey];
@@ -1830,7 +1830,7 @@ bool tg_portal(Controller& ct)
     int const scoutMaxLen = POCKET_CHECK ? BLIND_PORTAL_MAX_LEN : 12;
     bool const scout = PORTAL_SCOUTS && (boxedIn || PORTAL_ALWAYS) && !amQueen && !my.leader && L <= scoutMaxLen && (my.hunterSlot || my.role == ROLE_PORTAL) &&
                        (why == I_PEARL || why == I_EXPLORE);
-    if (!amQueen && !my.leader && L <= scoutMaxLen && (scout || (target < 0 && (boxedIn || my.role == ROLE_PORTAL))) &&
+    if (!amQueen && !my.leader && L <= scoutMaxLen && (scout || (target < 0 && (boxedIn || my.role == ROLE_PORTAL) && !(INTENT_GUARDS && why == I_REGROUP))) &&
         !(my.guard && why != I_EXPLORE))
     {
         int pd = -1;
@@ -1874,7 +1874,7 @@ bool tg_push(Controller& ct)
 {
     auto& target = tn.target;
     auto& why = tn.why;
-    if (AGGRO_EXPANSION && target < 0 && my.hunterSlot && sit.expansion && !my.leader && !my.guard && !(SAFE_TRADES && (sit.survival || sit.outnumbered)))
+    if (AGGRO_EXPANSION && target < 0 && !(INTENT_GUARDS && why == I_REGROUP) && my.hunterSlot && sit.expansion && !my.leader && !my.guard && !(SAFE_TRADES && (sit.survival || sit.outnumbered)))
     {
         // Take the middle early: idle hunter-group dragons head for the enemy
         // side (the mirror image of our queen's start), past the centre.
@@ -1894,7 +1894,7 @@ bool tg_defend(Controller& ct)
     auto& target = tn.target;
     auto& why = tn.why;
     auto& feedPhase = tn.feedPhase;
-    if (my.defender && !feedPhase && why != I_INTERCEPT &&
+    if (my.defender && !feedPhase && why != I_INTERCEPT && !(INTENT_GUARDS && why == I_REGROUP) &&
         (target < 0 || halfMargin(target) <= 0 || distHead[target] > kLeash.defender))
     {
         int const dg = choose_camp_goal(true);
@@ -1973,7 +1973,7 @@ bool tg_explore(Controller& ct)
     auto& target = tn.target;
     auto& why = tn.why;
     if (target < 0 && !(GUARDS && amQueen && sit.enemyQueenDead) && !(amQueen && QUEEN_AVOID_UNKNOWN && !queenStarving) && why != I_GUARD &&
-        why != I_REGROUP && why != I_EVADE)
+        why != I_REGROUP && why != I_EVADE && !(INTENT_GUARDS && why == I_POST))
     {
         target = choose_explore_goal();
         // Nothing unseen left to look at: wait by a spawn tile instead of

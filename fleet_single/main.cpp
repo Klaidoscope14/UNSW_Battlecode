@@ -708,10 +708,10 @@ using namespace unswbc;
 #define EXPANSION 1 // numbers first: everyone (queen included) splits from round 0 up to a denser cap
 #endif
 #ifndef EXP_DENSITY
-#define EXP_DENSITY 12 // expansion cap: one dragon per this many tiles (64 at most)
+#define EXP_DENSITY 12 // (only with DYN_ALLOC 0; DYN_DENSITY applies) expansion cap: one dragon per this many tiles (64 at most)
 #endif
 #ifndef EXP_END
-#define EXP_END 350 // after this round the normal SPLIT_DENSITY cap applies again
+#define EXP_END 350 // (only with DYN_ALLOC 0; growth ends at the switch) after this round the normal SPLIT_DENSITY cap applies again
 #endif
 #ifndef FAST_OPEN
 #define FAST_OPEN 1 // 2.1: hunters split at EARLY_SPLIT_MIN_LEN too while the fleet is still expanding
@@ -780,8 +780,8 @@ using namespace unswbc;
 #define LEADER_MIN_LEN 6 // F1: a dragon elects itself leader only from this length (big maps had ~30 leaders, some L2)
 #endif
 #ifndef OPEN_PLAN
-#define OPEN_PLAN 1 // until we have the majority: no hunters / wall / runners (all collect and split at 4), the queen
-                    // splits down to 2 and explores when no teammate is near her; hunting starts with the majority
+#define OPEN_PLAN 1 // until we have the majority: no hunters / wall / runners (all collect and split at 4); hunting
+                    // starts with the majority. (The queen part - split to 2, explore alone - is OPEN_QUEEN, OFF.)
 #endif
 #ifndef OPEN_MAJ_UNITS
 #define OPEN_MAJ_UNITS 8 // OPEN_PLAN majority needs at least this many dragons
@@ -837,10 +837,10 @@ using namespace unswbc;
 // SITUATION: PHASES, STRENGTH, MAP CLASS
 // ====================================================================================================
 #ifndef CONSOLIDATE
-#define CONSOLIDATE 1 // big open maps: from CONSOL_ROUND no optional splits, spare dragons feed the queen (length wins there)
+#define CONSOLIDATE 1 // (only with DYN_ALLOC 0; with it every map consolidates at the switch) big open maps: from CONSOL_ROUND no optional splits, spare dragons feed the queen (length wins there)
 #endif
 #ifndef CONSOL_ROUND
-#define CONSOL_ROUND 350
+#define CONSOL_ROUND 350 // (only with DYN_ALLOC 0)
 #endif
 #ifndef OPEN_MIN_CELLS
 #define OPEN_MIN_CELLS 1000 // smaller maps are congested: numbers matter more than length
@@ -849,13 +849,10 @@ using namespace unswbc;
 #define OPEN_KELP_MAX 0.20 // share of known edges that are kelp above which a map counts as congested
 #endif
 #ifndef CONSOL_MIN_UNITS
-#define CONSOL_MIN_UNITS 10 // never feed the fleet below this (elimination)
+#define CONSOL_MIN_UNITS 10 // (only with DYN_ALLOC 0; cons_floor() uses the enemy count) never feed the fleet below this (elimination)
 #endif
 #ifndef TIE_TRACK
 #define TIE_TRACK 1 // 27: running guess of the round-500 tiebreaks steers feeding
-#endif
-#ifndef TIE_MARGIN
-#define TIE_MARGIN 5 // lead that counts as safe on queen / longest length
 #endif
 #ifndef SAFE_TRADES
 #define SAFE_TRADES 1 // no snipes / packs / pushes / even trades while outnumbered or in survival mode
@@ -1363,6 +1360,18 @@ using namespace unswbc;
 #ifndef CS_MARGIN
 #define CS_MARGIN 200000.0 // R8 trigger: ...and (<= 1 fully safe move, or 2+ heads within 6, or best - second < this)
 #endif
+#ifndef ROLE_ORDER_FIX
+#define ROLE_ORDER_FIX 1 // A1 (v3.3.0): hunter / guard / screen / defender are derived AFTER the leader election, heir
+                         // and giant (they used last turn's leader flag and amQueen)
+#endif
+#ifndef INTENT_GUARDS
+#define INTENT_GUARDS 1 // A3 / A4 / A7 (v3.3.0): later target steps no longer overwrite a guard's post (explore), a
+                        // cork (pack, feed) or a pack regroup (portal, push, defend)
+#endif
+#ifndef REACH_EST
+#define REACH_EST 1 // A6 (v3.3.0): leaders judge an enemy's free-step reach from its estimated length (body partly out of
+                    // view), as the queen does - it used the visible part only
+#endif
 #ifndef QUEEN_CROWD
 #define QUEEN_CROWD 2 // Q4: was 3 (fled too late, cornered: 196-8, Qd 38 -> 36, head-on 19 -> 17) - F5: this many enemy heads within CROWD_RAD of the queen: no pearls, no rest - get to open water (0 = off)
 #endif
@@ -1394,10 +1403,10 @@ using namespace unswbc;
 // QUEEN: HOME, GROWTH, BUNKER
 // ====================================================================================================
 #ifndef QUEEN_SEED_UNITS
-#define QUEEN_SEED_UNITS 3 // the queen may split off 2 only while the team is this small
+#define QUEEN_SEED_UNITS 3 // (only with EXPANSION 0) the queen may split off 2 only while the team is this small
 #endif
 #ifndef QUEEN_GROW_ROUND
-#define QUEEN_GROW_ROUND 225 // enemy queen still alive by now: our queen stops splitting and grows
+#define QUEEN_GROW_ROUND 225 // (only with DYN_ALLOC 0; she grows from the switch) enemy queen still alive by now: our queen stops splitting and grows
 #endif
 #ifndef BUNKER
 #define BUNKER 1 // enemy queen dead: ours trims to length 2 and circles a sheltered 2x2 with no pearls
@@ -1466,7 +1475,8 @@ using namespace unswbc;
 #define EQ_INFER_ROUND 150
 #endif
 #ifndef QUEEN_FIRST_SPLIT
-#define QUEEN_FIRST_SPLIT 1 // F3: with <= 3 dragons the queen may split at length 4 (keeps 2)
+#define QUEEN_FIRST_SPLIT 1 // F3: with <= 3 dragons the queen may split at length 4 (keeps 2) - at the start her own
+                            // dragons within 3 block it (`crowded`); unblocking it was tested as QUEEN_START_SPLIT: worse
 #endif
 #ifndef OPEN_QUEEN
 #define OPEN_QUEEN 0 // (tested OFF: 191-13 vs 197-7 without it, same queen deaths) OPEN_PLAN queen part: splits down to 2 and explores when no teammate is near
@@ -1480,7 +1490,7 @@ using namespace unswbc;
                       // queen at length 2 on pocket maps - revisit once P3 (queen two-move safety) is in.
 #endif
 #ifndef ADAPT_SPLIT
-#define ADAPT_SPLIT 1 // in the opening the queen splits at length 4 (no QUEEN_MIN_KEEP / QUEEN_SPLIT_UNITS)
+#define ADAPT_SPLIT 1 // (no effect: needs QUEEN_ADAPT, which is OFF) in the opening the queen splits at length 4
 #endif
 #ifndef ADAPT_FLEET
 #define ADAPT_FLEET 6 // the opening lasts until the fleet first has this many dragons...
@@ -4104,7 +4114,7 @@ int vor_margin(int c)
 
 // Sprints: the first ceil(L/4) steps of a turn are free.
 int free_steps() { return (L + 3) / 4; }
-int enemy_reach(HeadInfo const& h) { return std::max(1, (h.len + 3) / 4); }
+int enemy_reach(HeadInfo const& h) { return std::max(1, ((REACH_EST ? std::max(h.len, h.estLen) : h.len) + 3) / 4); }
 
 // Danger of ending a turn on cell n: next to a teammate head, or where an
 // enemy head can reach us (leaders assume the enemy sprints its free steps).
@@ -4393,26 +4403,34 @@ void compute_fleet_state()
             sit.majority = false;
         sit.openPlan = OPEN_PLAN && !sit.majority && !sit.switched && R < OPEN_PLAN_END;
     }
-    // Hunters: a fixed share of the fleet (by id) goes after the enemy queen
-    // once the opening is over. The queen and the leaders never hunt.
+    // Duties (hunter / guard / screen / defender) from the leader flag and amQueen. A1: with ROLE_ORDER_FIX they are
+    // derived after the election below (they used last turn's values); my.wall comes after them either way.
+    auto derive_duties = [&]()
     {
-        std::uint32_t const hh = static_cast<std::uint32_t>(me) * 2246822519u + 3266489917u;
-        bool const active = HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND &&
-                            !(HUNT_GATE && (sit.survival || sit.outnumbered) && !sit.ourQueenDead);
-        int const slot = static_cast<int>((hh >> 13) % 10);
-        my.hunterSlot = !amQueen && kSlots.hunter(slot);
-        my.hunter = active && !amQueen && !my.leader && kSlots.hunter(slot) && !sit.openPlan; // OPEN_PLAN: multiply first
-        // Guards: their own slice of the fleet; once the enemy queen is dead
-        // the hunters come home too.
-        my.guard = GUARDS && !amQueen && !my.leader && !sit.ourQueenDead && !my.hunter &&
-                  (kSlots.guard(slot) || (sit.enemyQueenDead && kSlots.hunter(slot))) &&
-                  (GUARD_MIN_UNITS == 0 || sit.enemyQueenDead || (units >= GUARD_MIN_UNITS && !sit.expansion)) && units > GUARD_FLEET_MIN &&
-                  (R >= OPEN_FARM_ROUND || sit.enemyQueenDead);
-        my.screen = SCREENS && my.guard &&
-                   (kSlots.screen(slot) || (SCREENS_MORE && units < 20 && kSlots.screen2(slot) && (me & 1)));
-        my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && kSlots.defender(slot) && R >= HUNT_START;
-    }
+        // Hunters: a fixed share of the fleet (by id) goes after the enemy queen
+        // once the opening is over. The queen and the leaders never hunt.
+        {
+            std::uint32_t const hh = static_cast<std::uint32_t>(me) * 2246822519u + 3266489917u;
+            bool const active = HUNTERS && !(sit.enemyQueenDead && !sit.ourQueenDead) && (R >= HUNT_START || !sit.expansion) && R >= OPEN_FARM_ROUND &&
+                                !(HUNT_GATE && (sit.survival || sit.outnumbered) && !sit.ourQueenDead);
+            int const slot = static_cast<int>((hh >> 13) % 10);
+            my.hunterSlot = !amQueen && kSlots.hunter(slot);
+            my.hunter = active && !amQueen && !my.leader && kSlots.hunter(slot) && !sit.openPlan; // OPEN_PLAN: multiply first
+            // Guards: their own slice of the fleet; once the enemy queen is dead
+            // the hunters come home too.
+            my.guard = GUARDS && !amQueen && !my.leader && !sit.ourQueenDead && !my.hunter &&
+                      (kSlots.guard(slot) || (sit.enemyQueenDead && kSlots.hunter(slot))) &&
+                      (GUARD_MIN_UNITS == 0 || sit.enemyQueenDead || (units >= GUARD_MIN_UNITS && !sit.expansion)) && units > GUARD_FLEET_MIN &&
+                      (R >= OPEN_FARM_ROUND || sit.enemyQueenDead);
+            my.screen = SCREENS && my.guard &&
+                       (kSlots.screen(slot) || (SCREENS_MORE && units < 20 && kSlots.screen2(slot) && (me & 1)));
+            my.defender = OWN_HALF && !amQueen && !my.leader && !my.guard && !my.hunter && kSlots.defender(slot) && R >= HUNT_START;
+        }
+    };
+    if (!ROLE_ORDER_FIX)
+        derive_duties();
     my.wall = false; // set below once the leader election is done
+    [[maybe_unused]] bool const leaderBefore = my.leader; // audit #1 (QDIAG): did the election below change it?
 
     // Too many leaders (they could not hear each other at election time):
     // step down if enough longer leaders are known.
@@ -4512,11 +4530,19 @@ void compute_fleet_state()
             queue_fact(msg_role(CR_LEADER, me, L, R), 50, 1);
     }
 
+    if (ROLE_ORDER_FIX)
+        derive_duties();
     my.wall = wall_now() && !amQueen && !my.leader && !my.hunter && !my.guard && !my.defender && wall_slot(me) && L >= WALL_MIN_LEN;
+#ifdef QDIAG
+    // Audit #1: hunter / guard / defender were set from last turn's leader flag; count the turns it changed after.
+    if (!amQueen && my.leader != leaderBefore)
+        DIAG(my.leader ? ((my.hunter || my.guard || my.defender) ? "role-lag promoted-with-duty" : "role-lag promoted")
+                       : "role-lag demoted");
+#endif
 
-    // Big open map late in the game: length decides the tiebreaks there and
-    // long dragons do not trap themselves, so the fleet turns into length.
-    // Small or kelp-dense maps keep their numbers.
+    // DYN_ALLOC (on): every map turns its fleet into length at the numbers -> length switch.
+    // DYN_ALLOC 0 (older rule): only big open maps do, from CONSOL_ROUND; small or kelp-dense maps keep their numbers.
+    // sit.openMap is computed either way (half splits, cap feeding and feeding use it).
     sit.openMap = sit.consolidate = false;
     if (mapProf.openSized)
     {
@@ -4528,7 +4554,8 @@ void compute_fleet_state()
                 kelp += edgeType[code] == E_KELP;
             }
         sit.openMap = known > 0 && kelp <= OPEN_KELP_MAX * known;
-        sit.consolidate = CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND;
+        if (!DYN_ALLOC)
+            sit.consolidate = CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND;
     }
     if (DYN_ALLOC)
         sit.consolidate = sit.switched; // every map: after the switch, length
@@ -7165,7 +7192,7 @@ struct Turn
     int portalDir{};
     Intent why{};
     int pi{};
-    bool hunter{};
+    bool opportunist{}; // tg_hunt's short-range hunter (combat role or outnumbering); not my.hunter (pack slot)
     bool huntOk{};
     int feedId{};
     int feedLeader{};
@@ -8190,17 +8217,17 @@ bool tg_hunt(Controller& ct)
     auto& allIn = tn.allIn;
     auto& target = tn.target;
     auto& why = tn.why;
-    auto& hunter = tn.hunter;
+    auto& opportunist = tn.opportunist;
     auto& huntOk = tn.huntOk;
     // Combat dragons hunt enemies, preferring the ones near our leaders. When
     // we clearly outnumber them, small dragons also hunt the long enemies.
     bool const outnumber = units > sit.enemyEst + 3 && sit.distinctEnemies > 0;
-    hunter = !my.leader && ((sit.mode == MODE_COMBAT && my.role == ROLE_COMBAT) || (outnumber && L <= 5));
+    opportunist = !my.leader && ((sit.mode == MODE_COMBAT && my.role == ROLE_COMBAT) || (outnumber && L <= 5));
     // v2.12 gate, also for this chase: never while outnumbered or in survival mode.
     huntOk = allIn || !(HUNT_GATE && (sit.survival || sit.outnumbered));
     // Majority on a smaller map: every spare dragon hunts, any enemy will do.
     bool const majHunter = sit.majorityHunt && !amQueen && !my.leader && !my.guard;
-    if ((hunter && huntOk) || majHunter ? (target < 0 || distHead[target] > (majHunter ? kLeash.majHunt : kLeash.hunt)) : false)
+    if ((opportunist && huntOk) || majHunter ? (target < 0 || distHead[target] > (majHunter ? kLeash.majHunt : kLeash.hunt)) : false)
     {
         int best = -1, bestD = majHunter ? 24 : 16;
         for (auto const& e : enemyReps)
@@ -8248,7 +8275,7 @@ bool tg_hunt_queen(Controller& ct)
     auto& allIn = tn.allIn;
     auto& target = tn.target;
     auto& why = tn.why;
-    auto& hunter = tn.hunter;
+    auto& opportunist = tn.opportunist;
     auto& huntOk = tn.huntOk;
     // The enemy queen decides the game: chase her when she is close, always
     // for combat dragons, and with everyone once our own queen is gone.
@@ -8265,7 +8292,7 @@ bool tg_hunt_queen(Controller& ct)
         {
             int const dq = dist_to(distHead, qc);
             int const range = allIn ? 60 : HUNT_QUEEN_RANGE;
-            if (dq <= range && (dq <= 6 || allIn || (huntOk && R >= OPEN_FARM_ROUND && (my.role == ROLE_COMBAT || hunter))))
+            if (dq <= range && (dq <= 6 || allIn || (huntOk && R >= OPEN_FARM_ROUND && (my.role == ROLE_COMBAT || opportunist))))
             {
                 target = qc;
                 why = I_HUNT_QUEEN;
@@ -8467,7 +8494,7 @@ bool tg_feed(Controller& ct)
                 if (h.mine && h.id != me && h.id != feedId && manhattan(h.cell, feedLeader) <= 5)
                     crowd++;
         bool const waitTurn = feedLeader >= 0 && crowd >= FEED_CROWD && manhattan(head, feedLeader) > 4;
-        if (feedLeader >= 0 && !waitTurn && (target < 0 || distHead[target] > kLeash.feed))
+        if (feedLeader >= 0 && !waitTurn && (target < 0 || distHead[target] > kLeash.feed) && !(INTENT_GUARDS && why == I_CORK))
         {
             target = feedLeader;
             why = I_FEED;
@@ -8486,7 +8513,7 @@ bool tg_pack(Controller& ct)
     auto& feedPhase = tn.feedPhase;
     // Packs: go for the shared prey; the first one there waits a little for
     // a mate so the pack arrives together (alone, it just goes in).
-    if (packer && !feedPhase && (L >= HUNTER_LEN || sit.ourQueenDead || my.wall) && myPrey >= 0 &&
+    if (packer && !feedPhase && (L >= HUNTER_LEN || sit.ourQueenDead || my.wall) && myPrey >= 0 && !(INTENT_GUARDS && why == I_CORK) &&
         (target < 0 || why != I_PEARL || distHead[target] > kLeash.pack))
     {
         Prey const& pr = preyList[myPrey];
@@ -8957,7 +8984,7 @@ bool tg_portal(Controller& ct)
     int const scoutMaxLen = POCKET_CHECK ? BLIND_PORTAL_MAX_LEN : 12;
     bool const scout = PORTAL_SCOUTS && (boxedIn || PORTAL_ALWAYS) && !amQueen && !my.leader && L <= scoutMaxLen && (my.hunterSlot || my.role == ROLE_PORTAL) &&
                        (why == I_PEARL || why == I_EXPLORE);
-    if (!amQueen && !my.leader && L <= scoutMaxLen && (scout || (target < 0 && (boxedIn || my.role == ROLE_PORTAL))) &&
+    if (!amQueen && !my.leader && L <= scoutMaxLen && (scout || (target < 0 && (boxedIn || my.role == ROLE_PORTAL) && !(INTENT_GUARDS && why == I_REGROUP))) &&
         !(my.guard && why != I_EXPLORE))
     {
         int pd = -1;
@@ -9001,7 +9028,7 @@ bool tg_push(Controller& ct)
 {
     auto& target = tn.target;
     auto& why = tn.why;
-    if (AGGRO_EXPANSION && target < 0 && my.hunterSlot && sit.expansion && !my.leader && !my.guard && !(SAFE_TRADES && (sit.survival || sit.outnumbered)))
+    if (AGGRO_EXPANSION && target < 0 && !(INTENT_GUARDS && why == I_REGROUP) && my.hunterSlot && sit.expansion && !my.leader && !my.guard && !(SAFE_TRADES && (sit.survival || sit.outnumbered)))
     {
         // Take the middle early: idle hunter-group dragons head for the enemy
         // side (the mirror image of our queen's start), past the centre.
@@ -9021,7 +9048,7 @@ bool tg_defend(Controller& ct)
     auto& target = tn.target;
     auto& why = tn.why;
     auto& feedPhase = tn.feedPhase;
-    if (my.defender && !feedPhase && why != I_INTERCEPT &&
+    if (my.defender && !feedPhase && why != I_INTERCEPT && !(INTENT_GUARDS && why == I_REGROUP) &&
         (target < 0 || halfMargin(target) <= 0 || distHead[target] > kLeash.defender))
     {
         int const dg = choose_camp_goal(true);
@@ -9100,7 +9127,7 @@ bool tg_explore(Controller& ct)
     auto& target = tn.target;
     auto& why = tn.why;
     if (target < 0 && !(GUARDS && amQueen && sit.enemyQueenDead) && !(amQueen && QUEEN_AVOID_UNKNOWN && !queenStarving) && why != I_GUARD &&
-        why != I_REGROUP && why != I_EVADE)
+        why != I_REGROUP && why != I_EVADE && !(INTENT_GUARDS && why == I_POST))
     {
         target = choose_explore_goal();
         // Nothing unseen left to look at: wait by a spawn tile instead of

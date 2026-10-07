@@ -1,0 +1,1150 @@
+BATTLECODE — MASTER NEXT-GENERATION CHANGE PLAN
+================================================
+
+Purpose
+-------
+This document merges:
+
+1. The previously recommended new CP / DSA / game-theory / tactical ideas.
+2. The newer contradiction, intent-overwrite, configuration-liveness, and code-path discoveries from the latest Claude audit.
+3. The benchmark lessons from MATCH_PATHS, MATCH_SWAP, VOR_TURNS, ROLE_CLAIMS, and the ongoing CONTACT_SEARCH test.
+
+The goal is to provide one implementation roadmap for improving unseen-map Elo while preserving the currently successful behavior until a new idea has been separately validated.
+
+IMPORTANT PRINCIPLE
+-------------------
+The most accurate local model is not automatically the best game-playing model.
+
+Your experiments demonstrate this repeatedly:
+
+    MATCH_PATHS  -> more accurate path estimates, worse fleet performance
+    MATCH_SWAP   -> lower aggregate travel, worse fleet performance
+    VOR_TURNS    -> more realistic movement race, worse strategic territory behavior
+    ROLE_CLAIMS  -> theoretically better global role synchronization, ineffective under local sonar propagation
+
+The useful objective is therefore:
+
+    TEAM UTILITY
+    + DIVERSITY
+    + SAFETY
+    + INFORMATION
+    + TERRITORY
+    + OPPONENT RESTRICTION
+    - CONGESTION
+    - DUPLICATION
+
+not simply:
+
+    individual path accuracy
+    or
+    individual travel efficiency.
+
+-------------------------------------------------------------------------------
+PART I — CURRENT BASELINE: DO NOT DESTROY WHAT ALREADY WORKS
+-------------------------------------------------------------------------------
+
+1. Keep the current successful baseline as the control version.
+
+Do NOT directly re-enable in their current form:
+
+    MATCH_PATHS = 0
+    MATCH_SWAP  = 0
+    VOR_TURNS    = 0
+    ROLE_CLAIMS  = 0
+
+Why:
+
+MATCH_PATHS
+-----------
+Uses BFS path distance for pearl assignment instead of Manhattan distance.
+The benchmark showed worse pearl collection and more bunching. Straight-line distance, although less geometrically accurate, appears to create useful fleet dispersion.
+
+MATCH_SWAP
+----------
+Post-assignment local swaps reduce total assignment travel but similarly bunch dragons together and reduce overall performance.
+
+VOR_TURNS
+---------
+Turn-aware territory makes long enemies appear much faster, which caused our fleet to abandon contested pearls and spawn territory that the cell/path based strategic field handled better.
+
+ROLE_CLAIMS
+-----------
+Global role synchronization through sonar is unreliable because sonar stops at the first dragon / kelp and therefore role claims do not reliably reach the entire fleet.
+
+CONTACT_SEARCH
+--------------
+This one is different. It is already implemented as a selective adversarial search and should continue to be benchmarked independently before becoming production behavior.
+
+-------------------------------------------------------------------------------
+PART II — NEWLY CONFIRMED EXISTING-CODE CONTRADICTIONS
+-------------------------------------------------------------------------------
+
+The latest audit added several concrete findings to the original contradiction list.
+These should be treated as separate from the new-strategy experiments.
+
+A1. ROLE FLAGS ARE DERIVED BEFORE FINAL LEADER STATE
+----------------------------------------------------
+Hunter / guard / screen / defender are computed before later leader election,
+leader demotion, heir selection, and giant selection finish.
+Therefore a turn can temporarily carry role flags based on an earlier leader state.
+
+The newer audit narrows this compared with the original description:
+- the main confirmed issue is stale `my.leader` ordering;
+- `amQueen` is largely not a persistent runtime problem because it is refreshed during perception and queen identity only changes in the opening.
+
+Recommended fix:
+
+    amQueen / queen state first
+    -> leader demotion/election
+    -> heir/giant role resolution
+    -> derive hunter/guard/screen/defender/wall from FINAL state
+
+Switch:
+
+    ROLE_ORDER_FIX
+
+Keep it OFF by default until the decision trace shows whether the affected turns are frequent enough to matter.
+
+A2. CONSOLIDATE IS OVERWRITTEN BY DYN_ALLOC
+--------------------------------------------
+The code computes:
+
+    sit.consolidate = CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND
+
+and then, under DYN_ALLOC=1, replaces it with:
+
+    sit.consolidate = sit.switched
+
+Therefore the old "open maps late, small/kelp maps keep numbers" path is not active in the current build. `sit.openMap` itself remains live elsewhere.
+
+This is primarily a configuration/comment contradiction rather than necessarily a bad behavior, because DYN_ALLOC appears intentional.
+
+Recommended no-behavior-change cleanup:
+- make the DYN_ALLOC-off path visibly conditional;
+- update comments to describe the active behavior.
+
+A3. I_POST CAN BE OVERWRITTEN
+------------------------------
+`tg_guard` can set `why = I_POST` with no target.
+Later exploration can replace the intent in a narrower real case:
+- the dragon is inside the post;
+- length is at least 4;
+- the trim split is refused because of a unit cap or child-escape failure.
+
+At length <=3, the forced post loop dominates the exploration score, so the issue is not universal.
+
+Recommended switch:
+
+    POST_HOLD
+
+Behavior:
+- explicitly protect I_POST;
+- if trim split is unavailable, continue holding the post loop instead of walking off to an exploration goal.
+
+A4. I_CORK CAN BE OVERWRITTEN
+-----------------------------
+This is a new and important finding.
+`tg_cork` can create I_CORK, but later economy / pack / guard stages can replace it.
+
+The latest 204-game diagnostic data showed:
+
+    0 cork targets
+    while the enemy queen was seen in a corridor 758 times
+
+This does not prove the cork logic is bad. It suggests the cork decision may be getting lost downstream.
+
+Recommended switch:
+
+    CORK_KEEP
+
+Either:
+- protect I_CORK with the common intent-lock mechanism, or
+- move the cork stage later in the decision pipeline.
+
+Prefer the common lock mechanism so the architecture does not accumulate more local exceptions.
+
+A5. QUEEN_FIRST_SPLIT IS EFFECTIVELY BLOCKED AT THE START
+---------------------------------------------------------
+The intended first split can be blocked by the `crowded` check because the queen counts nearby friendly starting dragons.
+The audit reports the queen can therefore remain at length 4 for a long opening period.
+
+However, `QUEEN_START_SPLIT` was tested and produced more queen deaths (+14 over one 408-game comparison), so this is a contradiction in the code/comments, NOT a recommended behavior change.
+
+Recommended action:
+- document the active behavior;
+- do not enable the early queen split merely to "fix" the contradiction.
+
+A6. TWO DIFFERENT ENEMY-REACH MODELS
+------------------------------------
+The queen threat map uses a stronger model:
+
+    free + paid sprint reach
+    max(len, estLen)
+
+whereas leaders/giants use a weaker model through `enemy_reach(h)` based on free steps and visible length.
+Non-leaders use an even simpler reach model.
+
+This can result in inconsistent threat evaluation between the queen, leaders, and giants.
+
+Recommended switch:
+
+    REACH_UNIFY
+
+Introduce one canonical:
+
+    enemy_strike_reach(enemy)
+
+and use it consistently for:
+
+    queen threat
+    leader/giant end-threat
+    tactical head danger
+
+Keep the non-leader simplification only if it is explicitly intentional and benchmarked.
+
+This is one of the most promising existing-code fixes because it removes contradictory threat semantics without requiring a new strategy.
+
+A7. I_REGROUP IS NOT CONSISTENTLY PROTECTED
+-------------------------------------------
+`tg_pack` can create I_REGROUP, but later stages such as portal/push/defend can replace it while exploration does protect it.
+
+Recommended action:
+- fold regroup into the same intent-lock mechanism as POST/CORK/etc.
+
+A8. CONTACT_SEARCH CAN DISAGREE WITH THE FINAL SPRINT
+-----------------------------------------------------
+The contact search can choose a queen move, but `finish_move` may still extend that move into a free-step sprint whose endpoint is not evaluated by the contact search.
+Therefore:
+
+    contact-search choice
+        !=
+    final turn endpoint
+
+in some situations.
+
+Before enabling R1 in production, either:
+
+    skip sprint extension when contact search changes the move
+
+or:
+
+    include sprint endpoints in the search action set.
+
+This is a required CONTACT_SEARCH correctness fix.
+
+-------------------------------------------------------------------------------
+PART III — CONFIGURATION LIVENESS / DEAD SETTINGS
+-------------------------------------------------------------------------------
+
+The latest mechanical config-liveness audit tested all 364 defines in config.hpp:
+
+    322 change the bot when changed
+    42 do not change the bot in the current runtime configuration
+
+Some of those 42 are not compiler-dead in a theoretical configuration sense;
+they are simply dead under the current values of other switches.
+
+Treat these as configuration hygiene issues, not automatic gameplay bugs.
+
+B1. OVERRIDDEN OR CURRENTLY INACTIVE SETTINGS
+----------------------------------------------
+
+The following should NOT be tuned expecting immediate effects under the current build:
+
+    QUEEN_GROW_ROUND
+        overridden by DYN_ALLOC queen split logic
+
+    EXP_END
+        overridden by DYN_ALLOC growth_open()
+
+    EXP_DENSITY
+        expansion target currently uses DYN_DENSITY
+
+    CONSOL_MIN_UNITS
+        current cons_floor uses DYN_ALLOC logic
+
+    CONSOLIDATE / CONSOL_ROUND
+        their direct path is replaced by the DYN_ALLOC consolidation rule
+
+    QUEEN_SEED_UNITS
+        inactive while EXPANSION=1
+
+    ADAPT_SPLIT
+        ineffective while QUEEN_ADAPT=0
+
+    EARLY_SPLIT_ROUNDS
+        not fully dead; still participates in the SPLIT_MORE hunter clause
+
+    UNKNOWN_EDGE_COST
+        the Dial planner only uses it when the cost exceeds 1; value=1 therefore effectively means the default-cost path
+
+TIE_MARGIN is orphaned:
+
+    defined
+    referenced by no live code
+
+Recommended Stage-1 cleanup:
+- remove TIE_MARGIN;
+- update comments for inactive/overridden controls;
+- annotate ADAPT_SPLIT as requiring QUEEN_ADAPT;
+- clearly mark DYN_ALLOC as superseding the older round-based settings.
+
+Also maintain a generated/live configuration list in HANDOFF.md and rerun the liveness test after config changes.
+
+-------------------------------------------------------------------------------
+PART IV — GLOBAL DECISION-PIPELINE STRUCTURAL FIX
+-------------------------------------------------------------------------------
+
+D1. THE 21-STEP MUTABLE INTENT PIPELINE
+---------------------------------------
+The target-selection system writes into shared:
+
+    tn.target
+    tn.why
+
+across roughly 21 ordered target steps.
+Each step protects only the intents it explicitly remembers.
+This creates silent downstream overwrites.
+
+Concrete examples found:
+
+    I_POST
+    I_CORK
+    I_REGROUP
+
+and potentially other high-priority intents.
+
+This is a deeper architectural issue than any individual overwrite.
+
+IMPLEMENT:
+
+    bool intent_locked(Intent w)
+
+with at minimum:
+
+    POST
+    GUARD
+    REGROUP
+    EVADE
+    CORK
+    LATE_SAFE
+    BUNKER
+    INTERCEPT
+    FLEE
+
+Then every later target stage starts with:
+
+    if (intent_locked(tn.why)) return;
+
+This should replace dozens of inconsistent local protection conditions.
+
+Recommended rollout:
+
+Stage A:
+- build the helper;
+- protect only known high-priority intents;
+- compare decision traces.
+
+Stage B:
+- verify changed turns correspond only to known overwrite cases.
+
+Stage C:
+- run the full benchmark suite.
+
+Do NOT combine this first with large strategic changes.
+
+D2. TWO DIFFERENT "HUNTER" CONCEPTS
+------------------------------------
+There are two concepts with similar names:
+
+    my.hunter
+        slot-based pack hunter in situation/role logic
+
+    tn.hunter
+        opportunistic hunter used by tg_hunt
+
+Rename the tactical one to something such as:
+
+    tn.opportunist
+
+This is cleanup, but it reduces future strategy mistakes.
+
+D3. NO SINGLE DEFINITION OF ENEMY STRIKE REACH
+-----------------------------------------------
+This overlaps A6.
+Resolve it with the canonical `enemy_strike_reach()` function.
+
+-------------------------------------------------------------------------------
+PART V — NEW STRATEGIC / CP / GAME-THEORY FEATURES
+-------------------------------------------------------------------------------
+
+1. CONGESTION-AWARE MANHATTAN PEARL ASSIGNMENT
+------------------------------------------------
+Do NOT replace Manhattan with pure BFS.
+Preserve the diversification behavior that has already benchmarked well.
+
+Instead use:
+
+    effective_cost =
+          ManhattanDistance
+        + congestion_cost
+        + route_overlap_cost
+        + local_density_penalty
+        + opportunity_cost
+        - region_value
+
+Initial implementation should be simple:
+
+    cost = Manhattan
+         + lambda * number_of_already_assigned_dragons_near_target
+
+Only add more terms if diagnostics justify them.
+
+The objective is:
+
+    good individual target
+    + fleet dispersion
+
+not pure shortest path.
+
+2. REGRET-BASED PEARL ASSIGNMENT
+---------------------------------
+For each dragon:
+
+    best pearl
+    second-best pearl
+
+Define:
+
+    regret = cost(second_best) - cost(best)
+
+Assign high-regret dragons first.
+Flexible dragons can then fill remaining options.
+
+Use this with the successful Manhattan baseline and congestion penalty.
+Do NOT immediately combine it with MATCH_PATHS.
+
+3. REGION-LEVEL ASSIGNMENT
+---------------------------
+Introduce hierarchical coordination:
+
+    fleet
+      -> region allocation
+          -> pearl allocation
+              -> local movement
+
+Region bid:
+
+    bid =
+          expected pearl value
+        + future spawn value
+        + exploration value
+        + strategic territory value
+        + portal value
+        - travel cost
+        - enemy pressure
+        - crowding
+
+Use soft capacities rather than hard partitions.
+
+This is a stronger long-term approach than making pure pearl matching increasingly complicated.
+
+4. ENEMY REACHABLE-SET / BELIEF MAP
+------------------------------------
+For important enemies, maintain:
+
+    EnemyBelief[id] = possible current head cells
+
+Propagate through legal moves, portals, and known topology.
+Prune using:
+
+    vision
+    sonar
+    known bodies
+    kelp
+    portals
+    symmetry
+    death evidence
+    impossible motion
+
+Do not collapse it to one guessed position.
+
+Derived values:
+
+    belief_size
+    possible frontiers
+    escape branches
+    minimum ETA to a cell
+    maximum ETA to a cell
+    likely interception cells
+
+Use it for:
+
+    hunters
+    queen danger
+    interception
+    chokepoint control
+    prey assignment
+
+The key objective is robust decision-making under uncertainty, not point prediction.
+
+5. ENEMY ESCAPE-SET MINIMIZATION / HERDING
+-------------------------------------------
+For an important enemy, compute an approximate:
+
+    EscapeSet
+
+for the next K turns.
+For each candidate fleet action, estimate the next escape set.
+Prefer moves reducing:
+
+    |EscapeSet|
+
+or:
+
+    log2(number_of_viable_escape_branches)
+
+Use coordinated hunter roles:
+
+    blocker
+    blocker
+    interceptor/attacker
+
+instead of several hunters all chasing the same current coordinate.
+
+6. SELECTIVE LOCAL MINIMAX / CONTACT_SEARCH
+--------------------------------------------
+Keep the current selective architecture.
+Do NOT implement full-game minimax.
+
+Use:
+
+    candidate generation
+        -> tactical trigger
+        -> small enemy reply search
+        -> optional our follow-up
+        -> blend into move score
+
+Candidate counts:
+
+    our moves: 4 max
+    enemy replies: 2-4
+    our follow-up: 2-3
+
+Trigger when:
+
+    enemy is near
+    only 1 safe move exists
+    candidates are near-tied
+    queen is boxed
+    interception is possible
+    kill is available
+    contested objective is decisive
+
+Required before production:
+
+    fix A8
+    benchmark independently
+    log trigger reason, heuristic choice, search choice, final choice, nodes, aborts, survival, captures, mobility
+
+7. DETERMINISTIC DYNAMIC ROLE AUCTION
+--------------------------------------
+Do NOT use global ROLE_CLAIMS.
+
+Instead compute role bids from shared reconstructable state.
+
+Possible roles:
+
+    collector
+    explorer
+    hunter
+    guard
+    screen
+    portal scout
+    defender
+    cork/choke holder
+    queen support
+
+Example:
+
+    hunter_bid =
+          interception_value
+        - farming_opportunity_cost
+        - travel_cost
+        - danger
+
+    collector_bid =
+          expected_pearl_value
+        - travel_cost
+        - crowding
+
+    guard_bid =
+          queen_safety_reduction
+        - collection_loss
+
+Use deterministic tie-breaking so independently evaluating dragons converge whenever the underlying state is shared.
+
+Do not require global role messages to make this work.
+
+8. ROLE HYSTERESIS
+-------------------
+Prevent oscillation:
+
+    collector -> hunter -> collector -> hunter
+
+Use asymmetric enter/leave thresholds:
+
+    enter when value > H_ENTER
+    leave when value < H_EXIT
+
+with:
+
+    H_ENTER > H_EXIT
+
+Apply to hunter/guard/cork/scout as useful.
+
+9. MULTI-DRAGON RESERVATION TABLE
+----------------------------------
+Treat the fleet as lightweight MAPF.
+Do not implement full Conflict-Based Search.
+
+Reserve a short horizon:
+
+    t+0 current cell
+    t+1 intended cell
+    t+2 likely next cell
+    t+3 likely next cell
+
+Penalize:
+
+    same-cell conflicts
+    edge swaps
+    narrow corridor conflicts
+    portal-mouth conflicts
+    queen crowding
+    duplicate hunter routes
+
+Use soft penalties and tactical priority rather than rigid reservation unless collision is guaranteed.
+
+10. TURN-AWARE RACING WITHOUT REPLACING STRATEGIC VORONOI
+----------------------------------------------------------
+Keep VOR_TURNS off as a direct replacement.
+
+Maintain two fields:
+
+    tactical race field
+        who reaches a cell first?
+
+    strategic ownership field
+        whose territory/resource/control should this area represent?
+
+Tactical ETA can use turn-aware movement.
+Strategic ownership should preserve the current cell/path-based behavior.
+
+Example:
+
+    contest_score = strategic_value * race_probability
+
+This prevents fast long enemies from automatically causing excessive retreat.
+
+11. CHOKEPOINT / ARTICULATION-POINT CONTROL
+--------------------------------------------
+Extend the existing topology layer with:
+
+    articulation points
+    biconnected components
+    choke value
+
+Possible choke value:
+
+    choke_value =
+          enemy_routes_cut
+        * territory_behind
+        * pearl_value
+        * queen_relevance
+        * enemy_pressure
+
+Classify:
+
+    CORK
+    GATE
+    QUEEN_ROUTE
+    PEARL_GATE
+    PORTAL_GATE
+    TRAP_ENTRY
+
+One well-positioned medium/large dragon should ideally deny several enemy routes.
+
+12. SPLIT-VALUE SEARCH
+-----------------------
+For a dragon of length L, shallow-search:
+
+    childLen = 2 ... L-2
+
+Estimate:
+
+    parent survival
+    child survival
+    escape room
+    pearl access
+    territory
+    mobility
+    attack potential
+    enemy capture risk
+    regroup time
+    future value
+
+Example:
+
+    10 -> 7 + 3
+
+may be superior to:
+
+    10 -> 5 + 5
+
+if the 3-length child can hold a choke while the 7-length parent remains valuable.
+
+Restrict this to important lengths/positions to control CPU cost.
+
+13. ENEMY SACRIFICE / RECYCLE VALUE
+------------------------------------
+Extend recycle logic from a binary gate to a team-economic decision.
+
+Estimate:
+
+    self_drop_value
+    teammate collection probability
+    enemy damage
+    queen safety gained
+    choke opened
+    future territory value
+    opportunity cost
+
+Then:
+
+    sacrifice_score =
+          drop_value
+        + enemy_damage
+        + positional_value
+        - opportunity_cost
+
+Keep strict safety gates. This is a strategic sacrifice model, not a reason to throw dragons away.
+
+14. INFORMATION-VALUE SONAR
+----------------------------
+Do not just send more messages.
+Estimate:
+
+    message_value =
+          affected_teammates
+        * uncertainty_reduction
+        * tactical_importance
+
+Prioritize roughly:
+
+    enemy queen sighting
+    high-value enemy location
+    new portal pair
+    major danger
+    enemy movement/belief update
+    important pearl/spawn information
+    ordinary status
+
+Suppress redundant low-value facts where possible.
+
+15. ZOBRIST HASHING + TRANSPOSITION TABLES
+-------------------------------------------
+Use compact state hashing for repeated tactical search states.
+Useful for:
+
+    sprint DFS
+    dive search
+    queen survival
+    split escape
+    CONTACT_SEARCH
+    candidate simulations
+
+Cache:
+
+    hash -> depth / value / bound
+
+Use fixed-size memory bounded well below the 48 MB limit.
+
+The purpose is not direct strategic improvement.
+The purpose is to buy more search depth from the same CPU budget.
+
+16. LOCAL 7x7 BITBOARD / BITSET OPTIMIZATION
+---------------------------------------------
+Vision is only 7x7.
+Use compact local bit masks for hot computations:
+
+    occupancy
+    enemy heads
+    own body
+    legal cells
+    danger
+    unexplored
+    2x2 loops
+    mobility
+
+Useful operations:
+
+    adjacency
+    mobility counts
+    collision checks
+    escape checks
+    loop detection
+    tactical candidate evaluation
+
+Do not rewrite the entire bot into bitboards.
+Use them only in hot local code.
+
+17. INCREMENTAL TOPOLOGY UPDATES
+---------------------------------
+The bot already refreshes topology after learned edges.
+If profiling shows topology work is significant, investigate:
+
+    DSU/component tracking
+    incremental bridge metadata
+    articulation metadata
+    biconnected components
+
+This is a performance enabler for stronger topology decisions, not a first-line Elo strategy.
+
+18. SELECTIVE A* / 0-1 BFS / BUCKET SEARCH
+--------------------------------------------
+Use the cheapest search matching the cost structure.
+
+A*:
+    single target + strong heuristic + few candidate paths
+
+0-1 BFS:
+    binary edge costs
+
+bucketed shortest path:
+    small integer edge costs
+
+regular BFS:
+    keep where already optimal/simple
+
+The goal is to free CPU for deeper selective tactical search.
+
+-------------------------------------------------------------------------------
+PART VI — STRUCTURE OF THE NEW ARCHITECTURE
+-------------------------------------------------------------------------------
+
+The recommended architecture becomes:
+
+                         WORLD MODEL
+                              |
+              +---------------+---------------+
+              |                               |
+       ENEMY BELIEFS                       TOPOLOGY
+              |                               |
+              +---------------+---------------+
+                              |
+                       STRATEGIC STATE
+                              |
+              +---------------+---------------+
+              |                               |
+       REGION ALLOCATION               ROLE AUCTION
+              |                               |
+              +---------------+---------------+
+                              |
+                     OBJECTIVE ASSIGNMENT
+                              |
+                    pearl / prey / choke
+                              |
+                     TEAM COORDINATION
+                              |
+               diversity / congestion / reservation
+                              |
+                       LOCAL TACTICS
+                              |
+              +---------------+---------------+
+              |                               |
+       heuristic scoring              selective minimax
+              |                               |
+              +---------------+---------------+
+                              |
+                     move / sprint / split
+
+The critical new layer is TEAM COORDINATION between objectives and local movement.
+
+That layer should explicitly reason about:
+
+    diversity
+    congestion
+    route overlap
+    enemy escape options
+    region ownership
+    reservations
+    role opportunity cost
+    chokepoint coverage
+
+-------------------------------------------------------------------------------
+PART VII — STAGED IMPLEMENTATION PLAN
+-------------------------------------------------------------------------------
+
+Do NOT implement everything simultaneously.
+Every meaningful behavior change should have its own switch and benchmark batch.
+
+STAGE 0 — BASELINE SNAPSHOT
+----------------------------
+Freeze the current production bot.
+Record at minimum:
+
+    win rate
+    losses
+    queen deaths
+    enemy queen kills
+    pearls @ R100/R150/R250
+    own fleet @ R100/R250
+    average total length
+    territory/control metrics
+    hunter kills
+    duplicate target rate
+    route overlap
+    collision/block incidents
+    CPU / dragon / turn
+
+STAGE 1 — NO-BEHAVIOR-CHANGE CLEANUP
+-------------------------------------
+These should produce identical decision traces.
+
+1. Rewrite misleading comments (C1-C6).
+2. Remove TIE_MARGIN.
+3. Make DYN_ALLOC override paths visibly explicit.
+4. Annotate ADAPT_SPLIT as requiring QUEEN_ADAPT.
+5. Rename tn.hunter -> tn.opportunist.
+6. Add a live-configuration section to HANDOFF.md.
+7. Run the configuration liveness test after every config edit.
+
+Commit only if the decision trace is identical.
+
+STAGE 2 — EXISTING-CODE FIXES, ONE SWITCH EACH
+-----------------------------------------------
+
+Recommended order:
+
+    1. REACH_UNIFY
+    2. ROLE_ORDER_FIX
+    3. POST_HOLD
+    4. CORK_KEEP
+    5. intent_locked / regroup protection
+
+CONTACT_SEARCH-specific A8 should be fixed together with the next CONTACT_SEARCH revision.
+
+For each experiment:
+
+    one switch
+    same baseline configuration
+    same seeds/maps
+    compare diagnostics
+    compare protected/unseen-map rule
+
+STAGE 3 — CONTACT_SEARCH
+-------------------------
+Fix A8 first.
+Then benchmark CONTACT_SEARCH alone.
+Only ship if aggregate and trigger-level diagnostics improve.
+
+STAGE 4 — FLEET DIVERSIFICATION
+--------------------------------
+Implement:
+
+    congestion-aware Manhattan pearl assignment
+    then regret ordering
+    then region allocation
+
+Keep MATCH_PATHS and MATCH_SWAP themselves OFF.
+
+STAGE 5 — OPPONENT MODEL
+-------------------------
+Implement enemy belief sets only.
+Do not change hunter behavior immediately.
+Collect diagnostics first.
+
+STAGE 6 — COORDINATED HUNTING
+------------------------------
+Use the belief model for:
+
+    escape-set minimization
+    interception
+    surround/herding
+
+This is where the belief system starts affecting gameplay.
+
+STAGE 7 — TEAM RESERVATIONS
+----------------------------
+Add the short reservation table to reduce:
+
+    duplicate targets
+    corridor crowding
+    portal collisions
+    queen crowding
+
+STAGE 8 — TOPOLOGICAL CONTROL
+-----------------------------
+Add:
+
+    articulation/choke valuation
+    deterministic cork assignment
+
+STAGE 9 — SPLIT SEARCH
+----------------------
+Add shallow split-value search only to selected tactical situations.
+
+STAGE 10 — CPU-ENABLED SEARCH DEPTH
+------------------------------------
+Add:
+
+    Zobrist/transposition table
+    bitboard hot-path optimization
+
+Then use the saved CPU to increase:
+
+    CONTACT_SEARCH depth
+    hunter interception search
+    split search
+    tactical candidate evaluation
+
+-------------------------------------------------------------------------------
+PART VIII — BENCHMARKING / ELO SCIENCE
+-------------------------------------------------------------------------------
+
+Do not judge an algorithm solely on final W/L.
+
+Minimum benchmark table:
+
+    metric                         baseline     variant
+    ----------------------------------------------------
+    win rate
+    queen deaths
+    enemy queen kills
+    pearls @ R100
+    pearls @ R150
+    pearls @ R250
+    own fleet @ R100
+    own fleet @ R250
+    average total length
+    territory/control
+    hunter conversion rate
+    failed pearl chases
+    duplicate target rate
+    route overlap
+    collision/block incidents
+    CPU/dragon/turn
+
+For each feature also log:
+
+    trigger count
+    success rate when triggered
+    failure rate when triggered
+    affected map classes if available
+
+A feature should become the new baseline only after repeated batches across multiple random/unseen maps.
+
+CRITICAL BENCHMARK PRINCIPLE
+----------------------------
+Measure emergent behavior, not just local correctness.
+
+Examples:
+
+    Better path estimate
+        does NOT imply
+    Better fleet behavior.
+
+    More realistic territory race
+        does NOT imply
+    Better territorial strategy.
+
+    Better global role synchronization
+        does NOT imply
+    Better role distribution if communication cannot propagate.
+
+-------------------------------------------------------------------------------
+PART IX — WHAT NOT TO DO
+-------------------------------------------------------------------------------
+
+Do not:
+
+1. Re-enable MATCH_PATHS unchanged.
+2. Re-enable MATCH_SWAP unchanged.
+3. Replace strategic Voronoi with VOR_TURNS unchanged.
+4. Spend major effort making ROLE_CLAIMS globally reliable.
+5. Add dozens of new intent enums before fixing state/intent architecture.
+6. Introduce full-game MCTS.
+7. Introduce full joint-team minimax.
+8. Build one giant global score for every subsystem.
+9. Optimize purely for path accuracy.
+10. Optimize purely for individual dragon efficiency.
+11. Fix contradictions by changing behavior before measuring whether the contradiction matters.
+12. Tune configuration switches that are currently overridden/dead without first fixing the dependency that supersedes them.
+
+-------------------------------------------------------------------------------
+PART X — FINAL PRIORITY RANKING
+-------------------------------------------------------------------------------
+
+If time is limited, use this order:
+
+EXISTING-BOT CORRECTNESS / STRUCTURE
+------------------------------------
+1. Stage-1 live-config/comment cleanup
+2. REACH_UNIFY
+3. intent_locked / D1 overwrite protection
+4. ROLE_ORDER_FIX (after measuring frequency)
+5. CORK_KEEP
+6. POST_HOLD
+7. CONTACT_SEARCH A8 correction
+8. CONTACT_SEARCH benchmark
+
+NEW STRATEGIC STRENGTH
+-----------------------
+9. Congestion-aware Manhattan pearl assignment
+10. Regret-based pearl assignment
+11. Enemy reachable-set / belief model
+12. Escape-set hunter / interception behavior
+13. Region-level allocation
+14. Lightweight reservation table
+15. Chokepoint / articulation control
+16. Split-value shallow search
+17. Dynamic deterministic role auction + role hysteresis
+18. Information-value sonar
+19. Zobrist/transposition caching
+20. Local bitboard optimization
+21. Incremental topology optimization
+22. Selective A* / 0-1 BFS / bucketed search where profiling supports it
+23. Economic sacrifice/recycle scoring
+
+-------------------------------------------------------------------------------
+PART XI — CORE DESIGN PRINCIPLE
+-------------------------------------------------------------------------------
+
+The central shift should be:
+
+    STOP ASKING
+        "What is the best move for this dragon?"
+
+    START ASKING
+        "What is the best move for this dragon given what the rest of my fleet is already doing?"
+
+Your recent failed experiments strongly suggest that the game rewards coordinated diversity over locally optimal individual movement.
+
+The desired end state is not a bot in which every dragon has the most accurate path model.
+
+The desired end state is a bot in which:
+
+    dragons specialize without fragile global communication
+    dragons avoid duplicating useful work
+    dragons know where the enemy could plausibly be
+    hunters cut off options rather than simply chase
+    strategic territory and tactical race are separate concepts
+    high-priority intents cannot be silently overwritten
+    threat calculations use one canonical definition
+    tactical search is deeper only when the position actually matters
+    and CPU is spent on decisions that influence Elo
+
+That is the combined direction supported by the existing benchmark failures and the newer code audit.
+
+END OF MASTER DOCUMENT

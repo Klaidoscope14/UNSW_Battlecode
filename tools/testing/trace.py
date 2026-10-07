@@ -74,7 +74,7 @@ def run(name, defs):
     d = os.path.join(WORK, "trace", name)
     shutil.rmtree(d, ignore_errors=True)
     os.makedirs(d)
-    with ThreadPoolExecutor(8) as ex:
+    with ThreadPoolExecutor(6) as ex:
         res = list(ex.map(lambda g: play(name, b, g), GAMES))
     for gid, r, n, h in res:
         print(f"{gid:>28}  {r:<34} {n:>6} turns  {h}")
