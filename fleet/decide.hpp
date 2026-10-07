@@ -2776,6 +2776,89 @@ bool score_moves(Controller& ct)
             std::fclose(f);
         }
 #endif
+    // R8 / R1: the queen's contact search (contact.hpp) when an enemy is close and the move is hard.
+    if (amQueen && QUEEN_THREAT_MAP && !bunkerMode && bestD >= 0)
+    {
+        bool inRange = false;
+        int close6 = 0;
+        for (auto const& h : heads)
+            if (!h.mine)
+            {
+                int const el = std::max(h.len, h.estLen);
+                int const f = std::max(1, (el + 3) / 4);
+                int const m = std::min(PAID_REACH_CAP, f + (PAID_REACH ? std::max(0, el - 2) : 0));
+                inRange = inRange || manhattan(h.cell, head) <= std::max(f, m) + CS_TRIG_EXTRA;
+                close6 += manhattan(h.cell, head) <= 6;
+            }
+        if (inRange)
+        {
+            int safe = 0;
+            double s1 = -1e18, s2 = -1e18;
+            for (auto const& cd : cands)
+                if (cd.legal)
+                {
+                    safe += !cd.blind && cd.dest >= 0 && cd.ok1 && cd.ok2 && qThreat[cd.dest] >= INF;
+                    if (cd.score > s1)
+                    {
+                        s2 = s1;
+                        s1 = cd.score;
+                    }
+                    else if (cd.score > s2)
+                        s2 = cd.score;
+                }
+            double const margin = s2 > -1e17 ? s1 - s2 : 1e18;
+            bool const trig = safe <= 1 || close6 >= 2 || margin < CS_MARGIN;
+            [[maybe_unused]] int const heurD = bestD;
+            int searchD = -1;
+            CsResult cr;
+            if (trig && CONTACT_SEARCH)
+            {
+                cr = contact_search(cands, head);
+                set_body(body, L);
+                if (cr.ran)
+                {
+                    for (auto const& cd : cands)
+                        if (cr.has[cd.d] && (searchD < 0 || cr.val[cd.d] > cr.val[searchD]))
+                            searchD = cd.d;
+                    if (CONTACT_SEARCH == 1 && BAND_COMPARE == 0)
+                    {
+                        bestScore = -1e18;
+                        for (auto& cd : cands)
+                        {
+                            if (!cd.legal)
+                                continue;
+                            if (cr.has[cd.d])
+                            {
+                                double const add = CS_ALPHA * CS_SCALE * cr.val[cd.d];
+                                cd.score += add;
+                                cd.bands[BAND_SAFETY] += add;
+                            }
+                            if (cd.score > bestScore)
+                            {
+                                bestScore = cd.score;
+                                bestD = cd.d;
+                            }
+                        }
+                    }
+                }
+            }
+#ifdef QDIAG
+            // R9: one line per contact turn - trigger, heuristic / search / final choice, search values, effort.
+            if (char const* df = std::getenv("FLEET_DIAG"))
+                if (std::FILE* f = std::fopen(df, "a"))
+                {
+                    std::fprintf(f, "C %c %d L%d trig%d safe%d close%d margin%.0f heur%c search%c final%c ran%d abort%d work%d |", myTeam == Team::A ? 'A' : 'B', R, L,
+                                 trig ? 1 : 0, safe, close6, std::min(margin, 9e9), DCH[heurD], searchD >= 0 ? DCH[searchD] : '-', DCH[bestD], cr.ran ? 1 : 0,
+                                 cr.aborted ? 1 : 0, csWork);
+                    for (auto const& cd : cands)
+                        if (cr.has[cd.d])
+                            std::fprintf(f, " %c:%.2f", DCH[cd.d], cr.val[cd.d]);
+                    std::fprintf(f, "\n");
+                    std::fclose(f);
+                }
+#endif
+        }
+    }
     set_body(body, L);
     if (bestD < 0)
         bestD = facing;

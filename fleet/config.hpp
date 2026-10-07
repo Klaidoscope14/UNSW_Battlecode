@@ -113,7 +113,7 @@
 #define MAJ_OFF 1.1 // ...lost again below this
 #endif
 #ifndef QUEEN_START_SPLIT
-#define QUEEN_START_SPLIT 0 // user (2026-10-07): the queen splits at the beginning. Before QSS_END she splits in half
+#define QUEEN_START_SPLIT 0 // (OFF: over 408 games -7 wins, +14 queen deaths) user (2026-10-07): the queen splits at the beginning. Before QSS_END she splits in half
                             // (4 -> 2 + 2) whenever she can; only ENEMY heads within 3 stop it (the start crowd of our own
                             // dragons blocked every queen split before: she sat at length 4 to r150 on Australia). Her
                             // other split checks stay (calm, safe move, two real exits, room, child escape, loop, sealed start)
@@ -640,6 +640,48 @@
 #endif
 #ifndef LOOK2_QUEEN_REACH
 #define LOOK2_QUEEN_REACH 6 // her own next-turn reach considered (free + paid steps)
+#endif
+#ifndef CONTACT_SEARCH
+#define CONTACT_SEARCH 0 // R1 (contact.hpp): when an enemy head is close and the move is hard (R8 trigger), the queen
+                         // searches two of her moves ahead with the nearest enemies' replies in between (max-min) and
+                         // judges ground reached first + free loop + exits; blended into her score. 1 = on,
+                         // 2 = compute and log only (QDIAG "C" lines), 0 = off
+#endif
+#ifndef CS_ALPHA
+#define CS_ALPHA 0.3 // R1 blend weight (implicit-minimax style): score += CS_ALPHA * CS_SCALE * value (value -1 .. 1)
+#endif
+#ifndef CS_SCALE
+#define CS_SCALE 2000000.0 // R1: size of the queen's safety terms (hard threat 1.2e6, corner 1.5e6)
+#endif
+#ifndef CS_ENEMIES
+#define CS_ENEMIES 2 // R1: nearest enemy heads whose replies are searched (the rest: two-turn reach, as look-2)
+#endif
+#ifndef CS_REPLIES
+#define CS_REPLIES 5 // R1: reply cells per enemy (closest to her head = most threatening)
+#endif
+#ifndef CS_NEAR
+#define CS_NEAR 10 // R1: enemy heads this close (manhattan) can be searched enemies
+#endif
+#ifndef CS_TERR_RADIUS
+#define CS_TERR_RADIUS 10 // R1: ground counted within this many of her steps
+#endif
+#ifndef CS_W_TERR
+#define CS_W_TERR 0.55 // R1 leaf weights: ground she reaches first...
+#endif
+#ifndef CS_W_LOOP
+#define CS_W_LOOP 0.30 // ...a free loop longer than her within reach...
+#endif
+#ifndef CS_W_EXITS
+#define CS_W_EXITS 0.15 // ...her free exits (up to 3)
+#endif
+#ifndef CS_WORK_CAP
+#define CS_WORK_CAP 400000 // R8: BFS cells one search may pop (~15M points); over it the search is dropped
+#endif
+#ifndef CS_TRIG_EXTRA
+#define CS_TRIG_EXTRA 3 // R8 trigger: an enemy head within its full strike reach + this many of her head...
+#endif
+#ifndef CS_MARGIN
+#define CS_MARGIN 200000.0 // R8 trigger: ...and (<= 1 fully safe move, or 2+ heads within 6, or best - second < this)
 #endif
 #ifndef QUEEN_CROWD
 #define QUEEN_CROWD 2 // Q4: was 3 (fled too late, cornered: 196-8, Qd 38 -> 36, head-on 19 -> 17) - F5: this many enemy heads within CROWD_RAD of the queen: no pearls, no rest - get to open water (0 = off)

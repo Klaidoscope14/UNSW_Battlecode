@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -57,6 +58,7 @@ using namespace unswbc;
 #include "intent.hpp"
 #include "tactics.hpp"
 #include "act.hpp"
+#include "contact.hpp"
 #include "decide.hpp"
 #include "speak.hpp"
 

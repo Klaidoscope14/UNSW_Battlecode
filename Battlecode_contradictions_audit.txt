@@ -1,0 +1,612 @@
+UNSW Battlecode Bot — Contradiction / Overwrite Audit
+============================================================
+
+Source reviewed:
+    main(7).cpp
+    Size: ~416 KB
+    Lines: 10,572
+
+Purpose
+-------
+This document records contradictions, state overwrites, fall-through cases,
+and configuration paths that are effectively bypassed in the current active
+configuration.
+
+Important distinction:
+    1. Runtime logic contradiction / overwrite:
+       Two pieces of active control flow can produce an inconsistent state
+       or a later stage can replace an earlier decision.
+    2. Bypassed/dead configuration:
+       A feature exists in the source, but another active switch makes the
+       feature ineffective or unreachable.
+    3. Intentional layering:
+       Some later assignments are legitimate by design. They are included
+       only where the ordering creates a real inconsistency or makes the
+       source misleading.
+
+The findings below are based on the actual code in main(7).cpp and its
+currently active configuration.
+
+
+============================================================
+1. ROLE STATE IS COMPUTED BEFORE FINAL LEADER ELECTION
+============================================================
+
+Classification:
+    ACTUAL RUNTIME STATE INCONSISTENCY
+Severity:
+    HIGH
+
+Relevant flow:
+    compute_fleet_state()
+
+The code first computes hunter / guard / screen / defender status using the
+CURRENT value of my.leader:
+
+    my.hunter = active && !amQueen && !my.leader && ...
+    my.guard  = ... && !my.leader && ...
+    my.defender = ... && !my.leader && ...
+    my.screen = ... my.guard ...
+
+Only AFTER these assignments does the function perform leader promotion /
+demotion:
+
+    amQueen = me == queenId;
+
+    if (amQueen)
+        my.leader = true;
+    else if (my.leader)
+        ...
+        my.leader = false;
+
+    ... leader election ...
+
+    ... heir ...
+
+    ... giant ...
+
+The heir and giant logic can explicitly do:
+
+    my.leader = true;
+
+Therefore the roles and the final leader state can disagree during the
+same turn.
+
+Example state that is possible from ordering:
+
+    Step A:
+        my.leader == false
+        -> my.hunter may become true
+
+    Step B:
+        giant/heir/leader election
+        -> my.leader becomes true
+
+Final state:
+
+    my.leader == true
+    my.hunter == true
+
+The reverse problem also exists:
+
+    my.leader == true
+    -> hunter/guard/defender are suppressed
+
+Then later the dragon can be demoted by leader-election logic, but its
+hunter/guard/defender state was not recomputed after that demotion.
+
+Consequence:
+    The final role flags are not guaranteed to correspond to the final
+    leadership state computed for the same turn.
+
+Why it matters:
+    Later intent logic checks my.leader, my.hunter, my.guard, etc. Therefore
+    one-turn role combinations can change target selection and splitting
+    behavior unexpectedly.
+
+Recommended audit direction:
+    Separate "determine final strategic roles" from "derive dependent role
+    flags from those final roles." Do not apply a fix yet without benchmarking,
+    because the existing ordering may have been tuned around current behavior.
+
+Source locations:
+    main(7).cpp approximately lines 4370-4510.
+
+
+============================================================
+2. sit.consolidate IS EXPLICITLY OVERWRITTEN
+============================================================
+
+Classification:
+    ACTUAL RUNTIME LOGIC OVERWRITE
+Severity:
+    HIGH
+
+First computation:
+
+    sit.openMap = ...
+    sit.consolidate =
+        CONSOLIDATE && sit.openMap && R >= CONSOL_ROUND;
+
+This explicitly makes consolidation depend on:
+    - CONSOLIDATE
+    - map being classified as open
+    - round being late enough
+
+Immediately afterwards:
+
+    if (DYN_ALLOC)
+        sit.consolidate = sit.switched;
+
+Current active configuration:
+
+    DYN_ALLOC = 1
+
+Therefore, when DYN_ALLOC is enabled, the previous map-sensitive result is
+discarded and replaced by:
+
+    sit.consolidate = sit.switched;
+
+This means that once the dynamic numbers->length switch occurs, the bot
+enters consolidation regardless of whether the map was classified as
+open or kelp-dense.
+
+This directly conflicts with the earlier comment/logic describing
+consolidation as an open-map/late-game behavior.
+
+Example:
+
+    map:
+        not open / kelp-dense
+
+    earlier:
+        sit.consolidate = false
+
+    later:
+        DYN_ALLOC == 1
+        sit.switched == true
+
+    final:
+        sit.consolidate = true
+
+Consequence:
+    The map classification no longer controls consolidation in the active
+    configuration once DYN_ALLOC has switched.
+
+This also propagates into split decisions because many split paths require:
+
+    !sit.consolidate
+
+So the overwrite is strategically significant.
+
+Source locations:
+    compute_fleet_state(), approximately lines 4510-4535.
+    DYN_ALLOC configuration is near the opening/splitting config section.
+
+
+============================================================
+3. I_POST CAN FALL THROUGH INTO GENERIC EXPLORATION
+============================================================
+
+Classification:
+    ACTUAL TARGET / INTENT OVERWRITE
+Severity:
+    HIGH
+
+Guard/post logic can intentionally put a guard into:
+
+    target = -1;
+    why = I_POST;
+
+The surrounding code explicitly treats I_POST as meaningful and tries to
+preserve it.
+
+However, the generic exploration stage later contains:
+
+    if (target < 0
+        && ...
+        && why != I_GUARD
+        && why != I_REGROUP
+        && why != I_EVADE)
+    {
+        target = choose_explore_goal();
+        ...
+    }
+
+Notice that I_POST is NOT excluded.
+
+Therefore the same decision pipeline can do:
+
+    tg_guard / bunker-post logic
+        ->
+        target = -1
+        why = I_POST
+
+then later:
+
+    tg_explore
+        sees target < 0
+        sees why != I_GUARD
+        sees why != I_REGROUP
+        sees why != I_EVADE
+        ->
+        assigns exploration
+
+So:
+
+    I_POST -> I_EXPLORE
+
+can occur in the same turn.
+
+This is especially important because the earlier code has explicit checks
+for I_POST elsewhere, indicating that I_POST is intended to be a protected
+state.
+
+Consequence:
+    A guard that has reached a designated bunker/post state may be pulled
+    into exploration instead of holding the intended post.
+
+Source locations:
+    Guard/post target logic: approximately lines 8670-8690 and related
+    guard handling.
+    Generic exploration: approximately lines 9090-9120.
+
+
+============================================================
+4. QUEEN_GROW_ROUND IS BYPASSED WHEN DYN_ALLOC IS ENABLED
+============================================================
+
+Classification:
+    BYPASSED / EFFECTIVELY DEAD CONFIGURATION PATH
+Severity:
+    MEDIUM-HIGH
+
+Configuration defines:
+
+    QUEEN_GROW_ROUND = 225
+
+The surrounding comment describes this as the point where the queen stops
+splitting and starts growing.
+
+But the active logic is:
+
+    sit.queenSplits =
+        (DYN_ALLOC ? !sit.switched : R < QUEEN_GROW_ROUND)
+        || sit.enemyQueenDead;
+
+Current configuration:
+
+    DYN_ALLOC = 1
+
+Therefore the active expression becomes:
+
+    sit.queenSplits = !sit.switched || sit.enemyQueenDead;
+
+The R < QUEEN_GROW_ROUND branch is not used.
+
+So the active queen split cutoff is controlled by the dynamic switch round,
+not the configured QUEEN_GROW_ROUND value.
+
+Result:
+    Changing QUEEN_GROW_ROUND in the current build has no effect while
+    DYN_ALLOC remains enabled.
+
+This is not necessarily a bug. It is an architectural override that makes
+the old configuration misleading.
+
+
+============================================================
+5. EXP_END IS BYPASSED WHEN DYN_ALLOC IS ENABLED
+============================================================
+
+Classification:
+    BYPASSED / EFFECTIVELY DEAD CONFIGURATION PATH
+Severity:
+    MEDIUM
+
+Configuration defines:
+
+    EXP_END = 350
+
+with a comment describing it as the end of the expansion period.
+
+But:
+
+    bool growth_open()
+    {
+        return DYN_ALLOC ? !sit.switched : R < EXP_END;
+    }
+
+Current configuration:
+
+    DYN_ALLOC = 1
+
+Therefore:
+
+    growth_open() == !sit.switched
+
+and EXP_END is not consulted.
+
+So the active system is:
+
+    "grow until dynamic switch"
+
+rather than:
+
+    "grow until round EXP_END"
+
+The configured EXP_END value is therefore ineffective in the current build.
+
+Again, this may be intentional after the move to dynamic allocation, but it
+is a stale configuration path and should not be treated as an active control
+parameter.
+
+
+============================================================
+6. ADAPT_SPLIT IS ENABLED BUT ITS GATE IS DISABLED
+============================================================
+
+Classification:
+    UNREACHABLE FEATURE COMBINATION
+Severity:
+    MEDIUM
+
+Configuration:
+
+    QUEEN_ADAPT = 0
+    ADAPT_SPLIT = 1
+
+The split logic checks:
+
+    ADAPT_SPLIT && sit.queenOpening
+
+But sit.queenOpening is defined as:
+
+    sit.queenOpening =
+        QUEEN_ADAPT &&
+        !sit.fleetEstablished &&
+        R < ADAPT_OPEN_END;
+
+Therefore with:
+
+    QUEEN_ADAPT = 0
+
+we always get:
+
+    sit.queenOpening = false
+
+and hence:
+
+    ADAPT_SPLIT && sit.queenOpening
+        == false
+
+So ADAPT_SPLIT cannot have an effect in the current build.
+
+This is a dead configuration combination.
+
+Implication:
+    Looking at the config alone could make it appear that adaptive queen
+    splitting is enabled, but the required parent feature is disabled.
+
+
+============================================================
+7. LEADER-DEPENDENT ROLES ARE ALSO AFFECTED BY PERSISTENT STATE
+============================================================
+
+Classification:
+    STATE-LIFECYCLE RISK
+Severity:
+    MEDIUM-HIGH
+
+my.leader is a persistent state field. It is not simply recomputed from
+scratch at the beginning of the turn.
+
+The function can:
+    - retain an existing leader value
+    - demote it
+    - re-elect it
+    - promote via giant/heir logic
+
+Meanwhile hunter / guard / defender decisions are made before these later
+changes.
+
+This creates a broader lifecycle problem:
+
+    previous-turn leader state
+        ↓
+    used to suppress hunter/guard/defender
+        ↓
+    same-turn leader status may then change
+
+So the problem is not only "leader is set later." The input used by the
+dependent role calculation can be a stale strategic-role state.
+
+This should be treated together with Finding #1 rather than as a completely
+separate bug.
+
+
+============================================================
+8. THE INTENT SYSTEM IS A MUTABLE PRIORITY PIPELINE, NOT A STRICT
+   IMMUTABLE PRIORITY HIERARCHY
+============================================================
+
+Classification:
+    ARCHITECTURAL RISK
+Severity:
+    MEDIUM
+
+decide() executes target stages sequentially:
+
+    tg_bunker_watch
+    tg_pearl
+    tg_queen_caution
+    tg_hunt
+    tg_hunt_queen
+    tg_cork
+    tg_feed
+    tg_pack
+    tg_wall
+    tg_guard
+    tg_rescue
+    tg_queen_bunker
+    tg_queen_rest
+    tg_portal
+    tg_push
+    tg_defend
+    tg_camp_open
+    tg_zone
+    tg_outpost
+    tg_explore
+    commit_target
+
+These stages all operate on the same:
+
+    target
+    why
+
+variables.
+
+Therefore an earlier stage does not automatically "win" merely because it
+appears earlier. A later stage may overwrite target/intent unless it has an
+explicit guard preventing that.
+
+This is how the I_POST -> I_EXPLORE issue can occur.
+
+There is also evidence of manually protecting some intents:
+
+    why != I_GUARD
+    why != I_REGROUP
+    why != I_EVADE
+
+but the protection is not universal.
+
+The architectural risk is therefore:
+
+    priority order
+        +
+    mutable shared decision state
+        +
+    inconsistent protection predicates
+
+This makes accidental intent overwrites possible.
+
+
+============================================================
+9. MANY EXPERIMENTAL SYSTEMS EXIST IN SOURCE BUT ARE DISABLED OR
+   SUPERSEDED BY OTHER ACTIVE SYSTEMS
+============================================================
+
+Classification:
+    CODEBASE CONSISTENCY / MAINTENANCE ISSUE
+Severity:
+    MEDIUM
+
+The current file is effectively a research/benchmark framework containing
+many previous policies.
+
+Examples include:
+
+    ROLE_CLAIMS = 0
+    ROLES_AFTER_SWITCH = 0
+    QUEEN_ADAPT = 0
+    OPEN_QUEEN = 0
+    QUEEN_START_SPLIT = 0
+    CONTACT_SEARCH = disabled in the active decision path
+    MATCH_PATHS = 0
+    and multiple other OFF/test switches
+
+In isolation, an OFF feature is not a contradiction.
+
+The issue is that several features are also partially referenced by other
+active logic or are superseded by newer policy layers. This makes it easy
+to misread the active strategy from the source.
+
+Examples already identified:
+
+    QUEEN_GROW_ROUND
+        superseded by DYN_ALLOC
+
+    EXP_END
+        superseded by DYN_ALLOC
+
+    ADAPT_SPLIT
+        gated by QUEEN_ADAPT, which is OFF
+
+This means the file contains a larger conceptual architecture than the
+actual active policy.
+
+
+============================================================
+10. SUMMARY — CONFIRMED IMPORTANT ISSUES
+============================================================
+
+Highest-priority runtime issues:
+
+    A. Final my.leader state can disagree with hunter/guard/defender flags
+       because dependent roles are computed before final leadership election.
+
+    B. sit.consolidate is explicitly overwritten by sit.switched whenever
+       DYN_ALLOC is enabled, discarding the earlier open-map condition.
+
+    C. I_POST can be replaced by exploration because tg_explore checks
+       target < 0 but does not exclude I_POST.
+
+Configuration / feature contradictions:
+
+    D. QUEEN_GROW_ROUND has no effect while DYN_ALLOC=1.
+
+    E. EXP_END has no effect while DYN_ALLOC=1.
+
+    F. ADAPT_SPLIT=1 is ineffective while QUEEN_ADAPT=0.
+
+Architectural risk:
+
+    G. Intent is represented as mutable shared state through a sequence of
+       target stages, so every protected intent needs an explicit
+       anti-overwrite condition.
+
+    H. Persistent strategic-role state and dependent-role state are not
+       derived in one final canonical pass.
+
+
+============================================================
+11. WHAT THIS AUDIT DOES NOT CLAIM
+============================================================
+
+This document does NOT claim that every ordering difference is a bug.
+
+For example:
+    - deterministic role IDs may be intentionally designed,
+    - disabled experimental flags may be deliberately retained for testing,
+    - dynamic allocation may intentionally replace older round-based
+      parameters.
+
+The findings marked as "runtime overwrite" are cases where the code itself
+demonstrates that a later assignment can replace or invalidate an earlier
+decision/state within the active flow.
+
+The configuration findings are included because they are important when
+benchmarking or tuning the bot: changing those parameters may not actually
+change gameplay under the current parent switches.
+
+
+============================================================
+12. RECOMMENDED NEXT AUDIT
+============================================================
+
+Before changing algorithms, the next useful code audit would be:
+
+    1. Build a state-dependency graph for my.leader / my.giant / my.heir /
+       my.hunter / my.guard / my.defender / my.wall.
+
+    2. Build an intent overwrite table showing every function that can write
+       tn.target or tn.why and which later functions can overwrite it.
+
+    3. Build a "live configuration" table showing which #defines actually
+       influence the current build versus which are bypassed.
+
+    4. Check whether the tournament behavior was tuned around any of the
+       currently inconsistent states. A logic cleanup can change benchmark
+       results even if it appears semantically correct.
+
+This document is an audit of the current code, not a proposed patch.
