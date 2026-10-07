@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <functional>
 #include <random>
 #include <string>
 #include <unordered_map>
@@ -742,11 +743,18 @@ using namespace unswbc;
 #define HARVEST_START 470
 #endif
 #ifndef HARVEST_ADAPT
-#define HARVEST_ADAPT 1 // v5.0.1: behind on queen length (both queens alive, theirs known no shorter than ours) the harvest
+#define HARVEST_ADAPT 1 // v5.0.1 (64 games: queen at r500 13.8 -> 18.2 avg, deaths 12 = 12; vs v5.0.0 17-15): behind on queen length (both queens alive, theirs known no shorter than ours) the harvest
                         // starts earlier: HARVEST_START - 10 - HARVEST_PER_GAP x gap, never before HARVEST_EARLIEST
 #endif
 #ifndef HARVEST_PER_GAP
 #define HARVEST_PER_GAP 2
+#endif
+#ifndef HARVEST_UNKNOWN
+#define HARVEST_UNKNOWN 450 // v5.0.1: their queen's length unknown (never seen lately) and ours under HARVEST_UNKNOWN_GOAL:
+                            // start here (0 = wait for 470 as before)
+#endif
+#ifndef HARVEST_UNKNOWN_GOAL
+#define HARVEST_UNKNOWN_GOAL 16
 #endif
 #ifndef HARVEST_EARLIEST
 #define HARVEST_EARLIEST 400
@@ -813,6 +821,27 @@ using namespace unswbc;
 #endif
 #ifndef QUEEN_CAP_EXITS
 #define QUEEN_CAP_EXITS 1 // v5.0.0: the size-cap queen split needs two real ways on, like her own split
+#endif
+#ifndef QUEEN_LOOK
+#define QUEEN_LOOK 1 // v5.0.2: in contact (an enemy head in view within LOOK_NEAR) the queen searches LOOK_DEPTH of her own
+                     // moves against every enemy's earliest arrival (free + paid steps, reports included). A line dies at
+                     // turn k once some enemy can be on her head by then; lines are ranked by turns survived first, then
+                     // by the ground she reaches strictly first and her fewest exits on the way (funnels)
+#endif
+#ifndef LOOK_NEAR
+#define LOOK_NEAR 6
+#endif
+#ifndef LOOK_DEPTH
+#define LOOK_DEPTH 4
+#endif
+#ifndef LOOK_DEATH_PEN
+#define LOOK_DEATH_PEN 400000.0 // per turn this move's best line dies sooner than the best move's (below LOOK2_PEN)
+#endif
+#ifndef LOOK_TERR_W
+#define LOOK_TERR_W 120000.0 // surviving lines: ground she reaches first (0..1 of 2L + 8 cells)
+#endif
+#ifndef LOOK_EXIT_W
+#define LOOK_EXIT_W 60000.0 // surviving lines: fewest safe exits along the line (0..3, funnel detection)
 #endif
 #ifndef CAP_FIX
 #define CAP_FIX 1 // v2.14.10: the size-cap plan and the harvest agree with the v2.14.5 rules (see the checks below)
@@ -4654,6 +4683,8 @@ int harvest_start()
     TieState const t = tie_state();
     if (t.ourQ >= 0 && t.theirQ >= 0 && t.ourQ <= t.theirQ)
         cacheV = std::max(HARVEST_EARLIEST, HARVEST_START - 10 - HARVEST_PER_GAP * (t.theirQ - t.ourQ));
+    else if (HARVEST_UNKNOWN > 0 && t.ourQ >= 0 && t.theirQ < 0 && t.ourQ < HARVEST_UNKNOWN_GOAL)
+        cacheV = std::min(HARVEST_START, HARVEST_UNKNOWN); // strong teams hide a growing queen: assume we are behind
     return cacheV;
 }
 
@@ -4713,6 +4744,203 @@ bool corridor_leads_to(int start, int goal, int maxSteps)
         }
     }
     return false;
+}
+
+// ---------------------------------------------------------------------------
+// QUEEN_LOOK (v5.0.2): the queen's lookahead in contact.
+// ---------------------------------------------------------------------------
+// Every enemy moves after her each turn. lookT[c] = the first turn some enemy can have its head on c: within its
+// free + paid reach (a segment per paid step, down to length 2) in turn 1, then its free steps per turn after that
+// (conservative: paying would shorten it). Reported enemies count with their age. She dies at turn k on a cell with
+// lookT <= k. Her lines are walked to LOOK_DEPTH single steps (known water, bodies in view are walls, her own tail
+// moves on); a line is worth (turns survived, then ground she reaches strictly before every enemy and her fewest safe
+// exits along the way). One-turn danger stays with the threat map; this ranks what comes after.
+struct LookRes
+{
+    bool ran = false;
+    std::array<int, 4> surv{};
+    std::array<double, 4> val{};
+};
+std::vector<int> lookT, lookD, lookQ, lookRel;
+int lookS = 0;
+std::vector<int> lookStamp;
+
+void look_enemy(int src, int f, int budget1)
+{
+    // budget1: cells it can cover in turn 1 (free + paid); f per turn after that
+    int const maxR = std::min(48, budget1 + f * LOOK_DEPTH + 2);
+    lookS++;
+    lookQ.clear();
+    lookQ.push_back(src);
+    lookStamp[src] = lookS;
+    lookD[src] = 0;
+    for (std::size_t i = 0; i < lookQ.size(); i++)
+    {
+        int const c = lookQ[i], dc = lookD[c];
+        int const t = dc <= budget1 ? 1 : 1 + (dc - budget1 + f - 1) / f;
+        if (dc > 0)
+            lookT[c] = std::min(lookT[c], t);
+        if (dc >= maxR)
+            continue;
+        for (int k = 0; k < 4; k++)
+        {
+            int const n = step_open(c, k);
+            if (n < 0 || lookStamp[n] == lookS)
+                continue;
+            if (vis[n] && occId[n] >= 0 && occId[n] != me)
+                continue; // bodies in view block it (ours: the queen's own body moves on)
+            lookStamp[n] = lookS;
+            lookD[n] = dc + 1;
+            lookQ.push_back(n);
+        }
+    }
+}
+
+LookRes queen_lookahead(std::array<Cand, 4> const& cands)
+{
+    LookRes res;
+    if (!QUEEN_LOOK || body.empty())
+        return res;
+    int const hd = body[0];
+    bool contact = false;
+    for (auto const& h : heads)
+        if (!h.mine && manhattan(h.cell, hd) <= LOOK_NEAR)
+            contact = true;
+    if (!contact)
+        return res;
+    if (static_cast<int>(lookT.size()) != N)
+    {
+        lookT.assign(N, INF);
+        lookD.assign(N, 0);
+        lookStamp.assign(N, 0);
+        lookRel.assign(N, 0);
+    }
+    std::fill(lookT.begin(), lookT.end(), INF);
+    std::unordered_set<int> seenIds;
+    for (auto const& h : heads)
+    {
+        if (h.mine)
+            continue;
+        seenIds.insert(h.id);
+        int const len = std::max(h.len, h.estLen);
+        int const f = std::max(1, (len + 3) / 4);
+        int const m = std::min(PAID_REACH_CAP, f + (PAID_REACH ? std::max(0, len - 2) : 0));
+        if (manhattan(h.cell, hd) <= m + f * LOOK_DEPTH + 2)
+            look_enemy(h.cell, f, std::max(f, m));
+    }
+    for (auto const& e : enemyReps)
+    {
+        int const age = R - e.round;
+        if (age < 1 || age > REP_MAX_AGE || seenIds.count(e.id))
+            continue;
+        int const el = std::max(e.len, e.estLen);
+        int const f = std::max(1, (el + 3) / 4);
+        int const m = std::min(PAID_REACH_CAP, f * (age + 1) + (PAID_REACH ? std::max(0, el - 2) : 0));
+        if (manhattan(e.cell, hd) <= m + f * LOOK_DEPTH + 2)
+            look_enemy(e.cell, f, m);
+    }
+    res.ran = true;
+
+    // Free and safe at turn t: known water, no body in view (other than hers), and no enemy there by turn t.
+    auto other_body = [](int n) { return vis[n] && occId[n] >= 0 && occId[n] != me; };
+    std::vector<int> b;
+    int len = 0;
+    // Ground she reaches strictly first from the leaf (turn base), her body releasing as she moves.
+    auto territory = [&](int base) {
+        int const cap = 2 * len + 8;
+        lookS++;
+        for (int i = 0; i < static_cast<int>(b.size()) && i < len; i++)
+        {
+            lookStamp[b[i]] = lookS;
+            lookRel[b[i]] = len - i; // free once she has moved this many steps
+        }
+        lookQ.clear();
+        lookQ.push_back(b[0]);
+        lookD[b[0]] = 0;
+        lookRel[b[0]] = 0;
+        int cnt = 0;
+        for (std::size_t i = 0; i < lookQ.size() && cnt < cap; i++)
+        {
+            int const c = lookQ[i], dc = lookD[c];
+            if (dc >= cap)
+                continue;
+            for (int k = 0; k < 4; k++)
+            {
+                int const n = cross(c, k);
+                if (n < 0 || other_body(n) || base + dc + 1 >= lookT[n])
+                    continue;
+                if (lookStamp[n] == lookS && (lookRel[n] == 0 || dc + 1 < lookRel[n]))
+                    continue; // seen already, or her own body still there
+                lookStamp[n] = lookS;
+                lookRel[n] = 0;
+                lookD[n] = dc + 1;
+                lookQ.push_back(n);
+                cnt++;
+            }
+        }
+        return std::min(1.0, static_cast<double>(cnt) / cap);
+    };
+    auto safe_exits = [&](int turn) {
+        int ex = 0;
+        for (int k = 0; k < 4; k++)
+        {
+            int const n = cross(b[0], k);
+            if (n < 0 || other_body(n) || turn + 1 >= lookT[n])
+                continue;
+            bool own = false;
+            for (int i = 0; i + 1 < len && i < static_cast<int>(b.size()); i++)
+                own |= b[i] == n;
+            ex += !own;
+        }
+        return ex;
+    };
+    // Depth-first over her lines: returns the best (survived, value) from here.
+    std::function<std::pair<int, double>(int, int)> walk = [&](int turn, int minEx) -> std::pair<int, double> {
+        if (turn >= lookT[b[0]])
+            return {turn - 1, 0.0};
+        int const ex = safe_exits(turn);
+        minEx = std::min(minEx, ex);
+        if (turn == LOOK_DEPTH)
+            return {turn, LOOK_TERR_W * territory(turn) + LOOK_EXIT_W * std::min(minEx, 3) / 3.0};
+        std::pair<int, double> best{turn, -1.0}; // stuck: alive this turn, nowhere to go next
+        bool any = false;
+        for (int k = 0; k < 4; k++)
+        {
+            int const n = cross(b[0], k);
+            if (n < 0 || other_body(n))
+                continue;
+            bool own = false;
+            for (int i = 0; i + 1 < len && i < static_cast<int>(b.size()); i++)
+                own |= b[i] == n;
+            if (own)
+                continue;
+            any = true;
+            std::vector<int> const saved = b;
+            b.insert(b.begin(), n);
+            if (static_cast<int>(b.size()) > len)
+                b.pop_back();
+            auto const r = walk(turn + 1, minEx);
+            b = saved;
+            if (r.first > best.first || (r.first == best.first && r.second > best.second))
+                best = r;
+        }
+        if (!any)
+            return {turn, 0.0};
+        return best;
+    };
+    for (auto const& cd : cands)
+    {
+        res.surv[cd.d] = 0;
+        res.val[cd.d] = 0.0;
+        if (!cd.legal || cd.blind || cd.dest < 0 || cd.nb1.empty())
+            continue;
+        len = L + (cd.eat ? 1 : 0);
+        b.assign(cd.nb1.begin(), cd.nb1.begin() + std::min<int>(cd.nb1.size(), len));
+        auto const r = walk(1, 4);
+        res.surv[cd.d] = r.first;
+        res.val[cd.d] = std::max(0.0, r.second);
+    }
+    return res;
 }
 
 void decide(Controller& ct)
@@ -6500,6 +6728,16 @@ void decide(Controller& ct)
         cands[bunkerDir].ok1 = cands[bunkerDir].ok2 = true; // the box loop never traps a queen of length <= 3
         cands[bunkerDir].surv = true;
     }
+    // QUEEN_LOOK: her lines in contact (not while circling her bunker box).
+    LookRes look;
+    int lookBest = 0;
+    if (QUEEN_LOOK && amQueen && QUEEN_THREAT_MAP && bunkerDir < 0)
+    {
+        look = queen_lookahead(cands);
+        for (auto const& cd : cands)
+            if (look.ran && cd.legal && !cd.blind && cd.dest >= 0)
+                lookBest = std::max(lookBest, look.surv[cd.d]);
+    }
     int bestD = -1;
     double bestScore = -1e18;
     for (auto& cd : cands)
@@ -6507,6 +6745,8 @@ void decide(Controller& ct)
         if (!cd.legal)
             continue;
         double s = cd.d == bunkerDir ? 900000.0 : 0.0;
+        if (look.ran && !cd.blind && cd.dest >= 0)
+            s += look.val[cd.d] - LOOK_DEATH_PEN * (lookBest - look.surv[cd.d]);
         if (qCell >= 0 && !cd.blind && cd.dest >= 0)
         {
             // Teammates crowding the queen (her children start right behind
