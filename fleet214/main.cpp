@@ -741,6 +741,16 @@ using namespace unswbc;
 #ifndef HARVEST_START
 #define HARVEST_START 470
 #endif
+#ifndef HARVEST_ADAPT
+#define HARVEST_ADAPT 1 // v5.0.1: behind on queen length (both queens alive, theirs known no shorter than ours) the harvest
+                        // starts earlier: HARVEST_START - 10 - HARVEST_PER_GAP x gap, never before HARVEST_EARLIEST
+#endif
+#ifndef HARVEST_PER_GAP
+#define HARVEST_PER_GAP 2
+#endif
+#ifndef HARVEST_EARLIEST
+#define HARVEST_EARLIEST 400
+#endif
 #ifndef HARVEST_RADIUS
 #define HARVEST_RADIUS 20 // dragons this many steps (path) from the target take part
 #endif
@@ -800,6 +810,9 @@ using namespace unswbc;
 #endif
 #ifndef CHOKE_RANGE
 #define CHOKE_RANGE 5
+#endif
+#ifndef QUEEN_CAP_EXITS
+#define QUEEN_CAP_EXITS 1 // v5.0.0: the size-cap queen split needs two real ways on, like her own split
 #endif
 #ifndef CAP_FIX
 #define CAP_FIX 1 // v2.14.10: the size-cap plan and the harvest agree with the v2.14.5 rules (see the checks below)
@@ -4625,6 +4638,25 @@ TieState tie_state()
     return t;
 }
 
+// HARVEST_ADAPT: the round the harvest starts. Our queen no longer than theirs (a tie loses on the next tiebreaks):
+// the bigger the gap, the earlier - feeders walk one cell a turn, and each drop is a pearl or two.
+int harvest_start()
+{
+    if (!HARVEST_ADAPT)
+        return HARVEST_START;
+    static int cacheR = -1, cacheV = HARVEST_START;
+    if (cacheR == R)
+        return cacheV;
+    cacheR = R;
+    cacheV = HARVEST_START;
+    if (R < HARVEST_EARLIEST || ourQueenDead || enemyQueenDead)
+        return cacheV;
+    TieState const t = tie_state();
+    if (t.ourQ >= 0 && t.theirQ >= 0 && t.ourQ <= t.theirQ)
+        cacheV = std::max(HARVEST_EARLIEST, HARVEST_START - 10 - HARVEST_PER_GAP * (t.theirQ - t.ourQ));
+    return cacheV;
+}
+
 // Giant (insurance for the longest-dragon tiebreak): our longest non-queen
 // leader we know of, -1 if none.
 int giant_id()
@@ -5538,7 +5570,7 @@ void decide(Controller& ct)
         int bestD = INF, longestId = -1, longestLen = -1;
         // Giant: on open maps a share of the feeders grows it too (it wins
         // the longest-dragon tiebreak if the queens end up dead or tied).
-        bool const queenHarvest = CAP_FIX && HARVEST && R >= HARVEST_START && !ourQueenDead && !enemyQueenDead; // all of it is hers
+        bool const queenHarvest = CAP_FIX && HARVEST && R >= harvest_start() && !ourQueenDead && !enemyQueenDead; // all of it is hers
         int const gid = GIANT && (consolidate || (GIANT_ALL && R >= GIANT_ROUND)) && !ourQueenDead && !queenHarvest && (me % GIANT_SHARE == 0) ? giant_id() : -1;
         if (gid >= 0 && gid != me)
         {
@@ -5940,7 +5972,7 @@ void decide(Controller& ct)
     // CAP_FIX: in the harvest rounds a drop right by her (no enemy can reach it) beats circling at her length:
     // the feeders die for it. Their queen known dead keeps the full bunker.
     int harvestDrop = -1;
-    if (CAP_FIX && HARVEST && amQueen && R >= HARVEST_START && !enemyQueenDead && !ourQueenDead && QUEEN_THREAT_MAP)
+    if (CAP_FIX && HARVEST && amQueen && R >= harvest_start() && !enemyQueenDead && !ourQueenDead && QUEEN_THREAT_MAP)
         for (int c = 0; c < N; c++)
             if (vis[c] && pearl_at(c) && distHead[c] <= FEED_EAT_DIST && qThreat[c] >= INF &&
                 (harvestDrop < 0 || distHead[c] < distHead[harvestDrop]))
@@ -6137,7 +6169,7 @@ void decide(Controller& ct)
 
     // ---- HARVEST (v2.14.9): the last rounds turn our nearby dragons into length for the queen ------------
     // (or, with her dead, for our longest dragon: ties to the lowest id; that dragon itself never dies for it).
-    if (HARVEST && R >= HARVEST_START && !amQueen && L >= 2 && body.size() >= 2 && !(CAP_FIX && enemyQueenDead && !ourQueenDead))
+    if (HARVEST && R >= harvest_start() && !amQueen && L >= 2 && body.size() >= 2 && !(CAP_FIX && enemyQueenDead && !ourQueenDead))
     {
         int hId = -1, hCell = -1;
         bool hSeen = false;
@@ -6283,7 +6315,16 @@ void decide(Controller& ct)
         for (auto const& h : heads)
             if (!h.mine && manhattan(h.cell, head) <= 3)
                 enemyClose = true;
-        bool const ok = amQueen ? anySafe && !enemyClose && split_allowed(ct, child) && child_can_escape(child, true) && split_keeps_loop(child)
+        // QUEEN_CAP_EXITS: like her own split - the child stays on our tail cells this round, so she needs two ways on
+        // that are not dead ends without them (a cap split at round 4 left her boxed in: dead at round 6).
+        int realExits = 0;
+        for (int d = 0; d < 4; d++)
+        {
+            int const n = cross(head, d);
+            if (n >= 0 && !(vis[n] && occId[n] >= 0) && !(n == nb(head, d) && pocket_ahead(head, n)))
+                realExits++;
+        }
+        bool const ok = amQueen ? anySafe && !enemyClose && (!QUEEN_CAP_EXITS || realExits >= 2) && split_allowed(ct, child) && child_can_escape(child, true) && split_keeps_loop(child)
                                 : split_allowed(ct, child) && child_can_escape(child, true);
         if (ok)
             return act_split(ct, child, amQueen ? "cap-queen-split" : "cap-split");
@@ -6745,7 +6786,7 @@ void decide(Controller& ct)
                         if (now < before && now < 2)
                             s -= QUEEN_EXIT_PEN; // never take one of the queen's last ways out
                     }
-            if (!amQueen && !onPost && (std::string(why) != "feed" || (consolidate && !(HARVEST && R >= HARVEST_START))))
+            if (!amQueen && !onPost && (std::string(why) != "feed" || (consolidate && !(HARVEST && R >= harvest_start()))))
                 for (auto const& h : heads)
                     if (h.mine && h.id == queenId)
                     {
