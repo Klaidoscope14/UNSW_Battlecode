@@ -823,7 +823,7 @@ using namespace unswbc;
 #define QUEEN_CAP_EXITS 1 // v5.0.0: the size-cap queen split needs two real ways on, like her own split
 #endif
 #ifndef QUEEN_LOOK
-#define QUEEN_LOOK 1 // v5.0.2: in contact (an enemy head in view within LOOK_NEAR) the queen searches LOOK_DEPTH of her own
+#define QUEEN_LOOK 1 // v5.0.2 (64 sparring: queen deaths 12 -> 10; vs v5.0.1 34-30 over 64, queen deaths 29 vs 31): in contact (an enemy head in view within LOOK_NEAR) the queen searches LOOK_DEPTH of her own
                      // moves against every enemy's earliest arrival (free + paid steps, reports included). A line dies at
                      // turn k once some enemy can be on her head by then; lines are ranked by turns survived first, then
                      // by the ground she reaches strictly first and her fewest exits on the way (funnels)
