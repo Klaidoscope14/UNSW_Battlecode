@@ -71,7 +71,9 @@ std::vector<PearlCand> gather_pearls()
         else if (pearlState[c] == 2)
             conf = std::max(0.15, 0.55 - 0.01 * (R - pearlRound[c]));
         else if (nextSpawn[c] >= R &&
-                 nextSpawn[c] - R <= (CAMP_JOB && !amQueen ? (distHead[c] < INF ? distHead[c] : 0) + CAMP_LEAD
+                 nextSpawn[c] - R <= (CAMP_JOB && !amQueen ? (OPEN_HOLD && R < OPEN_HOLD_END && distHead[c] <= HOLD_DIST // O3
+                                                                  ? std::max(distHead[c] + CAMP_LEAD, HOLD_WAIT)
+                                                                  : (distHead[c] < INF ? distHead[c] : 0) + CAMP_LEAD)
                                                : std::max(25, (distHead[c] < INF ? distHead[c] : 0) + PREPOS_SLACK)))
         {
             conf = nextEst[c] ? 0.35 : CAMP_CONF;
@@ -255,6 +257,18 @@ double centre_pull()
     return val;
 }
 
+// 6c v3 (INTENT_MEMORY 3): the head start, in steps, that a chooser gives the goal this dragon picked last round
+// for the same intent - a new goal must be closer by COMMIT_MARGIN steps and by 30%. None with an enemy head in view.
+double keep_bonus(int c, int kind)
+{
+    if (INTENT_MEMORY != 3 || amQueen || c != lastGoal || kind != lastGoalIntent || R - lastGoalR > 1 || distHead[c] >= INF)
+        return 0;
+    for (auto const& h : heads)
+        if (!h.mine)
+            return 0;
+    return std::max<double>(COMMIT_MARGIN, 0.3 * distHead[c]);
+}
+
 // Section 9: spread out. Unseen cells first, then stale ones, away from teammates.
 int choose_explore_goal()
 {
@@ -301,10 +315,11 @@ int choose_explore_goal()
             {
                 // A: hold and push our side of the border; stay out of theirs.
                 int const mg = vor_margin(c);
+                bool const push = OPEN_PUSH && R < OPEN_PUSH_END; // O2: the opening claims ground
                 if (mg < -3)
-                    score += VOR_DEEP_PEN;
-                else if (mg >= 0 && mg <= 4)
-                    score -= VOR_FRONT_BONUS;
+                    score += push ? 0.0 : VOR_DEEP_PEN;
+                else if (mg >= (push ? -3 : 0) && mg <= 4)
+                    score -= push ? 2 * VOR_FRONT_BONUS : VOR_FRONT_BONUS;
             }
             if (my.role == ROLE_EXPLORER)
                 score -= 0.3 * dh; // explorers push further out
@@ -359,6 +374,7 @@ int choose_camp_goal(bool ownHalf = false)
                 continue;
             score += 0.7 * hm; // near the middle: where raiders come through
         }
+        score -= keep_bonus(c, I_CAMP);
         if (score < bestScore)
         {
             bestScore = score;
@@ -418,7 +434,7 @@ int choose_outpost()
         for (int m : mates)
             if (manhattan(m, o) <= 5)
                 crowd++;
-        double const sc = distHead[o] + OUTPOST_CROWD * crowd;
+        double const sc = distHead[o] + OUTPOST_CROWD * crowd - keep_bonus(o, I_OUTPOST);
         if (sc < bestScore)
         {
             bestScore = sc;
@@ -460,7 +476,7 @@ int choose_zone()
         for (int m : mates)
             if (manhattan(m, c) <= ZONE_RAD)
                 assigned++;
-        double const v = static_cast<double>(tiles) / (assigned + 1) - ZONE_DIST_W * distHead[c];
+        double const v = static_cast<double>(tiles) / (assigned + 1) - ZONE_DIST_W * (distHead[c] - keep_bonus(c, I_ZONE));
         if (v > bestV)
         {
             bestV = v;

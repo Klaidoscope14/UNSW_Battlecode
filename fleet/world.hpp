@@ -147,6 +147,14 @@ struct EnemyRep
     int estLen = 0; // queen threat only: length guess when the body was not seen whole
 };
 std::vector<EnemyRep> enemyReps;
+// Q2c: the latest strike news per striker (perceive.hpp strike_news_check).
+struct StrikeWatch
+{
+    int striker, cell, round;
+    bool off;
+};
+std::vector<StrikeWatch> strikeWatch;
+int strikeAnnR = -1000; // the last round this dragon said "she is within my reach"
 struct LenMem
 {
     int len, round;

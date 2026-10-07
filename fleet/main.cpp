@@ -187,6 +187,7 @@ int main()
             prune_knowledge();
             detect_teammate_deaths();
             record_enemies();
+            strike_news_check();
             fleet[me] = {L, body[0], R, my.leader};
             compute_fleet_state();
 
@@ -197,8 +198,8 @@ int main()
                 if (char const* df = std::getenv("FLEET_DIAG"))
                     if (std::FILE* f = std::fopen(df, "a"))
                     {
-                        std::fprintf(f, "G %c %d id%d giant%d heir%d leader%d L%d claimsG%d betterG%d claimsL%d betterL%d\n", myTeam == Team::A ? 'A' : 'B', R, me,
-                                     my.giant ? 1 : 0, my.heir ? 1 : 0, my.leader ? 1 : 0, L, static_cast<int>(roleClaims[CR_GIANT].size()),
+                        std::fprintf(f, "G %c %d id%d giant%d heir%d leader%d L%d gossip%d/%d/a%d claimsG%d betterG%d claimsL%d betterL%d\n", myTeam == Team::A ? 'A' : 'B', R, me,
+                                     my.giant ? 1 : 0, my.heir ? 1 : 0, my.leader ? 1 : 0, L, gBest.gl, gBest.gh, R - gBest.born, static_cast<int>(roleClaims[CR_GIANT].size()),
                                      better_claims(CR_GIANT, L), static_cast<int>(roleClaims[CR_LEADER].size()), better_claims(CR_LEADER, L));
                         std::fclose(f);
                     }

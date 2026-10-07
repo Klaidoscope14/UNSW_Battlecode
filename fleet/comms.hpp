@@ -12,6 +12,7 @@ namespace {
 // layout is zero - so a stray enemy value almost never passes (a 3-bit QUEEN_DEAD has 45 bits that must be 0).
 enum MsgType
 {
+    T_STRIKE = 0, // Q2c: "their queen is within my strike reach" / "off: she got away"
     T_STATUS = 1,
     T_PEARL = 2,
     T_PORTAL = 3,
@@ -113,6 +114,7 @@ int layout_bits(int type, std::uint64_t payload)
     case T_BUNKER: return 21;
     case T_ZONE: return 27;
     case T_ROLE: return 35;
+    case T_STRIKE: return 36;
     default: return -1; // not a type we send
     }
 }
@@ -141,10 +143,10 @@ void msg_selftest(std::FILE* f)
 {
     std::mt19937_64 g(12345);
     int bad = 0, randomPass = 0, smallPass = 0, qdeadPass = 0;
-    int const types[] = {T_STATUS, T_PEARL, T_PORTAL, T_KELP, T_ENEMY, T_DANGER, T_SYM, T_CLAIM, T_PORTAL_EDGE, T_QUEEN_DEAD, T_QSPAWN, T_PHASE, T_BUNKER, T_ZONE};
+    int const types[] = {T_STATUS, T_PEARL, T_PORTAL, T_KELP, T_ENEMY, T_DANGER, T_SYM, T_CLAIM, T_PORTAL_EDGE, T_QUEEN_DEAD, T_QSPAWN, T_PHASE, T_BUNKER, T_ZONE, T_STRIKE};
     for (int i = 0; i < 200000; i++)
     {
-        int const t = types[i % 14];
+        int const t = types[i % 15];
         std::uint64_t p = g();
         int const bits = layout_bits(t, p);
         p &= (1ULL << bits) - 1;
@@ -216,9 +218,67 @@ void queue_pearl(int kind, int cell, int round, int prio)
     }
 }
 
+// 6d'': giant / heir claims gossiped on every STATUS (GIANT_GOSSIP). Length 5..35+ -> 1..31 (0 = none).
+int gossip_len(int len) { return std::clamp(len - 4, 1, 31); }
+int gossip_hash(int id) { return id & 3; }
+struct GossipClaim
+{
+    int gl = 0, gh = 0, born = -1000; // born: the round its holder last made it
+};
+GossipClaim gBest;      // the best fresh claim heard (any holder, our own echo included)
+bool better_claim(int gl, int gh, GossipClaim const& c) { return gl > c.gl || (gl == c.gl && gh < c.gh); }
+bool gossip_fresh(GossipClaim const& c) { return c.gl > 0 && R - c.born <= GOSSIP_MAX_AGE; }
+// A claim from another holder (id hash differs) that beats a dragon of length len and id me.
+// Same hash: it may be our own echo - it counts only if 2+ longer than we are now.
+bool gossip_beats_me(int len)
+{
+    if (!GIANT_GOSSIP || !gossip_fresh(gBest))
+        return false;
+    if (gBest.gh == gossip_hash(me))
+        return gBest.gl >= gossip_len(len) + 2;
+    return better_claim(gBest.gl, gBest.gh, {gossip_len(len), gossip_hash(me), R});
+}
+static_assert(!(GIANT_GOSSIP && SWITCH_STATUS_BIT), "GIANT_GOSSIP repacks STATUS: no room for the 6e switch bit");
+struct StatusMsg
+{
+    int id, len, cell, leader, round, eq, sw, gl, gh, ga;
+};
+StatusMsg read_status(std::uint64_t payload)
+{
+    BitR b(payload);
+    StatusMsg s{};
+    if (GIANT_GOSSIP)
+    {
+        s.id = b.get(13), s.len = b.get(7), s.cell = b.get(12), s.leader = b.get(1);
+        int const r4 = b.get(4);
+        s.round = R - ((R - r4) & 15);
+        s.eq = b.get(1), s.gl = b.get(5), s.gh = b.get(2), s.ga = b.get(3);
+        return s;
+    }
+    s.id = b.get(14), s.len = b.get(10), s.cell = b.get(12), s.leader = b.get(1), s.round = b.get(9), s.eq = b.get(1), s.sw = b.get(1);
+    return s;
+}
+
 std::uint64_t msg_status()
 {
     BitW b;
+    if (GIANT_GOSSIP)
+    {
+        GossipClaim own;
+        if (my.giant || my.heir)
+            own = {gossip_len(L), gossip_hash(me), R};
+        GossipClaim const& c = gossip_fresh(gBest) && (own.gl == 0 || better_claim(gBest.gl, gBest.gh, own)) ? gBest : own;
+        b.put(me, 13);
+        b.put(std::min(L, 127), 7);
+        b.put(body.empty() ? 0 : body[0], 12);
+        b.put(my.leader ? 1 : 0, 1);
+        b.put(R & 15, 4);
+        b.put(EQ_STATUS_BIT && sit.enemyQueenDead ? 1 : 0, 1);
+        b.put(c.gl, 5);
+        b.put(c.gh, 2);
+        b.put(c.gl > 0 ? std::min((R - c.born + GOSSIP_AGE_UNIT - 1) / GOSSIP_AGE_UNIT, 7) : 0, 3);
+        return pack(T_STATUS, b.v);
+    }
     b.put(me, 14);
     b.put(std::min(L, 1023), 10);
     b.put(body.empty() ? 0 : body[0], 12);
@@ -289,6 +349,16 @@ std::uint64_t msg_role(int role, int id, int len, int round)
     b.put(std::min(len, 1023), 10);
     b.put(round, 9);
     return pack(T_ROLE, b.v);
+}
+// Q2c: striker id, her head cell, round, and whether the strike is off (she got away, the striker is alive).
+std::uint64_t msg_strike(int cell, bool off)
+{
+    BitW b;
+    b.put(me, 14);
+    b.put(cell, 12);
+    b.put(R, 9);
+    b.put(off ? 1 : 0, 1);
+    return pack(T_STRIKE, b.v);
 }
 std::uint64_t msg_zone(int cell, int tiles)
 {

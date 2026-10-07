@@ -27,7 +27,7 @@ def build(name, defs):
     b = os.path.join(WORK, name)
     shutil.rmtree(b, ignore_errors=True)
     os.makedirs(b)
-    src = os.path.join(ROOT, "fleet")
+    src = os.environ.get("TRACE_SRC") or os.path.join(ROOT, "fleet")  # TRACE_SRC: build another source folder (e.g. a git export)
     for f in os.listdir(src):
         if f.endswith((".hpp", ".cpp", ".h", ".toml")) and f != "main.cpp":
             shutil.copy(os.path.join(src, f), b)

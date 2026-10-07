@@ -1,7 +1,7 @@
 # Fleet bot — changes tracker
 
 Updated after every step. Suite = the 204-game check (`tools/testing/suite.sh`); baseline v2.16.0 = **197-7, queen deaths 44, protected maps 84-0**.
-Current reference (after Q4): `results/sQ4.txt` = **196-8, Qd 36, prot 83-1**; trace baseline `base2` (before 3 / B1b).
+Current reference = **v3.2.0** (`fleet-v3.2.0.zip`, `results/sV320.txt`): **196-8, Qd 36, protected 84-0**. ON since v2.16.0: topology (7b), encrypted sonar (7f), B1b, Q1, Q4, 7e, 7j, 7g. CPU max 49.7M on 64x64.
 Acceptance rule: at most one extra loss on the protected maps, no rise in queen deaths (noise ≈ ±3 wins / ±5 queen deaths).
 
 ## Done (Architecture_v2)
@@ -20,7 +20,7 @@ Acceptance rule: at most one extra loss on the protected maps, no rise in queen 
 | Q1 | Their queen's death rides on every STATUS message (`EQ_STATUS_BIT` ON): 47-90 of our dragons knew, our queen never heard | 197-7, Qd 38, prot 83-1 (totals unchanged, 27 games differ); Portals: she now learns 9 rounds after and lives 243 rounds longer |
 | 7c / 6b / 6f | Refactors: MapProfile (map class in one struct), pearl-leash table (`kLeash`), slot plan (`kSlots`) | identical (204) |
 | 7e | Feeder delivery (`FEED_DELIVERY` ON): a feeder dies only when 2/3 of its pearls land within 5 water steps of the queen's head | 198-6, Qd 38, **prot 84-0** |
-| 7j | Chokepoint guards (`CHOKE_GUARDS` ON) — kept by the user's call; first version never found a post (path search ignored unexplored water), fixed | first version 196-8 (3 games changed); fixed version in the combined suite |
+| 7j | Chokepoint guards (`CHOKE_GUARDS` ON) — kept by the user's call; first version never found a post (path search ignored unexplored water), fixed | in v3.2.0: 196-8, Qd 36, prot 84-0 |
 | 7g | Cork (`CORK` ON): locally identical — their queen is rarely seen; kept for the ladder | 196-8, Qd 36 (no game changed) |
 | Q4 | The queen flees a crowd from 2 enemy heads within 6 (`QUEEN_CROWD` 3 → 2): she was cornered by 3-5 heads | 196-8, **Qd 36** (head-on 19 → 17), prot 83-1 |
 | — | `tools/make_zip.py` (multi-file or `--single`), checked by unzip + sandbox | tool |
@@ -31,10 +31,16 @@ In proposed order. "Refactor" = must stay identical (trace); "change" = judged o
 
 | # | Change | Type | What it does / why |
 |---|---|---|---|
-| Q2 | Notice their queen's death (Q2a, Q2b tested, rejected) | change | In 5 of 7 games nobody of ours ever knew (deaths by wall / self out of view; our striker's own message dies with it). Ideas: a striker announces the turn before it commits; stronger 'probably dead' inference; a bunker that works above length 3 (EQ_INFER keeps her long, and a 2x2 loop needs length <= 3). |
+| Q2 | Notice their queen's death (Q2a, Q2b, Q2c tested, rejected) | change | In 5 of 7 games nobody of ours ever knew (deaths by wall / self out of view; our striker's own message dies with it). Ideas: a striker announces the turn before it commits; stronger 'probably dead' inference; a bunker that works above length 3 (EQ_INFER keeps her long, and a 2x2 loop needs length <= 3). |
 | Q3 | Unseen long strikers (`REP_MAX_AGE 6` tested, rejected) | change | A length-8 enemy can sprint 8 cells: it strikes from outside her 7x7 view. Older reports in her threat map made her give up room on Portals (5 losses). Open. |
 
 ## Diagnosis notes
+
+**Opening (2026-10-07, user: not aggressive enough).** Against the sparring bots we are level at r30 and ahead from r100 on every map;
+the only gap is Around UNSW / Islands at r50 (UNSW pearls 80 vs 89, dragons 26.5 vs 29.5). The opponent's heads sit within 1 of a spawn
+tile 60% of turns (ours 38%) - but making ours hold tiles (O3) cut UNSW pearls by a third. O1 (queen splits), O2 (border push) and O3 did
+not close the gap; the ladder gap needs ladder replays to find.
+
 
 **Q — our queen's head-on deaths (2026-10-07).** 20 head-on queen deaths in the suite (`QDIAG` per-turn log + replays of 9). Patterns:
 (A) killer never in her view — long enemies sprint from outside the 7x7 window; (B) cornered by 3-5 heads, every move in a reach;
@@ -103,14 +109,21 @@ Kept in the code as switches (OFF) unless noted.
 | Growth splits need room (`SPLIT_ROOM`) | v2.14.4 | — | OFF for faster splitting. |
 | Giants / elected leaders only after the switch (`ROLES_AFTER_SWITCH`, 6d') | 2026-10-07 | 196-8, Qd 40, Portals 81-3 (elimination wins 83 → 86) | More splitting grows the fleet but cost queen safety on Portals; fails the protected-map rule. The leader surplus stays a known issue. |
 | Role claim messages (`ROLE_CLAIMS`, 6d) | 2026-10-07 | still up to 16 giants / ~11 leaders at once (Around UNSW, Australia) | Claims did not spread: most giants heard 0 claims in 100 rounds — sonar stops at kelp and at the first dragon. Lesson: fleet-wide agreement only works for bits riding on every STATUS (as Q1), not for dedicated messages. |
+| Giant claims gossiped on every STATUS (`GIANT_GOSSIP`, 6d'') | 2026-10-07 | claim life 7 rounds: 196-8, Qd 37, prot 80-4 (Portals 4); giants at once 5.4 vs 6.2 (36 games). Claim life 28 rounds: still 8-14 giants per game (8 games) | STATUS repacked (id 13, length 7, round mod 16) to carry the best giant claim known (length, id hash, age). It spreads ~1 hop per round, and on kelp-heavy maps the sonar graph is in pieces: far giants never hear the longest one (the length-20 giant heard no claim at all). An expiring fleet-wide fact cannot form; only a permanent one (Q1) spreads. Kept as a switch, OFF. |
+| Giant only from length 10 (`GIANT_MIN_LEN` 5 → 10) | 2026-10-07 | 194-10, Qd 43, prot 79-5 (Portals 5) | Most surplus giants are 5-9 long; raising the bar cost Portals games and queen deaths. |
+| Queen splits at length 4 in the opening (`OPEN_QUEEN_SPLIT`, O1, user: multiply fast) | 2026-10-07 | 194-10, **Qd 40**, prot 83-1; opening unchanged on 6 of 8 maps | Her other split checks (no head within 3, two real exits, room) rarely pass early, so few extra splits; the ones that happen cost queen deaths. |
+| Hold spawn tiles in the opening (`OPEN_HOLD`, O3; ladder #1 sits by spawn tiles 60% of turns vs our 38%) | 2026-10-07 | 193-11, Qd 38, prot 80-4; **Around UNSW pearls r100 293 → 199** | A tile within 3 that spawns within 12 rounds became a job, so dragons waited instead of chasing: far worse on big maps. Sitting by tiles is not what makes the opponent faster. |
+| Opening border push (`OPEN_PUSH`, O2, user: occupy space) | 2026-10-07 | seeds 1-2: 194-10, Qd 35, prot 84-0 (v3.2.0 196-8, 36); **seeds 3-4: 191-13, Qd 36 (v3.2.0 191-13, Qd 32)** | Before r100 idle explorers are not kept out of their side and the border band pulls twice as hard. Neutral over 408 games (Australia pearls r100 +6); kept as a switch for a ladder trial. Also seen: v3.2.0 itself loses 6 Portals games on seeds 3-4 - its 84-0 on seeds 1-2 is partly luck. |
 | Enemy reports stay 6 rounds in the queen's threat map (`REP_MAX_AGE 6`, Q3) | 2026-10-07 | 192-12, Qd 35, prot 78-6 (Portals 5 losses) | Like 6a mode 1: a more cautious queen gives up room on Portals and traps herself. |
 | Looser enemy-queen death inference (`EQ_STRICT 0`, Q2b) | 2026-10-07 | 196-8, Qd 38 (reference 196-8, Qd 36) | No gain; slightly more queen deaths. |
+| Strike news (`STRIKE_NEWS`, Q2c) | 2026-10-07 | measured in log-only mode over 204 games: 2186 detections, **56 right (2.6%)**, false alarms in 75 games | A striker within next-turn reach of their queen says so every turn and "off" when she gets away (a striker dies in its strike and casts no sonar - the old same-turn QUEEN_DEAD in rx_regicide_paid is never sent). Silence for 6 rounds = dead. Sonar relays lose too many messages: silence means nothing. Never enabled. Lesson: infer only from positive evidence, never from a missing message. Also measured: in 186 games where their queen died our fleet learned it in only 52. |
 | Density by prefix-sum boxes (`DENSITY_BOX`, 7a) | 2026-10-07 | alone 195-9, Portals -3; with 7e+7j+7g 194-10, prot 80-4 | The box shape moves zone / outpost choices; the only gain was CPU we do not need. Dropped for v3.2.0 (user), may return later. |
 | Switch bit on every STATUS (`SWITCH_STATUS_BIT`, 6e) | 2026-10-07 | 196-8, **Qd 45**, prot 82-2 | The slow spread of the switch kept parts of the fleet splitting; switching together left fewer, longer dragons around the queen. |
 | Queen topological leash (`QUEEN_TOPO_LEASH`, 7d) | 2026-10-07 | 192-12, Qd 37, prot 81-3 | Trips beyond the home leash meet more enemies; topology guards against traps, not against chasers. |
 | Voronoi in turns (`VOR_TURNS`, 7h) | 2026-10-07 | 190-14, Qd 36, prot 79-5 | Long enemies look much faster: our dragons gave up contested pearls / spawn tiles (rules were tuned on cells). |
 | Intent memory, always (`INTENT_MEMORY 1`, 6c) | 2026-10-07 | 193-11, **Qd 33**, prot 81-3 | Fewest queen deaths so far, but dragons kept walking to old goals when enemies came. |
-| Intent memory only with no enemy in view (`INTENT_MEMORY 2`, 6c v2, user's idea) | 2026-10-07 | 186-18, Qd 43, prot 79-5 (vs the combined build 194-10, Qd 35) | Worse than v1, which is odd for a narrower rule — an interaction not yet found (Trauma 4 losses). Worth a look later. |
+| Intent memory only with no enemy in view (`INTENT_MEMORY 2`, 6c v2, user's idea) | 2026-10-07 | first run 186-18 (on the 7a combined build); **re-run on v3.2.0: 195-9, Qd 35, prot 81-3** (Portals 3) | The 186-18 came from the base it was tested on (7a), not from v2. On the real base it is neutral overall but loses 3 Portals games: fails the protected-map rule. |
+| Intent memory as a chooser bonus (`INTENT_MEMORY 3`, 6c v3) | 2026-10-07 | 194-10, Qd 38, prot 81-3 (Portals 3) | Fixes what v1/v2 got wrong (the remembered goal overrode skip lists, "teammate already here" and zone reallocation): zone / outpost / camp choosers give last round's goal max(4, 30%) steps head start. Still 3 Portals losses - every sticky-goal version loses there; the fleet must re-target freely. 6c closed. |
 | Pearl swap between nearby teammates (`MATCH_SWAP`, 7i) | 2026-10-07 | 189-15, Qd 40, prot 78-6 | Like MATCH_PATHS: "better" assignments crowd dragons together. |
 | Never-seen enemy queen counts as probably dead from r150 (`EQ_INFER_UNSEEN`, Q2a) | 2026-10-07 | 197-7, Qd 39 (Q1: 197-7, Qd 38); 82 games changed, wins and losses swapped both ways | No gain locally, and against a ladder opponent hiding a live queen ours would stop eating from r150. |
 | Body model drops visibly-wrong segments (`BODY_TRUST_VISION`, B1) | 2026-10-07 | 195-9, Qd 38, Portals 81-3 | Cut the whole remembered tail after the first wrong cell, including the correct part beyond a portal: the queen forgot her own body and hit herself 3 times on Portals. Replaced by B1b (legality only). |

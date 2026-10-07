@@ -57,7 +57,8 @@ Read this first, then `Architecture_Plan.txt` (the agreed next job) and `Combine
 ## Versions
 | zip | content |
 |---|---|
-| `fleet-v2.16.0.zip` | **current submission**; `fleet/` = the same play, restructured (step 1: 204 games identical) |
+| `fleet-v3.2.0.zip` | **latest build** (2026-10-07): restructured code + topology, encrypted sonar, B1b, Q1, Q4, 7e, 7j, 7g. Local 196-8, Qd 36, protected 84-0. See Changes_Tracker.md |
+| `fleet-v2.16.0.zip` | previous submission (197-7, Qd 44, protected 84-0) |
 | `fleet-v2.15.5.zip` | fallback (before the opening plan) |
 | 2.15.3 / 2.15.4 | older steps (F6/F7, Voronoi) |
 
@@ -88,6 +89,11 @@ v2.15.x comparable — candidate to turn on), OPEN_QUEEN (queen splits to 2 + ex
   values and note are compared, and the first diverging (round, dragon) is printed. Baseline `base` = v2.16.0
   (+ trace hooks; its 24 results match results/v2.16.0.txt). Traces live in `tools/testing/work/trace/` (~50 MB each).
 - `python3 tools/testing/check_switches.py` — fails if any `#define` name is used twice.
+- 2026-10-07 tool fixes: `bench.py` replays a game that ended in an engine error (an "Exec format error" under load once
+  wiped out 136 games of a suite); `trace.py` takes `TRACE_SRC=<folder>` to build another source tree (baseline
+  `work/trace/v320` = the committed v3.2.0, made from `git archive HEAD fleet`); `opening.sh` copies all `fleet/*.hpp`
+  (it still copied only helper.hpp); `opening_econ.py` also prints dragons at r30 / r50.
+- `check_switches.py` reports `DIAG` (core.hpp #ifdef / #else pair) - a false positive.
 - `bash tools/testing/opening.sh NAME "DEF=VAL" "maps"` — opening economy medians (noisy: ±150 pearls per game on
   Around UNSW; only use for big effects).
 - Baselines: `results/v2.16.0.txt` (197-7, queen deaths 44, protected 84-0), `results/v2.15.5.txt` (193-11, 33, 83-1).

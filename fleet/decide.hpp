@@ -133,6 +133,27 @@ bool prepare_turn(Controller& ct)
                 ourQueenSpawn = h.cell;
     if (HUNTERS && ourQueenSpawn >= 0 && (R % 20 == me % 20 || (amQueen && R < 5)))
         queue_fact(msg_qspawn(ourQueenSpawn), amQueen ? 60 : 40, 1);
+    // Q2c: their queen within my next-turn strike reach - say so every turn (if I strike, I die and say nothing);
+    // the turn she is out of reach again, say "off".
+    if (STRIKE_NEWS && PAID_REGICIDE && !amQueen && !sit.enemyQueenDead)
+    {
+        int qc = -1;
+        for (auto const& h : heads)
+            if (!h.mine && h.id == enemyQueenId)
+            {
+                int const reach = std::min(REGICIDE_MAX, free_steps() + std::max(0, L - 2));
+                int const herSteps = std::max(1, (std::max(h.len, h.estLen) + 3) / 4);
+                if (manhattan(h.cell, head) <= reach + herSteps + 1)
+                    qc = h.cell;
+            }
+        if (qc >= 0)
+        {
+            queue_fact(msg_strike(qc, false), 96, 2);
+            strikeAnnR = R;
+        }
+        else if (strikeAnnR == R - 1)
+            queue_fact(msg_strike(head, true), 96, 2);
+    }
     // OPEN_PLAN zones: standing in a rich spot - tell the fleet.
     if (ZONES && !body.empty() && R % ZONE_MSG_EVERY == me % ZONE_MSG_EVERY)
     {
@@ -440,7 +461,7 @@ bool rx_regicide_paid(Controller& ct)
                 if (!path.empty())
                 {
                     queue_fact(msg_danger(head, 1), 70, 2);
-                    if (EQ_DEATH_DETECT)
+                    if (EQ_DEATH_DETECT) // (never cast: a dragon that dies in its move sends no sonar - Q2c covers it)
                         queue_fact(msg_queen_dead(true), 99, 4); // certain: she moved before us
                     return act_moves(ct, path, "regicide");
                 }
@@ -1981,11 +2002,13 @@ bool commit_target(Controller& ct)
     for (auto const& h : heads)
         enemyInSight = enemyInSight || !h.mine;
     // INTENT_MEMORY 2 (user): only while no enemy head is in view - with one in sight the dragon reacts at once.
+    // INTENT_MEMORY 3 (v3): only records the goal; the choosers' keep_bonus() does the keeping (intent.hpp).
     if (INTENT_MEMORY && !amQueen)
     {
-        bool const sticky = (why == I_ZONE || why == I_OUTPOST || why == I_CAMP || why == I_EXPLORE || why == I_WALL) &&
-                            !(INTENT_MEMORY == 2 && enemyInSight);
-        if (sticky && why == lastGoalIntent && lastGoal >= 0 && lastGoal != target && target >= 0 && distHead[lastGoal] < INF &&
+        bool const sticky = (why == I_ZONE || why == I_OUTPOST || why == I_CAMP ||
+                             (INTENT_MEMORY <= 2 && (why == I_EXPLORE || why == I_WALL))) &&
+                            !(INTENT_MEMORY >= 2 && enemyInSight);
+        if (INTENT_MEMORY <= 2 && sticky && why == lastGoalIntent && lastGoal >= 0 && lastGoal != target && target >= 0 && distHead[lastGoal] < INF &&
             lastGoal != body[0] && R - lastGoalR <= 1)
         {
             int const dOld = distHead[lastGoal], dNew = distHead[target];
@@ -2201,7 +2224,16 @@ bool plan_split(Controller& ct)
                 if (n >= 0 && !(vis[n] && occId[n] >= 0) && !(QUEEN_HOME && n == nb(head, d) && pocket_ahead(head, n)))
                     realExits++;
             }
-            if (calm && !sit.consolidate && sit.queenSplits && anySafe && !crowded && L >= 4 && (!QUEEN_HOME || (realExits >= 2 && ((ADAPT_SPLIT && sit.queenOpening) || (OPEN_PLAN && OPEN_QUEEN && sit.openPlan) || (units < QUEEN_SPLIT_UNITS && (L - L / 2 >= QUEEN_MIN_KEEP || (QUEEN_FIRST_SPLIT && units <= 3 && L >= 4)))))) &&
+            // User: the queen splits at the beginning (our own start crowd does not count, enemies do).
+            bool enemyClose = false;
+            for (auto const& h : heads)
+                if (!h.mine && manhattan(h.cell, head) <= 3)
+                    enemyClose = true;
+            if (QUEEN_START_SPLIT && R < QSS_END && calm && !sit.consolidate && sit.queenSplits && anySafe && !enemyClose && L >= 4 &&
+                (!QUEEN_HOME || realExits >= 2) && room_for_more() && split_allowed(ct, L / 2) && child_can_escape(L / 2, true) &&
+                split_keeps_loop(L / 2))
+                return act_split(ct, L / 2, "queen-start");
+            if (calm && !sit.consolidate && sit.queenSplits && anySafe && !crowded && L >= 4 && (!QUEEN_HOME || (realExits >= 2 && ((ADAPT_SPLIT && sit.queenOpening) || (OPEN_PLAN && OPEN_QUEEN && sit.openPlan) || (OPEN_QUEEN_SPLIT && sit.openPlan && R < OQS_END) || (units < QUEEN_SPLIT_UNITS && (L - L / 2 >= QUEEN_MIN_KEEP || (QUEEN_FIRST_SPLIT && units <= 3 && L >= 4)))))) &&
                 room_for_more() &&
                 split_allowed(ct, L / 2) && child_can_escape(L / 2, true) && split_keeps_loop(L / 2))
                 return act_split(ct, L / 2, "queen-split");

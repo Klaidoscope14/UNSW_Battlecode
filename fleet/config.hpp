@@ -112,6 +112,43 @@
 #ifndef MAJ_OFF
 #define MAJ_OFF 1.1 // ...lost again below this
 #endif
+#ifndef QUEEN_START_SPLIT
+#define QUEEN_START_SPLIT 0 // user (2026-10-07): the queen splits at the beginning. Before QSS_END she splits in half
+                            // (4 -> 2 + 2) whenever she can; only ENEMY heads within 3 stop it (the start crowd of our own
+                            // dragons blocked every queen split before: she sat at length 4 to r150 on Australia). Her
+                            // other split checks stay (calm, safe move, two real exits, room, child escape, loop, sealed start)
+#endif
+#ifndef QSS_END
+#define QSS_END 30
+#endif
+#ifndef OPEN_QUEEN_SPLIT
+#define OPEN_QUEEN_SPLIT 0 // (OFF: 194-10, Qd 40 - few extra splits, more queen deaths) O1 (user: multiply fast): during the opening plan (no majority yet) and before OQS_END the
+                           // queen splits at length 4 like everyone else (2 + 2); all her split safety checks stay
+#endif
+#ifndef OQS_END
+#define OQS_END 120
+#endif
+#ifndef OPEN_PUSH
+#define OPEN_PUSH 0 // (neutral over 408 games: 194-10 / 191-13, Qd 35 / 36) O2 (user: occupy space): before OPEN_PUSH_END idle explorers are not kept out of their side and the
+                    // border band (they arrive up to 3 sooner .. we arrive 4 sooner) pulls twice as hard
+#endif
+#ifndef OPEN_PUSH_END
+#define OPEN_PUSH_END 100
+#endif
+#ifndef OPEN_HOLD
+#define OPEN_HOLD 0 // (OFF: Around UNSW pearls r100 293 -> 199, 193-11) O3 (user: multiply fast; ladder #1 sits by spawn tiles: heads within 1 of a tile 60% vs our 38%):
+                    // before OPEN_HOLD_END a spawn tile within HOLD_DIST steps is a pearl job if it spawns within
+                    // HOLD_WAIT rounds (not only within distance + CAMP_LEAD) - waiting beats walking to a far pearl
+#endif
+#ifndef OPEN_HOLD_END
+#define OPEN_HOLD_END 150
+#endif
+#ifndef HOLD_DIST
+#define HOLD_DIST 3
+#endif
+#ifndef HOLD_WAIT
+#define HOLD_WAIT 12
+#endif
 #ifndef OPEN_PLAN_END
 #define OPEN_PLAN_END 300 // the opening plan ends here at the latest (or at the numbers -> length switch)
 #endif
@@ -191,7 +228,11 @@
 #endif
 #ifndef INTENT_MEMORY
 #define INTENT_MEMORY 0 // 6c: zone / outpost / camp / explore / wall goals are kept unless a new one is clearly closer;
-                        // 1 = always (193-11, Qd 33, prot 81-3: slow to react), 2 = only while no enemy head is in view
+                        // (all OFF: every version loses ~3 Portals games) 1 = always (193-11, Qd 33, prot 81-3: slow to
+                        // react), 2 = only while no enemy head is in view (195-9, Qd 35, prot 81-3);
+                        // 3 = no override: the zone / outpost / camp choosers give last round's goal a bonus of
+                        //     max(COMMIT_MARGIN, 30%) steps, so a goal they no longer allow (skipped, taken, crowded) drops out
+                        //     (194-10, Qd 38, prot 81-3)
 #endif
 #ifndef COMMIT_MARGIN
 #define COMMIT_MARGIN 4 // ... by this many steps and by 30%
@@ -966,8 +1007,29 @@
 #ifndef EQ_INFER_UNSEEN
 #define EQ_INFER_UNSEEN 0 // Q2a: EQ_INFER also when their queen was never seen at all (she died unseen in 5 of 7 test games)
 #endif
+#ifndef GIANT_GOSSIP
+#define GIANT_GOSSIP 0 // (OFF: still 8-14 giants - the sonar graph is in pieces) 6d'': one giant fleet-wide. STATUS is repacked (id 13, length 7, round mod 16 bits) to carry
+                       // the best giant / heir claim its sender knows (length 5 bits, id hash 2, age 3); a holder that
+                       // hears a better claim steps down. Spreads hop by hop like Q1; an age past GOSSIP_MAX_AGE ends a claim.
+#endif
+#ifndef GOSSIP_MAX_AGE
+#define GOSSIP_MAX_AGE 28 // rounds a giant claim lives without its holder repeating it (one hop costs ~1 round: at 7 the
+                          // top giant's own claim came back 9 rounds old and far giants never heard it)
+#endif
+#ifndef GOSSIP_AGE_UNIT
+#define GOSSIP_AGE_UNIT 4 // the 3-bit age counts in units of this many rounds (rounded up: a claim never looks younger)
+#endif
 #ifndef SWITCH_STATUS_BIT
 #define SWITCH_STATUS_BIT 0 // 6e: every STATUS carries the numbers -> length switch (today only T_PHASE does)
+#endif
+#ifndef STRIKE_NEWS
+#define STRIKE_NEWS 0 // (OFF: 2.6% of its detections were right - lost relays look like silence) Q2c: a dragon within next-turn strike reach of their queen says so each turn (T_STRIKE), and
+                      // "off" the turn after she got away; a striker dies in its strike and casts no sonar, so when the
+                      // news stops with no "off" and nobody has seen her for STRIKE_CONFIRM rounds, she is dead.
+                      // 1 = on, 2 = measure only (QDIAG log "N Q2C ...", no effect)
+#endif
+#ifndef STRIKE_CONFIRM
+#define STRIKE_CONFIRM 6 // rounds of silence (no "off", no newer strike news, no sighting of her) before Q2c counts her dead
 #endif
 #ifndef EQ_STATUS_BIT
 #define EQ_STATUS_BIT 1 // Q: every STATUS message carries "their queen is dead" (in 7 test games 47-90 of our dragons
@@ -1033,7 +1095,7 @@
 #define GIANT_ROUND 200
 #endif
 #ifndef GIANT_MIN_LEN
-#define GIANT_MIN_LEN 5
+#define GIANT_MIN_LEN 5 // (10 tested: Portals 5 losses)
 #endif
 #ifndef ROLE_CLAIMS
 #define ROLE_CLAIMS 0 // 6d (tested, OFF): giant / heir / leader holders announce their role (T_ROLE, relayed). Claims did

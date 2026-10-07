@@ -508,9 +508,18 @@ bool apply_message(std::uint64_t m)
     switch (type)
     {
     case T_STATUS: {
-        int const id = b.get(14), len = b.get(10), cell = b.get(12), leader = b.get(1), round = b.get(9), eqDead = b.get(1), switchedBit = b.get(1);
+        StatusMsg const st = read_status(payload);
+        int const id = st.id, len = st.len, cell = st.cell, leader = st.leader, round = st.round, eqDead = st.eq, switchedBit = st.sw;
         if (id == me || cell >= N || round > R)
             return false;
+        // 6d'': the best giant / heir claim the sender knows; keep the best fresh one.
+        if (GIANT_GOSSIP && st.gl > 0)
+        {
+            GossipClaim const c{st.gl, st.gh, round - st.ga * GOSSIP_AGE_UNIT};
+            if (gossip_fresh(c) && (!gossip_fresh(gBest) || better_claim(c.gl, c.gh, gBest) ||
+                                    (c.gl == gBest.gl && c.gh == gBest.gh && c.born > gBest.born)))
+                gBest = c;
+        }
         // Q: the news that their queen is dead rides on every status (the dedicated message rarely reached our
         // queen: sonar runs along rows and columns and stops at the first dragon).
         if (EQ_STATUS_BIT && eqDead && !sit.enemyQueenDead)
@@ -631,6 +640,21 @@ bool apply_message(std::uint64_t m)
         rel = R;
         return true;
     }
+    case T_STRIKE: {
+        int const id = b.get(14), cell = b.get(12), round = b.get(9), off = b.get(1);
+        if (!STRIKE_NEWS || id == me || cell >= N || round > R || R - round > STRIKE_CONFIRM)
+            return false;
+        for (auto& w : strikeWatch)
+            if (w.striker == id)
+            {
+                if (w.round >= round)
+                    return false;
+                w = {id, cell, round, off == 1};
+                return true;
+            }
+        strikeWatch.push_back({id, cell, round, off == 1});
+        return true;
+    }
     case T_ZONE: {
         int const cell = b.get(12), round = b.get(9), tiles = b.get(6);
         if (cell >= N || round > R || R - round > 60)
@@ -718,11 +742,12 @@ void read_sonar(Controller& ct)
             {
                 // The queen's position: guards and screens need it, so it goes
                 // out ahead of pearl gossip while fresh.
-                int const id = static_cast<int>(payload & 0x3FFF);
-                int const round = static_cast<int>((payload >> 37) & 0x1FF);
+                StatusMsg const st = read_status(payload);
+                int const id = st.id;
+                int const round = st.round;
                 if (id == queenId && R - round <= 4)
                     prio = 45;
-                else if (GIANT && ((payload >> 36) & 1) && R - round <= 4)
+                else if (GIANT && st.leader && R - round <= 4)
                     prio = 35; // leaders (the giant among them) are fed too
             }
             if (ROLE_CLAIMS && typed && type == T_ROLE)
@@ -828,6 +853,36 @@ void detect_teammate_deaths()
     for (auto const& h : heads)
         if (h.mine)
             prevTeamHeads[h.id] = h.cell;
+}
+
+// Q2c: strike news that stopped. A striker dies in its strike and casts no sonar; alive, it either says "within
+// reach" again or "off". So news with neither for STRIKE_CONFIRM rounds, while nobody saw her, means she died.
+void strike_news_check()
+{
+    if (!STRIKE_NEWS)
+        return;
+    std::erase_if(strikeWatch, [](StrikeWatch const& w) { return w.off || sit.lastEqSeenR > w.round || R - w.round > STRIKE_CONFIRM + 2; });
+    if (sit.enemyQueenDead)
+    {
+        strikeWatch.clear();
+        return;
+    }
+    for (auto const& w : strikeWatch)
+        if (R - w.round >= STRIKE_CONFIRM)
+        {
+#ifdef QDIAG
+            char buf[96];
+            std::snprintf(buf, sizeof buf, "Q2C %c %d id%d striker%d sround%d", myTeam == Team::A ? 'A' : 'B', R, me, w.striker, w.round);
+            DIAG(buf);
+#endif
+            if (STRIKE_NEWS == 1)
+            {
+                sit.enemyQueenDead = true;
+                queue_fact(msg_queen_dead(true), 95, 4);
+            }
+            strikeWatch.clear();
+            return;
+        }
 }
 
 void record_enemies()

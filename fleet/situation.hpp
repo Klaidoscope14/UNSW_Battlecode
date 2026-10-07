@@ -210,6 +210,8 @@ void compute_fleet_state()
                 my.heir = false;
         if (better_claims(CR_HEIR, L) > 0)
             my.heir = false; // 6d: a better heir has claimed it
+        if (gossip_beats_me(L))
+            my.heir = false; // 6d'': a better holder is known fleet-wide
         if (my.heir)
             my.leader = true;
     }
@@ -233,6 +235,8 @@ void compute_fleet_state()
         }
         if (better_claims(CR_GIANT, L) > 0)
             my.giant = false; // 6d: a better giant has claimed it
+        if (gossip_beats_me(L))
+            my.giant = false; // 6d'': a better holder is known fleet-wide
         if (my.giant)
             my.leader = true;
     }

@@ -6,7 +6,7 @@ T=$(cd "$(dirname "$0")" && pwd); ROOT=$(cd "$T/../.." && pwd)
 export PATH=~/.local/bin:$PATH UNSWBC_NO_UPDATE=1
 NAME=$1; DEFS=$2; MAPS=${3:-"islands stripes tower_defense trauma trophy weakhold unsw australia"}
 B="$T/work/$NAME"; W="$T/work/op_$NAME"; rm -rf "$B" "$W"; mkdir -p "$B" "$W/rep" "$W/L"
-cp "$ROOT/fleet/bot.toml" "$ROOT/fleet/helper.hpp" "$B/"
+cp "$ROOT/fleet/bot.toml" "$ROOT"/fleet/*.hpp "$B/"
 { for d in $DEFS; do echo "#define ${d%%=*} ${d#*=}"; done; cat "$ROOT/fleet/main.cpp"; } > "$B/main.cpp"
 cd "$ROOT"; unswbc run maps/default_small.map "$B" "$T/sparring/vib2" --seed 1 --no-replay >/dev/null 2>&1
 for m in $MAPS; do for o in vib2 swarm2 fleet11; do for s in A B; do echo "$m $o $s"; done; done; done | \

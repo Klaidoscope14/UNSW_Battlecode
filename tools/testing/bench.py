@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Play bot vs opponents on every map from both sides; report wins and how games ended."""
-import argparse, glob, os, re, subprocess, collections
+import argparse, glob, os, re, subprocess, collections, time
 from concurrent.futures import ThreadPoolExecutor
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 env = dict(os.environ, PATH=os.path.expanduser("~/.local/bin") + ":" + os.environ["PATH"], UNSWBC_NO_UPDATE="1")
@@ -31,6 +31,9 @@ def main():
         opp, m, side, s = j
         x, y = (a.bot, opp) if side == "A" else (opp, a.bot)
         w, how, rounds, txt = play(m, x, y, s, a.sandbox)
+        for _ in range(2):  # a transient engine error (e.g. "Exec format error" under load): play it again
+            if w != "?": break
+            time.sleep(3); w, how, rounds, txt = play(m, x, y, s, a.sandbox)
         res = "D" if w == "D" else ("?" if w == "?" else ("W" if w == side else "L"))
         deaths = collections.Counter()
         ourTeam = side

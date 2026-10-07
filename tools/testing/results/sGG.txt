@@ -1,0 +1,209 @@
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2        australia A s1: W (longer queen, 16 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2        australia B s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2        australia A s2: W (longer queen, 17 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2        australia B s2: W (longer queen, 17 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          autarky A s1: W (longer queen, 15 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          autarky B s1: W (by elimination, 248r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          autarky A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          autarky B s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          default A s1: W (by elimination, 193r) Qdead:lost a head-to-head r95
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          default B s1: W (by elimination, 200r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          default A s2: W (by elimination, 212r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          default B s2: W (by elimination, 107r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2            devil A s1: W (by elimination, 90r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2            devil B s1: W (by elimination, 95r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2            devil A s2: W (by elimination, 79r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2            devil B s2: W (by elimination, 67r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          dilemma A s1: W (by elimination, 306r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          dilemma B s1: W (by elimination, 50r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          dilemma A s2: W (by elimination, 287r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          dilemma B s2: W (by elimination, 71r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          islands A s1: W (by elimination, 336r) Qdead:hit another dragon r181
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          islands B s1: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          islands A s2: W (longest dragon, 27 to 2, 500r) Qdead:lost a head-to-head r294
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          islands B s2: W (by elimination, 432r) Qdead:hit another dragon r301
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             maze A s1: W (longer queen, 40 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             maze B s1: W (longer queen, 14 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             maze A s2: W (longer queen, 15 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             maze B s2: W (longer queen, 21 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          portals A s1: L (longer queen, 3 to 0, 500r) Qdead:hit itself r407
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          portals B s1: W (by elimination, 181r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          portals A s2: L (longer queen, 3 to 0, 500r) Qdead:hit itself r421
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          portals B s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2  queen_of_spades A s1: W (by elimination, 242r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2  queen_of_spades B s1: W (by elimination, 229r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2  queen_of_spades A s2: W (by elimination, 191r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2  queen_of_spades B s2: W (by elimination, 425r) Qdead:lost a head-to-head r101
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2       schooltime A s1: W (by elimination, 477r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2       schooltime B s1: W (by elimination, 348r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2       schooltime A s2: W (by elimination, 420r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2       schooltime B s2: W (by elimination, 334r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2   slithery_fight A s1: W (by elimination, 351r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2   slithery_fight B s1: W (longer queen, 7 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2   slithery_fight A s2: W (by elimination, 402r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2   slithery_fight B s2: W (longer queen, 7 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          stripes A s1: W (by elimination, 52r) Qdead:lost a head-to-head r41
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          stripes B s1: W (by elimination, 163r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          stripes A s2: W (by elimination, 94r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2          stripes B s2: W (longest dragon, 5 to 3, 500r) Qdead:lost a head-to-head r184
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2    tower_defense A s1: W (by elimination, 288r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2    tower_defense B s1: W (by elimination, 316r) Qdead:hit another dragon r129
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2    tower_defense A s2: W (by elimination, 421r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2    tower_defense B s2: W (by elimination, 489r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trauma A s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trauma B s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trauma A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trauma B s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trophy A s1: W (by elimination, 151r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trophy B s1: W (by elimination, 152r) Qdead:lost a head-to-head r56
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trophy A s2: W (by elimination, 90r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2           trophy B s2: W (by elimination, 80r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             unsw A s1: W (longest dragon, 20 to 6, 500r) Qdead:hit a wall r252
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             unsw B s1: W (longest dragon, 29 to 3, 500r) Qdead:hit another dragon r352
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             unsw A s2: W (longer queen, 26 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2             unsw B s2: W (longest dragon, 26 to 4, 500r) Qdead:hit a wall r392
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2         weakhold A s1: W (by elimination, 220r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2         weakhold B s1: W (by elimination, 444r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2         weakhold A s2: W (by elimination, 322r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2         weakhold B s2: W (by elimination, 241r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2        australia A s1: W (longest dragon, 24 to 4, 500r) Qdead:lost a head-to-head r208
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2        australia B s1: W (longer queen, 11 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2        australia A s2: W (longer queen, 14 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2        australia B s2: W (longer queen, 14 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          autarky A s1: W (by elimination, 238r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          autarky B s1: W (by elimination, 301r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          autarky A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          autarky B s2: W (longest dragon, 15 to 3, 500r) Qdead:lost a head-to-head r355
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          default A s1: W (by elimination, 227r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          default B s1: W (by elimination, 274r) Qdead:lost a head-to-head r135
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          default A s2: W (by elimination, 254r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          default B s2: W (by elimination, 292r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2            devil A s1: W (by elimination, 158r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2            devil B s1: W (by elimination, 202r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2            devil A s2: W (by elimination, 172r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2            devil B s2: W (by elimination, 150r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          dilemma A s1: W (by elimination, 324r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          dilemma B s1: W (by elimination, 319r) Qdead:hit another dragon r271
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          dilemma A s2: W (by elimination, 248r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          dilemma B s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          islands A s1: W (by elimination, 229r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          islands B s1: W (longer queen, 5 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          islands A s2: W (by elimination, 346r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          islands B s2: W (longest dragon, 29 to 2, 500r) Qdead:lost a head-to-head r160
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             maze A s1: W (longer queen, 16 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             maze B s1: W (longer queen, 16 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             maze A s2: W (longest dragon, 10 to 5, 500r) Qdead:hit itself r268
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             maze B s2: W (longer queen, 40 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          portals A s1: W (longest dragon, 9 to 3, 500r) Qdead:hit another dragon r357
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          portals B s1: W (longer queen, 13 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          portals A s2: L (longer queen, 3 to 0, 500r) Qdead:hit itself r161
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          portals B s2: W (longest dragon, 9 to 3, 500r) Qdead:lost a head-to-head r395
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2  queen_of_spades A s1: W (by elimination, 67r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2  queen_of_spades B s1: W (by elimination, 280r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2  queen_of_spades A s2: W (by elimination, 93r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2  queen_of_spades B s2: W (by elimination, 319r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2       schooltime A s1: W (longest dragon, 28 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2       schooltime B s1: W (longest dragon, 28 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2       schooltime A s2: W (longest dragon, 29 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2       schooltime B s2: W (longest dragon, 49 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2   slithery_fight A s1: W (longer queen, 8 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2   slithery_fight B s1: W (longer queen, 8 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2   slithery_fight A s2: W (longer queen, 9 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2   slithery_fight B s2: W (longer queen, 6 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          stripes A s1: W (by elimination, 131r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          stripes B s1: W (by elimination, 142r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          stripes A s2: W (by elimination, 114r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2          stripes B s2: W (by elimination, 142r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2    tower_defense A s1: W (longest dragon, 5 to 4, 500r) Qdead:hit a wall r253
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2    tower_defense B s1: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2    tower_defense A s2: W (longer queen, 7 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2    tower_defense B s2: W (longer queen, 21 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trauma A s1: W (longer queen, 5 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trauma B s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trauma A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trauma B s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trophy A s1: W (by elimination, 276r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trophy B s1: W (by elimination, 105r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trophy A s2: W (by elimination, 56r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2           trophy B s2: W (by elimination, 158r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             unsw A s1: W (longest dragon, 23 to 4, 500r) Qdead:lost a head-to-head r465
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             unsw B s1: W (longest dragon, 27 to 5, 500r) Qdead:hit itself r232
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             unsw A s2: W (longest dragon, 25 to 4, 500r) Qdead:lost a head-to-head r439
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2             unsw B s2: W (longest dragon, 16 to 4, 500r) Qdead:lost a head-to-head r263
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2         weakhold A s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2         weakhold B s1: W (by elimination, 405r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2         weakhold A s2: W (longer queen, 4 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2         weakhold B s2: W (by elimination, 262r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11        australia A s1: W (longer queen, 13 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11        australia B s1: W (longer queen, 9 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11        australia A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11        australia B s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          autarky A s1: W (by elimination, 401r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          autarky B s1: W (by elimination, 311r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          autarky A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          autarky B s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          default A s1: W (by elimination, 287r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          default B s1: W (longer queen, 11 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          default A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          default B s2: W (longer queen, 17 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11            devil A s1: W (longer queen, 5 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11            devil B s1: W (by elimination, 84r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11            devil A s2: W (longer queen, 6 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11            devil B s2: W (by elimination, 225r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          dilemma A s1: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          dilemma B s1: W (by elimination, 392r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          dilemma A s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          dilemma B s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          islands A s1: W (longest dragon, 16 to 9, 500r) Qdead:hit itself r126
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          islands B s1: W (longer queen, 17 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          islands A s2: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          islands B s2: W (longest dragon, 19 to 9, 500r) Qdead:hit another dragon r308
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             maze A s1: W (longer queen, 20 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             maze B s1: W (longer queen, 8 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             maze A s2: W (longer queen, 22 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             maze B s2: W (longer queen, 10 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          portals A s1: L (longest dragon, 21 to 10, 500r) Qdead:hit another dragon r330
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          portals B s1: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          portals A s2: W (longest dragon, 11 to 7, 500r) Qdead:hit itself r387
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          portals B s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11  queen_of_spades A s1: W (by elimination, 104r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11  queen_of_spades B s1: W (longer queen, 13 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11  queen_of_spades A s2: W (by elimination, 263r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11  queen_of_spades B s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11       schooltime A s1: W (longest dragon, 22 to 8, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11       schooltime B s1: W (longest dragon, 35 to 3, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11       schooltime A s2: W (longest dragon, 22 to 7, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11       schooltime B s2: W (longest dragon, 19 to 10, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11   slithery_fight A s1: W (longer queen, 8 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11   slithery_fight B s1: W (longer queen, 7 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11   slithery_fight A s2: W (longer queen, 6 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11   slithery_fight B s2: W (longer queen, 4 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          stripes A s1: L (by elimination, 390r) Qdead:lost a head-to-head r389
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          stripes B s1: L (by elimination, 303r) Qdead:lost a head-to-head r302
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          stripes A s2: L (by elimination, 122r) Qdead:lost a head-to-head r121
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11          stripes B s2: L (by elimination, 115r) Qdead:lost a head-to-head r114
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11    tower_defense A s1: W (longer queen, 8 to 2, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11    tower_defense B s1: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11    tower_defense A s2: W (longer queen, 11 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11    tower_defense B s2: W (longer queen, 11 to 2, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trauma A s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trauma B s1: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trauma A s2: W (longer queen, 7 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trauma B s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trophy A s1: W (by elimination, 302r) Qdead:lost a head-to-head r111
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trophy B s1: W (by elimination, 181r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trophy A s2: W (by elimination, 260r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11           trophy B s2: W (by elimination, 162r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             unsw A s1: W (longer queen, 9 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             unsw B s1: W (longer queen, 21 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             unsw A s2: W (longer queen, 14 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11             unsw B s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11         weakhold A s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11         weakhold B s1: W (longer queen, 2 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11         weakhold A s2: W (longer queen, 3 to 0, 500r)
+/Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11         weakhold B s2: W (longer queen, 3 to 0, 500r)
+vs /Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/vib2: W66 L2 D0 ?0
+vs /Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/swarm2: W67 L1 D0 ?0
+vs /Users/chaitanyasaagar/Desktop/UNSW_HRT/tools/testing/sparring/fleet11: W63 L5 D0 ?0
+queen deaths 37/204 enemy queen deaths 187 {'': 0, 'lost a head-to-head': 19, 'hit another dragon': 8, 'hit itself': 7, 'hit a wall': 3}
+TOTAL W196 L8 D0 ?0  our deaths: {'hit itself': 20245, 'hit a wall': 17013, 'lost a head-to-head': 5323, 'hit another dragon': 5138}
