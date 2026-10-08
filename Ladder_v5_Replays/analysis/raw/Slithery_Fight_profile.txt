@@ -1,0 +1,10 @@
+====================================================================================================
+PROFILE Ladder_v5 / Slithery_Fight
+  us: dragons ever 763, born by split 756, died 719, median lifespan 10 rounds
+     length mix: r50: n29 {'L2': 62, 'L3': 31, 'L4-5': 7}  r100: n37 {'L2': 68, 'L3': 30, 'L4-5': 3}  r200: n43 {'L2': 56, 'L3': 40, 'L4-5': 5}  r300: n51 {'L2': 65, 'L3': 25, 'L4-5': 6, 'L6-9': 4}  r400: n48 {'L2': 48, 'L3': 35, 'L4-5': 15, 'L6-9': 2}  r499: n41 {'L2': 34, 'L3': 22, 'L4-5': 27, 'L6-9': 15, 'L10+': 2}
+  opp: dragons ever 1220, born by split 1213, died 1211, median lifespan 10.0 rounds
+     length mix: r50: n48 {'L2': 62, 'L3': 27, 'L4-5': 8, 'L6-9': 2}  r100: n58 {'L2': 36, 'L3': 19, 'L4-5': 24, 'L6-9': 21}  r200: n60 {'L2': 15, 'L3': 15, 'L4-5': 27, 'L6-9': 43}  r300: n59 {'L2': 22, 'L3': 22, 'L4-5': 24, 'L6-9': 31, 'L10+': 2}  r400: n54 {'L2': 11, 'L3': 15, 'L4-5': 33, 'L6-9': 31, 'L10+': 9}  r499: n9 {'L2': 11, 'L6-9': 22, 'L10+': 67}
+  us queen: rounds 501; length at r50/100/200/300/400: 3/3/3/3/2; max 25; stays inside a 4-cell spread over 10 rounds 21% of the time; enemy heads within 3 of her: 0:471 1:28 2:2 3+:0
+  opp queen: rounds 501; length at r50/100/200/300/400: 7/7/7/7/7; max 25; stays inside a 4-cell spread over 10 rounds 100% of the time; enemy heads within 3 of her: 0:499 1:2 2:0 3+:0
+  us paid steps: {'paid step': 16, 'died the same turn (head-on collision)': 6, 'ate a pearl on the paid step': 8}
+  opp paid steps: {'ate a pearl on the paid step': 17, 'paid step': 7, 'died the same turn (head-on collision)': 2}

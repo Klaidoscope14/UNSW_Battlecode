@@ -1,0 +1,8 @@
+====================================================================================================
+PROFILE Ladder_v5 / Weakhold
+  us: dragons ever 5, born by split 3, died 5, median lifespan 227 rounds
+     length mix: r50: n3 {'L2': 67, 'L4-5': 33}  r100: n4 {'L2': 100}  r200: n4 {'L2': 75, 'L3': 25}  r300: n1 {'L2': 100}
+  opp: dragons ever 164, born by split 162, died 130, median lifespan 14.5 rounds
+     length mix: r50: n5 {'L2': 60, 'L3': 20, 'L4-5': 20}  r100: n10 {'L2': 60, 'L3': 20, 'L4-5': 20}  r200: n24 {'L2': 62, 'L3': 25, 'L4-5': 12}  r300: n33 {'L2': 67, 'L3': 18, 'L4-5': 12, 'L6-9': 3}
+  us queen: rounds 308; length at r50/100/200/300/400: 4/2/2/2/-; max 4; stays inside a 4-cell spread over 10 rounds 42% of the time; enemy heads within 3 of her: 0:289 1:19 2:0 3+:0
+  opp queen: rounds 309; length at r50/100/200/300/400: 4/4/4/4/-; max 4; stays inside a 4-cell spread over 10 rounds 98% of the time; enemy heads within 3 of her: 0:309 1:0 2:0 3+:0

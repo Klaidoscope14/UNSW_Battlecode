@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -843,6 +844,381 @@ using namespace unswbc;
 #ifndef LOOK_EXIT_W
 #define LOOK_EXIT_W 60000.0 // surviving lines: fewest safe exits along the line (0..3, funnel detection)
 #endif
+#ifndef STALKER_LEN
+#define STALKER_LEN 0 // OFF (64 sparring: queen deaths 10 -> 15, 61-3; boxes her in). Was 7. v5.0.3: an enemy whose body runs out of her view and that stays within STALKER_NEAR of the queen two
+                      // rounds running is a hunter: assume at least this length (0 = off). Killers seen as "4" were 9-10
+#endif
+#ifndef STALKER_NEAR
+#define STALKER_NEAR 6
+#endif
+#ifndef LONG_AVOID
+#define LONG_AVOID 0 // OFF for v5.0.4 (user). v5.0.3 (vs v5.0.2 34-30, queen deaths 31 vs 35; sparring 63-1, queen deaths 12 vs 10 - roughly neutral): the queen keeps clear of the last known spot of long enemies (length >= LONG_ENEMY_MIN) seen or
+                     // reported within LONG_MEM rounds and within LONG_RADIUS of her: unseen hunters strike from just
+                     // outside her view once she steps into theirs
+#endif
+#ifndef LONG_ENEMY_MIN
+#define LONG_ENEMY_MIN 5
+#endif
+#ifndef LONG_MEM
+#define LONG_MEM 20
+#endif
+#ifndef LONG_RADIUS
+#define LONG_RADIUS 12
+#endif
+#ifndef LONG_AVOID_PEN
+#define LONG_AVOID_PEN 30000.0 // per step closer to one (soft: above pearls and errands, below every safety rule)
+#endif
+#ifndef QUEEN_SURV_LEASH
+#define QUEEN_SURV_LEASH 1 // v5.0.4 (3a; no game changed in 64 sparring - rare, ladder-only): survival mode (tiny fleet, or far outnumbered) pulls her leash back to QUEEN_LEASH
+                           // even with no enemy near (not in the opening: there a small fleet is normal and she must eat)
+#endif
+#ifndef QUEEN_SONAR_AIM
+#define QUEEN_SONAR_AIM 0 // OFF (64 sparring: queen deaths 10 -> 16, 63 of 64 games changed; vs v5.0.2 30-34). v5.0.4 (3b): her two status copies go where a ray can reach a teammate (a teammate first in line,
+                          // then open water), never straight into kelp, her own body or an enemy
+#endif
+#ifndef FEED_CLEAR_FRONT
+#define FEED_CLEAR_FRONT 1 // v5.0.4 (2a; no game changed in 64 sparring + 64 vs v5.0.2): a feeder never walks onto the cell in front of the queen's head (her way on).
+                           // Dying there stays allowed: the body turns into pearls, food right in front of her
+#endif
+#ifndef FEED_FRONT_PEN
+#define FEED_FRONT_PEN 300000.0
+#endif
+#ifndef WATCH_KEEP
+#define WATCH_KEEP 1 // v5.0.5 (G1-lite): while our queen lives, screens (1-3 dragons posted 6-9 out toward the enemy) never
+                     // feed or harvest - they keep watch to the end (4 of 7 unseen long-hunter kills came at rounds 458-497)
+#endif
+#ifndef WATCH_GUARDS
+#define WATCH_GUARDS 0 // G1 full: every guard keeps watch too (64 vs v5.0.2 35-29, but sparring queen length 19.2 -> 16.4,
+                       // queen deaths 10 -> 12: a fifth of the harvest food lost)
+#endif
+#ifndef QUEEN_OPEN_SPLIT
+#define QUEEN_OPEN_SPLIT 1 // v5.0.6 (user; vs v5.0.5 36-28, queen deaths 26 vs 33; sparring 63-1, 10 queen deaths = unchanged): at the start a queen of length >= 4 splits down to 2; the tail part explores and
+                           // eats by the usual rules (v3's QUEEN_START_SPLIT, 4 -> 2 + 2 before r30: -7 wins, +14 queen deaths / 408)
+#endif
+#ifndef QOS_MAX_START
+#define QOS_MAX_START 6 // v5.1.0 (user): only a queen that STARTS this short splits down to 2; a longer starting queen keeps
+                        // her length (ladder Slithery Fight: theirs kept 7 of 25 and won the tiebreak 7-4)
+#endif
+#ifndef QOS_ROUNDS
+#define QOS_ROUNDS 10 // the split waits for a safe turn up to this round, then is given up
+#endif
+#ifndef FOUNT_POCKETS
+#define FOUNT_POCKETS 0 // OFF (fountain pearls r0-100 on 6 maps: 926 base, 962 fountain-only pockets, 658 any dead end). v5.1.0: a group of touching fountain tiles is one job - the pearl matching gives each pocket to one
+                        // dragon (the others take other pockets or pearls), and a miner keeps its pocket (no dithering:
+                        // two length-2 dragons swapped between the same pockets for 40 rounds on weakhold, eating nothing)
+#endif
+#ifndef FOUNT_STICK
+#define FOUNT_STICK 0.6 // cost factor for the pocket this dragon went for last turn
+#endif
+#ifndef DIVE_CHEAP_LEN
+#define DIVE_CHEAP_LEN 0 // OFF (64 sparring: queen deaths 12 -> 22, queen length 19.5 -> 12.4 with it). Was 3. v5.1.0: dragons this short take break-even pocket dives (pearls in = stub left): unseen cells further
+                         // in, refilling fountains and the stub's drops for the next miner make them pay. Ladder weakhold:
+                         // two length-2 dragons circled at a pocket mouth for 200 rounds (2 of 3 pearls in view: dive 0 < 1)
+#endif
+#ifndef POCKET_SKIP
+#define POCKET_SKIP 1 // v5.1.0: a pocket whose dive does not pay is skipped whole (all its pearls), not pearl by pearl - the
+                      // matching handed the next pearl of the same pocket over and over: circling at the mouth for 200 rounds
+#endif
+#ifndef QUEEN_PEEL
+#define QUEEN_PEEL 1 // v5.1.0: a queen boxed in by her own body peels 2 cells a round off her tail (see "unwind-peel")
+#endif
+#ifndef BARREN_MEMORY
+#define BARREN_MEMORY 1 // v5.1.0 (user): areas watched long with no pearl tile ever seen are barren - explorers keep out of
+                        // them and drop an exploring goal that turns out barren (ladder weakhold: dragons sat in the empty part)
+#endif
+#ifndef BARREN_RAD
+#define BARREN_RAD 4 // area around a cell (manhattan)
+#endif
+#ifndef BARREN_WATCH_AVG
+#define BARREN_WATCH_AVG 20 // rounds each cell of the area was in view, on average, before it counts as barren
+#endif
+#ifndef BARREN_EXPLORE_PEN
+#define BARREN_EXPLORE_PEN 80.0 // exploring-goal score: like 80 extra steps of travel
+#endif
+#ifndef DIVE_SCORE_FIX
+#define DIVE_SCORE_FIX 1 // v5.1.0: the dive's fixed -1500 scales with its value (full at 1+). A break-even dive the threshold
+                         // accepts (DIVE_MATE_GAIN 0: a teammate near recycles the stub) scored -1500 and never beat stepping
+                         // away, while the skip rule counted it as fine: the dragon circled the pocket mouth (ladder weakhold)
+#endif
+#ifndef EXPLORE_FIRST
+#define EXPLORE_FIRST 1 // v5.1.1 (user): in the opening (before EF_END, while under EF_FRAC of the map's edges are known) a
+                        // non-queen leaves far pearls (> EF_NEAR steps) and slow spawn tiles (> EF_CAMP_WAIT rounds off) to
+                        // explore new ground - unless the area is very rich. Ladder Tower Defense: dragons got out of the
+                        // walled start, then went back in to camp tiles that refill every 225 rounds
+#endif
+#ifndef EF_SKIP_FAR
+#define EF_SKIP_FAR 0 // OFF (user: hunt pearls from the start until none are known; explore when there are none). 1: also
+                      // leave pearls farther than EF_NEAR in the opening. Waiting for slow spawns stays limited either way
+#endif
+#ifndef RICH_HOLD
+#define RICH_HOLD 1 // v5.1.1 (user): a dragon in a very rich area with nothing to chase holds it - it waits by that area's
+                    // next spawn (one dragon per tile) instead of exploring away: occupy the rich ground early, keep control
+#endif
+#ifndef EF_END
+#define EF_END 150
+#endif
+#ifndef EF_FRAC
+#define EF_FRAC 0.6
+#endif
+#ifndef EF_NEAR
+#define EF_NEAR 8
+#endif
+#ifndef EF_CAMP_WAIT
+#define EF_CAMP_WAIT 12
+#endif
+#ifndef RICH_RV
+#define RICH_RV 0.6 // "very rich": region value (known spawn tiles) at least this, or a teammate's rich report nearby
+#endif
+#ifndef NO_BACKTRACK
+#define NO_BACKTRACK 1 // v5.1.1 (user): an exploring dragon does not step back onto cells it was on in the last BT_ROUNDS rounds
+#endif
+#ifndef BT_ROUNDS
+#define BT_ROUNDS 25
+#endif
+#ifndef BT_PEN
+#define BT_PEN 400.0 // per move back onto our own recent trail (an exploring move; safety penalties are far larger)
+#endif
+#ifndef OPEN_AHEAD
+#define OPEN_AHEAD 1 // v5.1.1 (user): exploring, a move with open water straight ahead beats one facing a visible kelp wall
+#endif
+#ifndef OPEN_AHEAD_W
+#define OPEN_AHEAD_W 40.0 // per open (or unexplored) cell straight ahead, up to 3: a tie-break below the 150 per step to the goal
+#endif
+#ifndef QUEEN_ROAM
+#define QUEEN_ROAM 0 // OFF in v5.1.3 (with CENTRE_RUSH her leaders head for the middle: vs v5.1.2 35-29 on, 36-28 off; Queen of Spades 2-6 on, 4-4 off). v5.1.1 (user): with QUEEN_ROAM_UNITS or fewer dragons (after the opening splits) and no enemy in view,
+                     // the queen explores with the fleet before QUEEN_ROAM_END (no home leash / rest); her safety rules stay
+#endif
+#ifndef QUEEN_FOLLOW
+#define QUEEN_FOLLOW 1 // v5.1.1 (user): a roaming queen never leads - she follows the teammate furthest out from home, a few
+                       // rounds behind on its trail (FOLLOW_LAG), at least FOLLOW_GAP away; no leader known: she waits at
+                       // home. When the fleet has grown past QUEEN_ROAM_UNITS her home rules bring her back to her quiet start
+#endif
+#ifndef FOLLOW_LAG
+#define FOLLOW_LAG 4
+#endif
+#ifndef FOLLOW_HALF
+#define FOLLOW_HALF 4 // the leader she follows is at least this much nearer our start than theirs (halfMargin)
+#endif
+#ifndef FOLLOW_GAP
+#define FOLLOW_GAP 2
+#endif
+#ifndef QUEEN_ROAM_UNITS
+#define QUEEN_ROAM_UNITS 3
+#endif
+#ifndef QUEEN_ROAM_END
+#define QUEEN_ROAM_END 100 // (150 kept her out too long: early head-ons on small maps)
+#endif
+#ifndef GOAL_SHARE
+#define GOAL_SHARE 1 // v5.1.1 (user): sonar T_GOAL - a dragon out in new ground reports where it is (a way out for those still
+                     // at home); a dragon seeing RICH_SEEN+ pearls reports the spot (very rich: worth more than exploring)
+#endif
+#ifndef RICH_SEEN
+#define RICH_SEEN 6
+#endif
+#ifndef EXIT_MIN
+#define EXIT_MIN 8 // a "way out" report: the reporter is this far (manhattan) from our queen's start
+#endif
+#ifndef PASSAGE_FIX
+#define PASSAGE_FIX 1 // v5.1.1: a move the dive search follows out into open water (value x.5) is a passage, not a dead end -
+                      // it is allowed wherever a paying dive is. The dive threshold was meant for dead ends (pearls must pay
+                      // for the stub left at the bottom); a 1-wide corridor out of a walled start with no pearls in it scored
+                      // 0.5 < 1 and was refused for good (Tower Defense: dragons circled in front of the only way out)
+#endif
+#ifndef QUEEN_CAP4
+#define QUEEN_CAP4 1 // v5.1.1 (user, repeated): the queen's part of the size cap holds on every map - before round X (the
+                     // switch round clamped to CAP_X_MIN..CAP_X_MAX, as for open maps) she splits from length 4, keeping 3
+                     // or less. Before, the cap only ran on open maps or small ones once outnumbered, and her own split
+                     // rule (keep 3, no dragon within 3) let her reach 5-6 elsewhere. Her safety checks are unchanged
+#endif
+#ifndef FLEET_CAP4
+#define FLEET_CAP4 0 // OFF (vs v5.1.1: 27-37 with it - a fleet held at length <= 3 until X loses the length tiebreaks). v5.1.2 (user: split fast while exploring): the size cap's split from length 4 (L/2, safety checks kept)
+                     // holds for every dragon on every map before round X - before, only on open maps or small ones once
+                     // outnumbered; elsewhere the density caps and roles (runners 8, hunters 12) held splits back
+#endif
+#ifndef COVERAGE
+#define COVERAGE 1 // v5.1.2 (user: control the richest pearl ground): an idle dragon takes the station (a known pearl tile)
+                   // whose surrounding tiles are worth most, each tile's worth shared by the teammates already near it -
+                   // the fleet spreads over the pearl fields, richer fields drawing more dragons until shares level out
+#endif
+#ifndef COV_RAD
+#define COV_RAD 5 // tiles within this (manhattan) of a station are its ground
+#endif
+#ifndef COV_DIST_W
+#define COV_DIST_W 0.02 // worth lost per step of travel to the station
+#endif
+#ifndef COV_MIN_OPEN
+#define COV_MIN_OPEN 1.0 // while EXPLORE_FIRST holds (opening, map mostly unknown): only very rich ground beats exploring
+#endif
+#ifndef COV_MIN
+#define COV_MIN 0.2 // below this a station is not worth it: explore instead (unexplored ground first)
+#endif
+#ifndef CENTRE_RUSH
+#define CENTRE_RUSH 1 // v5.1.3 (user): in the opening an idle non-queen first heads for the map's centre (the reachable cell
+                      // nearest the geometric middle - equally far from both sides, the ground to hold), then explores out
+                      // from there. Rich spots passed on the way are reported and shared out by COVERAGE as before
+#endif
+#ifndef CR_END
+#define CR_END 120 // the rush ends by this round
+#endif
+#ifndef CR_RADIUS
+#define CR_RADIUS 3 // within this (manhattan) of the centre once: rushed, now explore outward
+#endif
+#ifndef CR_ENEMY
+#define CR_ENEMY 5 // an enemy head this close ends our rush
+#endif
+#ifndef COV_RUSH_MIN
+#define COV_RUSH_MIN 3.0 // while rushing, only ground at least this rich (COVERAGE worth) beats the centre
+#endif
+#ifndef CAP4_SWITCH_END
+#define CAP4_SWITCH_END 1 // v5.1.4 (user): on congested maps QUEEN_CAP4 ends at the fleet's switch to length (DYN_ALLOC), not
+                          // at the clamped X - the fleet grew from the switch while she kept splitting up to 40 rounds more
+#endif
+#ifndef CR_PULL_OFF
+#define CR_PULL_OFF 1 // v5.1.4: a dragon that has reached the centre (CENTRE_RUSH) explores outward - the older opening pull of
+                      // exploring goals toward the middle (RV_EXPLORE_W) no longer applies to it
+#endif
+#ifndef RICH_NEW_PRIO
+#define RICH_NEW_PRIO 44 // v5.1.4 (user): a newly seen rich spot goes out below the queen's relayed position / bunker (45)
+#endif
+#ifndef PORTAL_SYM
+#define PORTAL_SYM 1 // v5.1.4: mirrored portal pairs follow the map symmetry until a seen pair refutes it, then the next one the
+                     // kelp allows (Portals: the kelp fits mirror-x too, the pairs only the 180-degree turn - the queen stepped
+                     // into a portal expecting the wrong exit cell and died on her own body); only seen pairs are gossiped.
+                     // (Confirm-first version: 56-72 vs v5.1.3 - most portals stayed unknown.) With MATE_FORCED: 72-56 vs v5.1.3
+#endif
+#ifndef FEED_STRIKE
+#define FEED_STRIKE 1 // v5.1.5 (user): ON. Alone: never fired in 6 replays, 32-32 vs v5.1.4 (late queen deaths come with few dragons left). O1: from the harvest on, a dragon that can put its head on an enemy head within FS_NEAR
+                      // of our queen strikes it first (it was going to die beside her anyway; both bodies drop by her)
+#endif
+#ifndef FS_NEAR
+#define FS_NEAR 6
+#endif
+#ifndef LOOKOUT_RING
+#define LOOKOUT_RING 0 // OFF: 27-37 vs v5.1.4, queen deaths 43 vs 35 (sparring 19 vs 23). Lookout ring: guards spread over the four arms of the queen's cross (her row and column, where a
+                       // sonar ping reaches her), the emptiest arm first: hunters are seen and reported from every side
+#endif
+#ifndef LR_MIN
+#define LR_MIN 4 // nearest post on an arm (GUARD_MIN keeps guards this far anyway)
+#endif
+#ifndef LR_ARM_W
+#define LR_ARM_W 8.0 // an arm with a teammate on it counts like this many extra steps
+#endif
+#ifndef LR_TRAVEL
+#define LR_TRAVEL 10 // longest walk to a post
+#endif
+#ifndef MATE_FORCED
+#define MATE_FORCED 1 // v5.1.4: teammates move after the queen, and one with a single way on takes it whatever the exit guard
+                      // says. The queen counts such a cell as blocked; a teammate never steps where its only way on next turn
+                      // is within MF_NEAR of her (Portals: a scout in a 1-exit nook boxed her into a corner - her main death there)
+#endif
+#ifndef MF_NEAR
+#define MF_NEAR 3
+#endif
+#ifndef MF_PEN
+#define MF_PEN 600000.0
+#endif
+#ifndef COMMIT_NEAR
+#define COMMIT_NEAR 2 // v5.1.5 (user): ON. Alone: 32-32 vs v5.1.4. Near pearl first: a pearl this close (and 2+ steps nearer than the committed one) is taken first - in lost
+                      // pearl races our nearest dragon was mostly committed to another pearl (ladder Slithery Fight: 166 of 290)
+#endif
+#ifndef TIE_LEASH
+#define TIE_LEASH 1 // v5.1.6 (user, O4): behind on queen length (theirs known, longer) from TL_ROUND: her leash widens to TL_LEASH
+#endif
+#ifndef TL_ROUND
+#define TL_ROUND 300
+#endif
+#ifndef TL_LEASH
+#define TL_LEASH 14 // twice QUEEN_LEASH
+#endif
+#ifndef TL_SEEN
+#define TL_SEEN 150 // how old their queen's length may be (as the tiebreak tracker uses it)
+#endif
+#ifndef WATCHTOWER
+#define WATCHTOWER 1 // v5.1.7 (user): one short dragon keeps watch WT_DIST from their queen (her home - the mirror of our
+                     // queen's start, the 180-degree turn first when several mirrors fit - until she is seen), so her length
+                     // and position are known; sightings go out as before. Paused WT_COOL rounds after a fight there
+#endif
+#ifndef WT_DIST
+#define WT_DIST 3 // our view reaches 3
+#endif
+#ifndef WT_START
+#define WT_START 40
+#endif
+#ifndef WT_MIN_UNITS
+#define WT_MIN_UNITS 6
+#endif
+#ifndef WT_MAX_LEN
+#define WT_MAX_LEN 12 // after the switch our dragons grow: 5 left no watcher from round ~200
+#endif
+#ifndef WT_RANGE
+#define WT_RANGE 30 // farther than this from her home: not a candidate
+#endif
+#ifndef WT_HYST
+#define WT_HYST 4 // the sitting watcher keeps the job unless another is this much nearer
+#endif
+#ifndef WT_FRESH
+#define WT_FRESH 10 // a report of her this recent moves the post
+#endif
+#ifndef WT_COOL
+#define WT_COOL 40
+#endif
+#ifndef WT_SEARCH
+#define WT_SEARCH 7 // her home seen empty: search this far round it (her leash, if she is like ours)
+#endif
+#ifndef BIRTH_HANDOFF
+#define BIRTH_HANDOFF 0 // OFF in v5.1.10 (v5.1.8 lost 28-36 vs v5.1.7; variants under test). v5.1.8 (user, idea 2): on a split our ray from the tail carries our queen's start to the child
+#endif
+#ifndef QS_ESTIMATE
+#define QS_ESTIMATE 0 // OFF in v5.1.10 (see BIRTH_HANDOFF). v5.1.8: a dragon that has not heard our queen's start uses her last reported position for the watch
+#endif
+#ifndef QS_FAST_END
+#define QS_FAST_END 0 // OFF in v5.1.10 (see BIRTH_HANDOFF); was 100. v5.1.8 (user, idea 2): before this round our queen's start goes out every 5 rounds, then every 10 (was 20)
+#endif
+#ifndef DROP_TRAIL
+#define DROP_TRAIL 0 // OFF in v5.1.10 (v5.1.9 30-34 vs v5.1.8). v5.1.9 (user, idea 1): a death-drop trail is one job for 1 + size/3 of us, not one dragon per drop
+#endif
+#ifndef DROP_RACE
+#define DROP_RACE 0 // OFF in v5.1.10 (v5.1.9 30-34 vs v5.1.8). v5.1.9 (user, idea 1): a contested death drop 3 steps off: a dragon with 2 free steps pays the third
+#endif
+#ifndef CORK
+#define CORK 1 // v5.1.10 (user, O2): their queen (seen, reported, else at home) sealed in behind one crossing: the nearest of
+               // us holds the cell just outside it (bundled maps: queens start sealed so on 5 of 22, e.g. 127 cells on
+               // weakhold, 49 on tower_defense). Not while outnumbered or in survival mode. vs SYM_FIX alone 32-32 (no game
+               // changed: it needs our queen's start, which most dragons never hear; with BIRTH_HANDOFF etc. 31-33)
+#endif
+#ifndef EQ_EDGE_SYM
+#define EQ_EDGE_SYM 1 // v5.1.10: their queen's start from the kelp's symmetry only (see eq_home_k)
+#endif
+#ifndef CORK_MAX
+#define CORK_MAX 300 // largest part of the map that counts as sealed
+#endif
+#ifndef CORK_START
+#define CORK_START 40
+#endif
+#ifndef CORK_FRESH
+#define CORK_FRESH 10
+#endif
+#ifndef SYM_FIX
+#define SYM_FIX 1 // v5.1.10: symmetry choice prefers the 180-degree turn, mirrored kelp is not gossiped, a refuted choice is undone
+                  // (vs v5.1.7: 36-28 + 37-27 = 73-55 over 128)
+#endif
+#ifndef SYM_SHARE
+#define SYM_SHARE 1 // v5.1.11 (user, idea 2): the symmetry (mirrored kelp, pearl tiles and timings on the far side) is told
+                    // again every SS_EVERY rounds and handed to each child at its birth (v5.1.10: 27-73% of dragon-turns knew it,
+                    // now 60-88%). vs v5.1.10: 36-28 + 32-32 = 68-60 over 128, queen deaths 69 vs 70; sparring 62-2
+#endif
+#ifndef SS_EVERY
+#define SS_EVERY 10
+#endif
+#ifndef PORTAL_EXPLORE
+#define PORTAL_EXPLORE 0 // OFF: vs v5.1.11 27-37 (australia 1-7, islands 2-6), sparring 64-0; explored faster on portals/maze/
+                         // australia, slower on islands. v5.1.12 (user, idea 1): unknown portals compete with unseen cells as exploring goals
+#endif
+#ifndef HEAD_LOG
+#define HEAD_LOG 1 // v5.1.4: every cell our head entered, in order (portal steps too); a body of length L is the last L of
+                   // them. Only fills cells the vision chain / last-move replay lost - once short, the body stayed short
+                   // (Portals: a long queen lost 4 of 23 cells behind a portal and turned into her own neck)
+#endif
 #ifndef CAP_FIX
 #define CAP_FIX 1 // v2.14.10: the size-cap plan and the harvest agree with the v2.14.5 rules (see the checks below)
 #endif
@@ -1084,6 +1460,7 @@ int mirror_edge(int k, int code)
 // World model: tiles and pearls (sections 6, 18)
 // ---------------------------------------------------------------------------
 std::vector<int> seenRound;  // last round the tile was in view, -1 never
+std::vector<int> watchCnt;   // BARREN_MEMORY: rounds the tile was in our view
 std::vector<int> obsNext;    // observed next spawn round, -1 unknown, -2 never spawns
 std::vector<int> nextSpawn;  // best estimate incl. mirrored/predicted, same encoding
 std::vector<char> nextEst;   // nextSpawn is an estimate from observed gaps
@@ -1196,6 +1573,38 @@ int qBunkerTl = -1, qBunkerR = -1, inferTl = -1, inferR = -1; // the queen's bun
 int pressureMax = 0, switchRound = SW_HI, firstR = -1; // DYN_ALLOC
 bool switched = false, heardPressure = false, majorityHunt = false;
 bool capMode = false, capSmallLatched = false; int capRound = 0; // SIZE_CAP_PLAN
+bool qosDone = false; // QUEEN_OPEN_SPLIT: her opening split is done
+bool queenRoam = false; // QUEEN_ROAM: this turn the queen explores with the fleet
+struct GoalMem
+{
+    int cell, round;
+};
+std::vector<GoalMem> exitMem, richMem; // GOAL_SHARE: reported ways out / very rich spots (newest last)
+void remember_goal(std::vector<GoalMem>& v, int cell, int round)
+{
+    for (auto& g : v)
+        if (manhattan(g.cell, cell) <= 3)
+        {
+            if (round > g.round)
+                g = {cell, round};
+            return;
+        }
+    v.push_back({cell, round});
+    if (v.size() > 6)
+        v.erase(v.begin());
+}
+std::vector<int> visitR; // NO_BACKTRACK: last round our head was on each cell
+std::unordered_map<int, std::vector<std::pair<int, int>>> mateTrail; // QUEEN_FOLLOW: teammate id -> (round, head cell), oldest first
+void note_mate(int id, int round, int cell)
+{
+    auto& t = mateTrail[id];
+    if (!t.empty() && t.back().first >= round)
+        return;
+    t.push_back({round, cell});
+    if (t.size() > 12)
+        t.erase(t.begin());
+}
+int qosStartL = -1;   // QUEEN_OPEN_SPLIT: her length on her first turn
 bool capOpen = false; int capOpenLock = -1; // CAP_FIX: the open verdict the cap plan uses (fixed from CAP_OPEN_LOCK)
 bool openMap = false;     // big map with little kelp: long dragons do not trap themselves
 bool consolidate = false; // big open map, late: length over numbers
@@ -1262,6 +1671,7 @@ enum MsgType
     T_QSPAWN = 11,
     T_PHASE = 12,
     T_BUNKER = 13,
+    T_GOAL = 14, // GOAL_SHARE: kind (0 way out, 1 rich area), cell, round
 };
 
 struct BitW
@@ -1344,6 +1754,7 @@ int layout_bits(int type, std::uint64_t payload)
     case T_QSPAWN: return 12;
     case T_PHASE: return 16;
     case T_BUNKER: return 21;
+    case T_GOAL: return 22;
     default: return -1; // not a type we send
     }
 }
@@ -1483,6 +1894,15 @@ std::uint64_t msg_qspawn(int cell)
     return pack(T_QSPAWN, b.v);
 }
 // The queen's bunker box (its top-left cell): guards post round it.
+// GOAL_SHARE: a way out (kind 0) or a very rich spot (kind 1).
+std::uint64_t msg_goal(int kind, int cell)
+{
+    BitW b;
+    b.put(kind, 1);
+    b.put(cell, 12);
+    b.put(R & 511, 9);
+    return pack(T_GOAL, b.v);
+}
 std::uint64_t msg_bunker(int tl)
 {
     BitW b;
@@ -1513,41 +1933,133 @@ std::uint64_t msg_claim(int cell, int eta)
 // ---------------------------------------------------------------------------
 // Learning
 // ---------------------------------------------------------------------------
+int edgeSymMask = 7; // v5.1.10: mirrors the kelp and portals alone allow (pearl countdowns can pair tiles by another)
 void check_edge_symmetry(int code)
 {
     for (int k = 0; k < 3; k++)
     {
-        if (!(symMask & (1 << k)))
-            continue;
         int const mc = mirror_edge(k, code);
         if (obsEdge[mc] == E_UNK)
             continue;
-        if (obsEdge[mc] != obsEdge[code])
+        bool const same = obsEdge[mc] == obsEdge[code];
+        if (!same)
+            edgeSymMask &= ~(1 << k);
+        if (!(symMask & (1 << k)))
+            continue;
+        if (!same)
             symMask &= ~(1 << k);
         else
             symConfirm[k]++;
     }
 }
 
-void set_partner(int a, int b)
+// PORTAL_SYM: a map can be symmetric in its kelp and tiles under several mirrors but in its portal pairs under one only
+// (Portals: kelp fits mirror-x, mirror-y and the 180-degree turn; the pairs only the turn). Pairs seen directly (portal
+// ids, or a teammate's report of its own) are facts; a mirrored pair is a guess, made with the map's symmetry as before
+// until a seen pair refutes it (a guess on either of its edges was wrong, or the mirror of a seen pair is a seen pair
+// that does not match). Then the guesses go and the next symmetry the kelp still allows (confirmed ones first) takes
+// over. Only facts are gossiped.
+std::vector<char> pairDirect;              // PORTAL_SYM: this edge's partner was seen, not mirrored
+int portalSymOk = 7, portalSymConf[3] = {0, 0, 0};
+bool guessRefuted = false;                 // PORTAL_SYM: the last seen pair overwrote a wrong mirrored guess
+int portal_sym()
+{
+    if (!PORTAL_SYM || symKnown < 0)
+        return symKnown;
+    if (portalSymOk >> symKnown & 1)
+        return symKnown;
+    int best = -1;
+    for (int k = 0; k < 3; k++)
+        if ((symMask >> k & 1) && (portalSymOk >> k & 1) && (best < 0 || portalSymConf[k] > portalSymConf[best]))
+            best = k;
+    return best;
+}
+void unlink_guess(int a)
+{
+    int const o = edgePartner[a];
+    if (o < 0)
+        return;
+    if (edgePartner[o] == a)
+        edgePartner[o] = -1;
+    edgePartner[a] = -1;
+    edgeVersion++;
+}
+void set_partner(int a, int b, bool direct = true)
 {
     if (a == b || edgePartner[a] == b)
+    {
+        if (PORTAL_SYM && direct && a != b)
+            pairDirect[a] = pairDirect[b] = 1;
         return;
+    }
+    if (PORTAL_SYM)
+    {
+        if (!direct && (pairDirect[a] || pairDirect[b]))
+            return; // never overwrite a seen pair with a guess
+        if (direct)
+        {
+            if ((edgePartner[a] >= 0 && !pairDirect[a]) || (edgePartner[b] >= 0 && !pairDirect[b]))
+                guessRefuted = true; // a mirrored guess on either edge was wrong: so was its symmetry
+            unlink_guess(a);
+            unlink_guess(b);
+        }
+    }
     edgePartner[a] = b;
     edgePartner[b] = a;
     edgeVersion++;
     if (edgeType[a] == E_UNK) edgeType[a] = E_PORTAL;
     if (edgeType[b] == E_UNK) edgeType[b] = E_PORTAL;
-    portalPairs.push_back({a, b});
+    if (!PORTAL_SYM || direct)
+    {
+        if (PORTAL_SYM)
+            pairDirect[a] = pairDirect[b] = 1;
+        portalPairs.push_back({a, b});
+    }
 }
 
 void mirror_pair(int a, int b)
 {
-    if (symKnown < 0)
+    int const k = portal_sym();
+    if (k < 0)
         return;
-    int const ma = mirror_edge(symKnown, a), mb = mirror_edge(symKnown, b);
+    int const ma = mirror_edge(k, a), mb = mirror_edge(k, b);
     if (edgePartner[ma] < 0 && edgePartner[mb] < 0 && ma != mb)
-        set_partner(ma, mb);
+        set_partner(ma, mb, false);
+}
+
+// PORTAL_SYM: a seen pair tests each symmetry against the other seen pairs; mirrored guesses follow the verdict.
+void portal_sym_check(int a, int b)
+{
+    if (!PORTAL_SYM)
+        return;
+    int const before = portal_sym();
+    if (guessRefuted && before >= 0)
+        portalSymOk &= ~(1 << before);
+    guessRefuted = false;
+    for (int k = 0; k < 3; k++)
+    {
+        if (!(portalSymOk >> k & 1))
+            continue;
+        int const ma = mirror_edge(k, a), mb = mirror_edge(k, b);
+        if ((ma == a && mb == b) || (ma == b && mb == a))
+            continue; // maps onto itself: no evidence either way
+        bool const da = pairDirect[ma], db = pairDirect[mb];
+        if ((da && edgePartner[ma] != mb) || (db && edgePartner[mb] != ma))
+            portalSymOk &= ~(1 << k); // a seen pair says otherwise
+        else if (da && db)
+            portalSymConf[k]++;
+    }
+    int const after = portal_sym();
+    if (before >= 0 && after != before)
+        for (int c = 0; c < 2 * N; c++)
+            if (!pairDirect[c] && edgePartner[c] >= 0)
+                unlink_guess(c); // guesses made with a refuted symmetry
+    if (after >= 0 && after != before)
+    {
+        auto const pairs = portalPairs;
+        for (auto const& [x, y] : pairs)
+            mirror_pair(x, y);
+    }
 }
 
 // Record an edge. direct = seen by a dragon (us or a teammate), which is what
@@ -1578,6 +2090,7 @@ bool learn_edge(int code, std::uint8_t type, int pid, bool direct)
         if (v.size() == 2 && edgePartner[v[0]] != v[1])
         {
             set_partner(v[0], v[1]);
+            portal_sym_check(v[0], v[1]);
             mirror_pair(v[0], v[1]);
             queue_fact(msg_portal(v[0], v[1]), 85, 4); // section 5: share portal structure
         }
@@ -1591,8 +2104,8 @@ bool learn_edge(int code, std::uint8_t type, int pid, bool direct)
         {
             edgeType[mc] = type;
             edgeVersion++;
-            if (type == E_KELP)
-                kelpList.push_back(mc);
+            if (type == E_KELP && !SYM_FIX)
+                kelpList.push_back(mc); // (SYM_FIX: mirrored kelp is not gossiped - receivers count gossip as seen)
         }
     }
     return changed;
@@ -1648,6 +2161,8 @@ void observe_tile(int c, bool pearl, int k)
     }
     bool const newTiming = obsNext[c] != ns;
     bool const wasPresent = pearlState[c] == 1;
+    if (seenRound[c] != R)
+        watchCnt[c]++;
     seenRound[c] = R;
     obsNext[c] = ns;
     nextSpawn[c] = ns;
@@ -1747,7 +2262,7 @@ void set_symmetry(int k)
         {
             edgeType[mc] = obsEdge[code];
             edgeVersion++;
-            if (obsEdge[code] == E_KELP)
+            if (obsEdge[code] == E_KELP && !SYM_FIX)
                 kelpList.push_back(mc);
         }
     }
@@ -1759,8 +2274,31 @@ void set_symmetry(int k)
             mirror_tile(c);
 }
 
+// SYM_FIX: the symmetry we chose was refuted after all - forget everything only mirroring gave us and choose again.
+void unwind_symmetry()
+{
+    for (int code = 0; code < 2 * N; code++)
+        if (obsEdge[code] == E_UNK && edgeType[code] != E_UNK)
+            edgeType[code] = E_UNK;
+    edgeVersion++;
+    std::erase_if(kelpList, [](int c) { return obsEdge[c] != E_KELP; });
+    if (PORTAL_SYM)
+        for (int c = 0; c < 2 * N; c++)
+            if (!pairDirect[c] && edgePartner[c] >= 0)
+                unlink_guess(c);
+    for (int c = 0; c < N; c++)
+        if (seenRound[c] < 0)
+        {
+            nextSpawn[c] = -1;
+            nextEst[c] = 0;
+            gapLo[c] = gapHi[c] = 0;
+        }
+    symKnown = -1;
+}
 void resolve_symmetry()
 {
+    if (SYM_FIX && symKnown >= 0 && !(symMask >> symKnown & 1) && symMask != 0)
+        unwind_symmetry();
     if (symKnown >= 0 || symFailed)
         return;
     if (symMask == 0)
@@ -1779,6 +2317,11 @@ void resolve_symmetry()
         }
     // Several survivors with lots of evidence: the map has several symmetries,
     // and any of them predicts correctly.
+    // SYM_FIX: ...or one of them only fits the part we have seen. The 180-degree turn first: a map symmetric under both
+    // mirrors is symmetric under the turn too (every bundled xy map is the turn only; mirror-x passed 80 checks on
+    // weakhold's middle, was chosen, and its mirrored kelp, gossiped as seen, then refuted the true turn for everyone).
+    if (SYM_FIX && bits > 1 && (symMask & 4))
+        first = 2;
     if (bits == 1 || allConfirmed)
         set_symmetry(first);
 }
@@ -1902,7 +2445,56 @@ void read_vision(Controller& ct)
 
 // Own body: follow the facing chain from the head inside the window, then
 // extend with last turn's body for the part that is out of view.
+std::vector<int> headLog; // HEAD_LOG: our head's cells, oldest first
+std::vector<int> mateForced; int mateForcedR = -1; // MATE_FORCED: cells teammates near the queen must move into next
+void update_body_core(Controller& ct);
 void update_body(Controller& ct)
+{
+    update_body_core(ct);
+    if (!HEAD_LOG)
+        return;
+    int const head = cell_of(ct.get_position());
+    // Extend the log with last turn's steps (replayed from the logged head), else with the head alone.
+    if (headLog.empty())
+    {
+        if (static_cast<int>(body.size()) >= L)
+            headLog.assign(body.rbegin(), body.rend()); // first full view of ourselves: tail first
+        else
+            headLog.assign(1, head); // grows step by step from here
+    }
+    else if (headLog.back() != head)
+    {
+        int pos = headLog.back();
+        std::vector<int> steps;
+        for (std::size_t i = 0; i < lastDirs.size(); i++)
+        {
+            pos = cross(pos, lastDirs[i]);
+            if (pos < 0)
+                break;
+            steps.push_back(pos);
+        }
+        if (steps.empty() || steps.back() != head)
+            headLog.assign(1, head); // a step we cannot replay (portal with an unknown far side): a gap - start over here
+        else
+            headLog.insert(headLog.end(), steps.begin(), steps.end());
+    }
+    if (static_cast<int>(headLog.size()) > L + 64)
+        headLog.erase(headLog.begin(), headLog.end() - (L + 64));
+    // Fill a short body from the log - only if the log agrees with every cell we do know.
+    if (static_cast<int>(body.size()) < L && static_cast<int>(headLog.size()) >= L)
+    {
+        std::vector<int> cand(headLog.rbegin(), headLog.rbegin() + L);
+        bool ok = cand[0] == head;
+        for (std::size_t i = 0; i < body.size() && ok; i++)
+            ok = cand[i] == body[i];
+        for (int c : cand)
+            if (vis[c] && occId[c] != me)
+                ok = false; // in view and not ours (empty or another dragon): the log is stale
+        if (ok)
+            body = cand;
+    }
+}
+void update_body_core(Controller& ct)
 {
     int const head = cell_of(ct.get_position());
     std::vector<int> chain{head};
@@ -2023,6 +2615,7 @@ bool apply_message(std::uint64_t m)
         if (it != fleet.end() && it->second.round >= round)
             return false;
         fleet[id] = {len, cell, round, leader == 1};
+        note_mate(id, round, cell); // QUEEN_FOLLOW
         if (id == queenId)
             return true; // relay the queen's position across the fleet
         return leader == 1;
@@ -2062,9 +2655,10 @@ bool apply_message(std::uint64_t m)
     }
     case T_PORTAL: {
         int const a = b.get(13), c = b.get(13);
-        if (a >= 2 * N || c >= 2 * N || edgePartner[a] == c)
+        if (a >= 2 * N || c >= 2 * N || a == c || (edgePartner[a] == c && (!PORTAL_SYM || pairDirect[a])))
             return false;
         set_partner(a, c);
+        portal_sym_check(a, c);
         mirror_pair(a, c);
         return true;
     }
@@ -2130,6 +2724,16 @@ bool apply_message(std::uint64_t m)
         if (sw == 1 && R >= SW_LO)
             switched = true;
         return changed;
+    }
+    case T_GOAL: {
+        int const kind = static_cast<int>(b.get(1)), cell = static_cast<int>(b.get(12)), r9 = static_cast<int>(b.get(9));
+        if (cell >= N)
+            return false;
+        int const round = R - ((R - r9) & 511); // 9-bit round, the newest that fits
+        if (R - round > 60)
+            return false;
+        remember_goal(kind ? richMem : exitMem, cell, round);
+        return R - round <= 3;
     }
     case T_QSPAWN: {
         int const cell = static_cast<int>(b.get(12));
@@ -2308,6 +2912,7 @@ void detect_teammate_deaths()
             prevTeamHeads[h.id] = h.cell;
 }
 
+void eq_home_evidence(int cell, int round); // WATCHTOWER
 void record_enemies()
 {
     int shared = 0;
@@ -2317,7 +2922,11 @@ void record_enemies()
             continue;
         add_enemy(h.cell, R, h.id, h.len, h.estLen);
         if (h.id == enemyQueenId)
+        {
             queue_fact(msg_enemy(h.cell, h.id, h.len, h.partial), 92, 2); // "one smells blood"
+            if (WATCHTOWER)
+                eq_home_evidence(h.cell, R);
+        }
         else if (shared < 2)
         {
             int prio = 70;
@@ -2494,6 +3103,98 @@ bool fountain(int c)
     return FOUNTAINS && gapHi[c] > 0 && gapHi[c] <= FOUNT_GAP; // refills (almost) at once: a pocket worth mining
 }
 bool in_pocket(int c);
+int open_sides(int c);
+
+// DIVE_CHEAP_LEN: a 1-wide dead end from `c` on that still has cells unseen (or not seen for 10 rounds) - pearls may be
+// waiting there that the dive search cannot count.
+bool pocket_has_unseen(int c, int head)
+{
+    std::vector<int> q{c};
+    std::unordered_set<int> seen{c, head};
+    for (std::size_t i = 0; i < q.size() && q.size() <= 16; i++)
+    {
+        int const x = q[i];
+        if (seenRound[x] < 0 || R - seenRound[x] > 10)
+            return true;
+        if (open_sides(x) >= 3)
+            continue;
+        for (int d = 0; d < 4; d++)
+        {
+            int const n = cross(x, d);
+            if (n == -2 || n == -3)
+                return true; // the corridor runs into the unknown
+            if (n >= 0 && seen.insert(n).second)
+                q.push_back(n);
+        }
+    }
+    return false;
+}
+
+// FOUNT_POCKETS: the job a pearl belongs to. Pearls inside the same 1-wide dead end (a pocket, fountain or not) share
+// the key of the pocket's mouth - the first junction (3+ open sides) the corridor reaches - so one dragon mines it at a
+// time; touching fountain tiles in open water share a key too. -1: an ordinary pearl. Cached for the round.
+std::unordered_map<int, int> pocketKey;
+int pocketKeyR = -1;
+std::vector<int> fountPocket;
+int pocket_of(int c)
+{
+    if (c < 0)
+        return -1;
+    if (pocketKeyR != R)
+    {
+        pocketKeyR = R;
+        pocketKey.clear();
+        fountPocket.assign(N, -1);
+        int next = 0;
+        std::vector<int> q;
+        for (int s = 0; s < N; s++)
+        {
+            if (fountPocket[s] >= 0 || !fountain(s))
+                continue;
+            fountPocket[s] = next;
+            q.assign(1, s);
+            for (std::size_t i = 0; i < q.size(); i++)
+                for (int d = 0; d < 4; d++)
+                {
+                    int const n = cross(q[i], d);
+                    if (n >= 0 && fountPocket[n] < 0 && fountain(n))
+                    {
+                        fountPocket[n] = next;
+                        q.push_back(n);
+                    }
+                }
+            next++;
+        }
+    }
+    auto const it = pocketKey.find(c);
+    if (it != pocketKey.end())
+        return it->second;
+    int key = fountPocket[c] >= 0 ? N + fountPocket[c] : -1;
+    if (in_pocket(c))
+    {
+        // walk the corridor out to its mouth
+        std::vector<int> q{c};
+        std::unordered_set<int> seen{c};
+        int mouth = -1;
+        for (std::size_t i = 0; i < q.size() && q.size() <= 40 && mouth < 0; i++)
+            for (int d = 0; d < 4; d++)
+            {
+                int const n = cross(q[i], d);
+                if (n < 0 || !seen.insert(n).second)
+                    continue;
+                if (open_sides(n) >= 3)
+                {
+                    mouth = n;
+                    break;
+                }
+                q.push_back(n);
+            }
+        if (mouth >= 0)
+            key = mouth;
+    }
+    pocketKey[c] = key;
+    return key;
+}
 
 bool pearl_at(int c)
 {
@@ -2601,6 +3302,29 @@ void compute_fleet_state()
             queenLeash = INF;
         else if (quiet >= 0 && R < ADAPT_END_ROUND)
             queenLeash = std::min(LEASH_MAX, QUEEN_LEASH + quiet / 2);
+    }
+    if (QUEEN_SURV_LEASH && amQueen && survivalMode && !queenOpening)
+        queenLeash = QUEEN_LEASH; // 3a: outnumbered or a tiny fleet: home, before their hunters find her
+    // TIE_LEASH (O4): from TL_ROUND, with their queen's length known (seen within TL_SEEN rounds) and longer than ours, her
+    // leash widens to TL_LEASH so she can eat more - the round-500 tiebreak is lost as things stand. Unknown length: no
+    // change (roaming queens get killed). Never in survival mode (3a above wins); her safety rules are unchanged.
+    if (TIE_LEASH && amQueen && !ourQueenDead && !enemyQueenDead && R >= TL_ROUND && !survivalMode && queenLeash < TL_LEASH)
+        if (auto const e = enemyLenMem.find(enemyQueenId); e != enemyLenMem.end() && R - e->second.round <= TL_SEEN && e->second.len > L)
+            queenLeash = TL_LEASH;
+    // QUEEN_ROAM: a tiny fleet cannot afford a queen sitting at home - she explores with it while no enemy is in view.
+    queenRoam = false;
+    if (QUEEN_ROAM && amQueen && !ourQueenDead && R < QUEEN_ROAM_END && units <= QUEEN_ROAM_UNITS)
+    {
+        bool enemySeen = false;
+        for (auto const& h : heads)
+            if (!h.mine)
+                enemySeen = true;
+        for (auto const& e : enemyReps)
+            if (R - e.round <= 15 && manhattan(e.cell, head) <= 12)
+                enemySeen = true; // reported near her lately: a hunter may be just outside her view
+        queenRoam = !enemySeen;
+        if (queenRoam)
+            queenLeash = INF;
     }
 
     // Expansion (numbers first): lasts until the fleet first reaches its
@@ -2849,6 +3573,8 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
             cost /= p.conf;
             if (a.leader)
                 cost *= a.id == queenId ? (EXPANSION && queenSplits ? 1.0 : 0.3) : 0.6; // feed the queen (once she grows), then the leaders
+            if (FOUNT_POCKETS && a.id == me && lastPearl >= 0 && pocket_of(p.cell) >= 0 && pocket_of(p.cell) == pocket_of(lastPearl))
+                cost *= FOUNT_STICK; // a miner keeps its pocket
             pairs.push_back({cost + a.id * 1e-7, ai, pi});
         }
         // A teammate we cannot see but who claimed this pearl still counts.
@@ -2860,11 +3586,54 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
     }
     std::sort(pairs.begin(), pairs.end(), [](Pair const& a, Pair const& b) { return a.cost < b.cost; });
     std::vector<char> agentUsed(agents.size(), 0), pearlUsed(pearls.size(), 0);
+    std::unordered_set<int> pocketUsed; // FOUNT_POCKETS: one dragon per pocket
+    // DROP_TRAIL (v5.1.9): death drops lie every second cell of the dead body. Drops within 2 of each other are one
+    // trail; only 1 + size/3 of us go for one trail (each drop matched alone sent several of us into one line).
+    std::vector<int> trailOf(pearls.size(), -1), trailSize, trailUsed;
+    if (DROP_TRAIL)
+    {
+        for (int i = 0; i < static_cast<int>(pearls.size()); i++)
+        {
+            int const c = pearls[i].cell;
+            if (trailOf[i] >= 0 || pearlState[c] != 1 || obsNext[c] != -2)
+                continue;
+            int const t = static_cast<int>(trailSize.size());
+            trailSize.push_back(0);
+            std::vector<int> st{i};
+            trailOf[i] = t;
+            while (!st.empty())
+            {
+                int const a = st.back();
+                st.pop_back();
+                trailSize[t]++;
+                for (int j = 0; j < static_cast<int>(pearls.size()); j++)
+                {
+                    int const cj = pearls[j].cell;
+                    if (trailOf[j] < 0 && pearlState[cj] == 1 && obsNext[cj] == -2 && manhattan(cj, pearls[a].cell) <= 2)
+                    {
+                        trailOf[j] = t;
+                        st.push_back(j);
+                    }
+                }
+            }
+        }
+        trailUsed.assign(trailSize.size(), 0);
+    }
     for (auto const& pr : pairs)
     {
         if (pearlUsed[pr.pearl] || (pr.agent >= 0 && agentUsed[pr.agent]))
             continue;
+        int const pk = FOUNT_POCKETS ? pocket_of(pearls[pr.pearl].cell) : -1;
+        if (pk >= 0 && pocketUsed.count(pk))
+            continue;
+        int const tr = trailOf[pr.pearl];
+        if (tr >= 0 && pr.agent >= 0 && trailUsed[tr] >= 1 + trailSize[tr] / 3)
+            continue; // enough of us on this trail already
+        if (tr >= 0 && pr.agent >= 0)
+            trailUsed[tr]++;
         pearlUsed[pr.pearl] = 1;
+        if (pk >= 0)
+            pocketUsed.insert(pk);
         if (pr.agent < 0)
             continue;
         agentUsed[pr.agent] = 1;
@@ -2912,6 +3681,32 @@ void update_region_value()
 }
 double rv_norm(int c) { return REGION_VALUE && static_cast<int>(regionVal.size()) == N ? regionVal[c] : 0.0; }
 
+// EXPLORE_FIRST: share of the map's edges we know (kelp, open, portals; mirrored ones count). Cached per round.
+double explored_frac()
+{
+    static int cacheR = -1;
+    static double v = 0;
+    if (cacheR == R)
+        return v;
+    cacheR = R;
+    int known = 0;
+    for (int code = 0; code < 2 * N; code++)
+        known += edgeType[code] != E_UNK;
+    v = static_cast<double>(known) / std::max(1, 2 * N);
+    return v;
+}
+bool explore_first() { return EXPLORE_FIRST && R < EF_END && explored_frac() < EF_FRAC; }
+// A very rich spot: our own spawn-tile knowledge says so, or a teammate reported RICH_SEEN+ pearls near it lately.
+bool rich_spot(int c)
+{
+    if (rv_norm(c) >= RICH_RV)
+        return true;
+    for (auto const& g : richMem)
+        if (R - g.round <= 100 && manhattan(g.cell, c) <= 4)
+            return true;
+    return false;
+}
+
 std::vector<PearlCand> gather_pearls()
 {
     if (REGION_VALUE && !amQueen)
@@ -2938,6 +3733,12 @@ std::vector<PearlCand> gather_pearls()
             continue;
         int const eta = distHead[c];
         if (eta > 60)
+            continue;
+        // EXPLORE_FIRST: in the opening, far pearls and slow future spawns wait - new ground first (very rich spots aside).
+        if (!amQueen && explore_first() && ((EF_SKIP_FAR && eta > EF_NEAR) || appear - R > EF_CAMP_WAIT) && !rich_spot(c))
+            continue;
+        // QUEEN_ROAM: a roaming queen takes pearls that are there and close, and does not wait for spawns - she explores.
+        if (amQueen && queenRoam && (eta > EF_NEAR || appear > R))
             continue;
         // Contested: an enemy head is clearly closer.
         for (auto const& h : heads)
@@ -3032,11 +3833,114 @@ std::vector<PearlCand> gather_pearls()
     return out;
 }
 
+// CENTRE_RUSH: the reachable cell nearest the map's geometric middle (from this dragon's path distances); -1 none.
+bool reachedCentre = false; // this dragon has been within CR_RADIUS of the middle
+int centre_cell()
+{
+    int const cx = W / 2, cy = H / 2;
+    int best = -1, bestKey = INF;
+    for (int c = 0; c < N; c++)
+    {
+        if (distHead[c] >= INF)
+            continue;
+        int const key = 4 * (std::abs(c % W - cx) + std::abs(c / W - cy)) + std::min(distHead[c], 400) / 50;
+        if (key < bestKey)
+        {
+            bestKey = key;
+            best = c;
+        }
+    }
+    return best;
+}
+
+// COVERAGE: the best station for an idle dragon - the known pearl tile whose ground (tiles within COV_RAD) is worth most
+// per dragon there. A tile's worth: a pearl on it now 1, else its refill rate (unknown gap: 1/25); shared by the teammates
+// within COV_RAD of it (and us). -1: nothing worth COV_MIN.
+int choose_station(double minWorth = -1.0)
+{
+    std::vector<int> tiles;
+    for (int c = 0; c < N; c++)
+        if (nextSpawn[c] >= 0 || pearlState[c] != 0 || gapHi[c] > 0)
+            tiles.push_back(c);
+    if (tiles.empty())
+        return -1;
+    std::vector<int> mates;
+    for (auto const& h : heads)
+        if (h.mine && h.id != me && h.id != queenId)
+            mates.push_back(h.cell);
+    for (auto const& [id, st] : fleet)
+        if (id != me && id != queenId && R - st.round <= 5)
+            mates.push_back(st.cell);
+    std::vector<double> worth(tiles.size());
+    for (std::size_t i = 0; i < tiles.size(); i++)
+    {
+        int const t = tiles[i];
+        double w = pearlState[t] == 1 ? 1.0 : (gapHi[t] > 0 ? 1.0 / std::max(3, gapHi[t]) : 1.0 / 25.0);
+        if (pearlState[t] != 1 && nextSpawn[t] >= 0 && nextSpawn[t] - R > 150)
+            w *= 0.1; // not before long
+        int crowd = 0;
+        for (int m : mates)
+            if (manhattan(m, t) <= COV_RAD)
+                crowd++;
+        worth[i] = w / (1 + crowd);
+    }
+    int qCell = -1; // pearls right by the queen are hers: no station there
+    for (auto const& h : heads)
+        if (h.mine && h.id == queenId)
+            qCell = h.cell;
+    if (qCell < 0)
+        if (auto const q = fleet.find(queenId); q != fleet.end() && R - q->second.round <= 5)
+            qCell = q->second.cell;
+    int best = -1;
+    double bestV = minWorth > 0 ? minWorth : (explore_first() ? COV_MIN_OPEN : COV_MIN);
+    std::size_t const step = std::max<std::size_t>(1, tiles.size() / 120); // at most ~120 candidate stations
+    for (std::size_t j = 0; j < tiles.size(); j += step)
+    {
+        int const sc = tiles[j];
+        if (distHead[sc] >= INF || skipPearl[sc] > R || (qCell >= 0 && manhattan(qCell, sc) <= 3))
+            continue;
+        double v = 0;
+        for (std::size_t i = 0; i < tiles.size(); i++)
+            if (manhattan(tiles[i], sc) <= COV_RAD)
+                v += worth[i];
+        v -= COV_DIST_W * distHead[sc];
+        if (v > bestV)
+        {
+            bestV = v;
+            best = sc;
+        }
+    }
+    return best;
+}
+
+// BARREN_MEMORY: the area round c (manhattan BARREN_RAD) has been watched long and no pearl tile is known in it.
+bool barren(int c)
+{
+    if (!BARREN_MEMORY)
+        return false;
+    int const cx = c % W, cy = c / W;
+    long watch = 0;
+    int cells = 0;
+    for (int dy = -BARREN_RAD; dy <= BARREN_RAD; dy++)
+        for (int dx = -BARREN_RAD + std::abs(dy); dx <= BARREN_RAD - std::abs(dy); dx++)
+        {
+            int const x = cx + dx, y = cy + dy;
+            if (x < 0 || y < 0 || x >= W || y >= H)
+                continue;
+            int const t = y * W + x;
+            if (nextSpawn[t] >= 0 || pearlState[t] != 0 || gapHi[t] > 0)
+                return false; // a pearl tile is known here
+            watch += watchCnt[t];
+            cells++;
+        }
+    return cells > 0 && watch >= static_cast<long>(BARREN_WATCH_AVG) * cells;
+}
+
 // Section 9: spread out. Unseen cells first, then stale ones, away from teammates.
 int choose_explore_goal()
 {
     bool const valid = exploreGoal >= 0 && R - exploreSetRound < 40 && distHead[exploreGoal] < INF &&
-                       exploreGoal != body[0] && (seenRound[exploreGoal] < exploreSetRound);
+                       exploreGoal != body[0] && (seenRound[exploreGoal] < exploreSetRound) && (amQueen || !barren(exploreGoal));
     if (valid)
         return exploreGoal;
     std::vector<int> teamCells;
@@ -3049,7 +3953,7 @@ int choose_explore_goal()
 
     int best = -1;
     double bestScore = 1e18;
-    for (int pass = amQueen ? 1 : 0; pass < 2 && best < 0; pass++)
+    for (int pass = (amQueen && !queenRoam) ? 1 : 0; pass < 2 && best < 0; pass++)
         for (int i = 0; i < 48; i++)
         {
             int const c = static_cast<int>(rng() % static_cast<unsigned>(N));
@@ -3066,7 +3970,7 @@ int choose_explore_goal()
                 if (manhattan(tc, c) < 8)
                     crowd++;
             double score = dh + 25.0 * crowd;
-            if (REGION_VALUE && !amQueen && R < RV_EXPLORE_END)
+            if (REGION_VALUE && !amQueen && R < RV_EXPLORE_END && !(CR_PULL_OFF && CENTRE_RUSH && reachedCentre))
             {
                 // P7: the opening heads for the middle of the map, where both
                 // sides meet and pearl fields usually are.
@@ -3076,6 +3980,8 @@ int choose_explore_goal()
             }
             if (role == ROLE_EXPLORER)
                 score -= 0.3 * dh; // explorers push further out
+            if (pass == 1 && !amQueen && barren(c))
+                score += BARREN_EXPLORE_PEN; // watched long, never a pearl: not worth the trip (the queen keeps to her home rules)
             for (auto const& dg : dangers)
                 if (dg.cause == 1 && R - dg.round <= 30 && manhattan(dg.cell, c) <= 4)
                     score += isLeader ? 200 : 40;
@@ -3085,13 +3991,41 @@ int choose_explore_goal()
                 best = c;
             }
         }
+    // GOAL_SHARE: a teammate's way out (for those still at home in the opening) and very rich spots are candidates too.
+    if (GOAL_SHARE && (!amQueen || queenRoam) && ourQueenSpawn >= 0)
+    {
+        bool const atHome = manhattan(body[0], ourQueenSpawn) <= EXIT_MIN - 2;
+        auto consider = [&](int c, double bonus) {
+            int const dh = distHead[c];
+            if (dh >= INF || dh < 3)
+                return;
+            int crowd = 0;
+            for (int tc : teamCells)
+                if (manhattan(tc, c) < 8)
+                    crowd++;
+            double const score = dh + 25.0 * crowd - bonus;
+            if (score < bestScore)
+            {
+                bestScore = score;
+                best = c;
+            }
+        };
+        if (explore_first() && atHome)
+            for (auto const& g : exitMem)
+                if (R - g.round <= 40)
+                    consider(g.cell, 25.0);
+        if (!amQueen)
+            for (auto const& g : richMem)
+                if (R - g.round <= 60)
+                    consider(g.cell, 30.0);
+    }
     exploreGoal = best;
     exploreSetRound = R;
     return best;
 }
 
 // Nearest spawn tile no teammate is already sitting by; sooner spawns first.
-int choose_camp_goal(bool ownHalf = false)
+int choose_camp_goal(bool ownHalf = false, int maxWait = INF)
 {
     std::vector<int> mates;
     for (auto const& h : heads)
@@ -3113,6 +4047,8 @@ int choose_camp_goal(bool ownHalf = false)
         if (taken)
             continue;
         double const wait = nextSpawn[c] >= R ? nextSpawn[c] - R : 15; // spawned earlier: next time unknown
+        if (wait > maxWait && !rich_spot(c))
+            continue; // EXPLORE_FIRST: no long waits in the opening
         double score = distHead[c] + 0.5 * std::max(0.0, wait - distHead[c]);
         if (REGION_VALUE && !amQueen)
             score -= (RV_CAMP_W + (SIZE_CAP_PLAN && capOpen && capRound > 0 && R >= capRound ? CAP_RV_CAMP_W : 0.0)) * rv_size_factor() * rv_norm(c); // P7: rich areas first
@@ -3224,8 +4160,11 @@ void act_move(Controller& ct, int d, char const* why)
     lastDirs = {d};
 }
 
+int splitChildLen = 0, splitRound = -1, birthSent = 0; // BIRTH_HANDOFF: this turn's split
 void act_split(Controller& ct, int child, char const* why)
 {
+    splitChildLen = child;
+    splitRound = R;
     ct.do_split(child);
     note = why;
     prevBody = body;
@@ -3859,6 +4798,140 @@ int feeder_queen_guess()
     return best;
 }
 
+// WATCHTOWER (v5.1.7): their queen's start is the mirror image of ours. Ladder queens stay within 2-4 cells of it
+// (median 1-2) while our nearest dragon sits 6-7 away: 1-2% of rounds with her in view, so her length (every tiebreak
+// rule) is a guess. One short dragon keeps watch 3 cells from her - inside its 7x7 view.
+int eqHomeMask = 7; // WATCHTOWER: mirrors still consistent with where her sightings put her
+// The mirror that maps our queen's start onto hers: the 180-degree turn first when several fit (a map symmetric under
+// both mirrors places teams by it). v5.1.10: judged by the kelp alone - on weakhold the pearl countdowns pair tiles by
+// mirror-x while the teams sit by the turn, and the general symmetry test dropped the turn (watch post on the wrong spot).
+int eq_home_k()
+{
+    int const allowed = (EQ_EDGE_SYM ? edgeSymMask & symMask : symMask) & eqHomeMask;
+    if (SYM_FIX && symKnown >= 0 && (allowed >> symKnown & 1))
+        return symKnown; // with SYM_FIX the chosen symmetry is trustworthy again
+    int const order[3] = {2, 0, 1};
+    for (int k : order)
+        if (allowed >> k & 1)
+            return k;
+    return -1;
+}
+int eq_home()
+{
+    int base = ourQueenSpawn;
+    if (base < 0 && QS_ESTIMATE)
+        if (auto const q = fleet.find(queenId); q != fleet.end() && R - q->second.round <= 30)
+            base = q->second.cell; // v5.1.8: start not heard yet - she keeps near it (the watcher's search covers the gap)
+    if (base < 0)
+        return -1;
+    int const k = eq_home_k();
+    return k >= 0 ? mirror_cell(k, base) : -1;
+}
+void eq_home_evidence(int cell, int round)
+{
+    if (ourQueenSpawn < 0 || round < 0 || cell < 0)
+        return;
+    int keep = 0;
+    for (int k = 0; k < 3; k++)
+        if (((EQ_EDGE_SYM ? edgeSymMask : symMask) >> k & 1) && manhattan(cell, mirror_cell(k, ourQueenSpawn)) <= 2 * round + 3)
+            keep |= 1 << k; // she could have come this far from that start
+    if (keep & eqHomeMask)
+        eqHomeMask &= keep;
+}
+// Her best-known position: in view, her head beyond a visible body (body parts face their head), a fresh report, home.
+int wt_focus(int home)
+{
+    for (auto const& h : heads)
+        if (!h.mine && h.id == enemyQueenId)
+            return h.cell;
+    for (int c : eqBodyNow)
+    {
+        int const n = nb(c, occDir[c]);
+        if (std::find(eqBodyNow.begin(), eqBodyNow.end(), n) == eqBodyNow.end())
+            return nb(n, occDir[c]); // the chain leaves our view here: her head lies on along it
+    }
+    int best = -1, bestR = -1;
+    for (auto const& e : enemyReps)
+        if (e.id == enemyQueenId && R - e.round <= WT_FRESH && e.round > bestR)
+        {
+            best = e.cell;
+            bestR = e.round;
+        }
+    if (best >= 0)
+        return best;
+    if (WT_SEARCH > 0 && seenRound[home] >= R - 2)
+    {
+        // Her home is in view and she is not there: sweep the ground round it she may have moved to, the cells
+        // longest out of view first (nearer her home first among equals).
+        double bestS = -1e18;
+        int const hx = home % W, hy = home / W;
+        for (int dy = -WT_SEARCH; dy <= WT_SEARCH; dy++)
+            for (int dx = -WT_SEARCH + std::abs(dy); dx <= WT_SEARCH - std::abs(dy); dx++)
+            {
+                int const c = cell_of(((hx + dx) % W + W) % W, ((hy + dy) % H + H) % H);
+                if (distHead[c] >= INF)
+                    continue;
+                double const sc = std::min(60, R - std::max(seenRound[c], 0)) - 3.0 * (std::abs(dx) + std::abs(dy));
+                if (sc > bestS)
+                {
+                    bestS = sc;
+                    best = c;
+                }
+            }
+        if (best >= 0)
+            return best;
+    }
+    return home;
+}
+// A post WT_DIST (Chebyshev) from her: the cells round her (within 2) it keeps in view, travel, no enemy head near.
+int choose_watch_post(int focus)
+{
+    int best = -1;
+    double bestS = 1e18;
+    int const fx = focus % W, fy = focus / W;
+    for (int dy = -WT_DIST; dy <= WT_DIST; dy++)
+        for (int dx = -WT_DIST; dx <= WT_DIST; dx++)
+        {
+            if (std::max(std::abs(dx), std::abs(dy)) != WT_DIST)
+                continue;
+            int const c = cell_of(((fx + dx) % W + W) % W, ((fy + dy) % H + H) % H);
+            if (distHead[c] >= INF || (vis[c] && occId[c] >= 0 && occId[c] != me) || in_pocket(c))
+                continue;
+            int cov = 0;
+            for (int ey = -2; ey <= 2; ey++)
+                for (int ex = -2; ex <= 2; ex++)
+                    cov += std::max(std::abs(ex - dx), std::abs(ey - dy)) <= 3;
+            int enemies = 0;
+            for (auto const& h : heads)
+                if (!h.mine && h.id != enemyQueenId && manhattan(h.cell, c) <= 3)
+                    enemies++;
+            double const sc = distHead[c] - 3.0 * cov + 40.0 * enemies;
+            if (sc < bestS)
+            {
+                bestS = sc;
+                best = c;
+            }
+        }
+    return best;
+}
+int wtLastR = -1000; // WATCHTOWER: last round this dragon was the watcher
+// One watcher: the dragon nearest her home among short non-leaders we know of (a sitting watcher keeps the job).
+bool am_watcher(int home)
+{
+    if (distHead[home] > WT_RANGE && manhattan(body[0], home) > WT_RANGE)
+        return false;
+    int const myD = manhattan(body[0], home) - (R - wtLastR <= 2 ? WT_HYST : 0);
+    auto beats = [&](int id, int cell) { int const d = manhattan(cell, home); return d < myD || (d == myD && id < me); };
+    for (auto const& h : heads)
+        if (h.mine && h.id != me && h.id != queenId)
+            if (auto const f = fleet.find(h.id); (f == fleet.end() || (!f->second.leader && f->second.len <= WT_MAX_LEN)) && beats(h.id, h.cell))
+                return false;
+    for (auto const& [id, st] : fleet)
+        if (id != me && id != queenId && !st.leader && st.len <= WT_MAX_LEN && R - st.round <= 4 && beats(id, st.cell))
+            return false;
+    return true;
+}
+
 int enemy_queen_target()
 {
     for (auto const& h : heads)
@@ -4271,6 +5344,88 @@ int step_open(int c, int d)
     return n == -2 ? nb(c, d) : n;
 }
 
+// CORK (v5.1.10, O2): their queen inside a fully known part of the map whose only way out is one crossing (a bridge
+// of the topology): the cell just outside it, -1 if none. Of several such crossings, the outermost (largest part, at
+// most CORK_MAX cells). Our dragon there seals her in: anything of theirs coming through hits our body or our head.
+int corkCacheR = -1, corkCacheQ = -1, corkCacheV = -1;
+std::vector<int> corkInside; // cells on her side of the chosen crossing
+int cork_post(int q)
+{
+    if (q < 0)
+        return -1;
+    if (corkCacheR == R && corkCacheQ == q)
+        return corkCacheV;
+    corkCacheR = R;
+    corkCacheQ = q;
+    corkCacheV = -1;
+    topo_refresh();
+    if (static_cast<int>(topo.comp.size()) != N)
+        return -1;
+    // Bridges near her: crossings met by a search from her cell through known water.
+    static std::vector<int> mark;
+    static int mstamp = 0;
+    if (static_cast<int>(mark.size()) != N)
+        mark.assign(N, 0);
+    std::vector<std::pair<int, int>> cand; // (cell on her side, direction across)
+    {
+        mstamp++;
+        std::vector<int> q2{q};
+        mark[q] = mstamp;
+        for (std::size_t i = 0; i < q2.size() && static_cast<int>(q2.size()) <= CORK_MAX + 1; i++)
+            for (int d = 0; d < 4; d++)
+            {
+                int const n = cross(q2[i], d);
+                if (n < 0)
+                    continue;
+                if (topo.bridge[edge_key(q2[i], d)])
+                    cand.push_back({q2[i], d});
+                if (mark[n] == mstamp)
+                    continue;
+                mark[n] = mstamp;
+                q2.push_back(n);
+            }
+    }
+    int bestSize = -1;
+    for (auto const& [x, d] : cand)
+    {
+        int const key = edge_key(x, d);
+        int const y = cross(x, d);
+        // Her side without this crossing: small, fully known, and not holding the far cell.
+        mstamp++;
+        std::vector<int> side{q};
+        mark[q] = mstamp;
+        bool open = false;
+        for (std::size_t i = 0; i < side.size() && !open; i++)
+        {
+            if (static_cast<int>(side.size()) > CORK_MAX)
+            {
+                open = true;
+                break;
+            }
+            for (int dd = 0; dd < 4; dd++)
+            {
+                int const n = cross(side[i], dd);
+                if (n == -2 || n == -3)
+                {
+                    open = true; // unexplored edge or unlocated portal: there may be another way out
+                    break;
+                }
+                if (n < 0 || edge_key(side[i], dd) == key || mark[n] == mstamp)
+                    continue;
+                mark[n] = mstamp;
+                side.push_back(n);
+            }
+        }
+        if (open || mark[y] == mstamp || static_cast<int>(side.size()) <= bestSize)
+            continue;
+        bestSize = static_cast<int>(side.size());
+        corkCacheV = y;
+        corkInside = side;
+    }
+    return corkCacheV;
+}
+int corkLastR = -1000; // CORK: last round this dragon held the cork
+
 // CHOKE_GUARDS: the first bridge (topology) on the queen's shortest way toward the enemy side, within
 // CHOKE_RANGE steps of her: the cell on her side of it. One guard there sees (and can block) everything that comes
 // through. -1 when her way out has no bridge that close.
@@ -4638,6 +5793,31 @@ int queen_exits(int qh, std::vector<int> const& newBody)
     return k;
 }
 
+// MATE_FORCED: the one cell a dragon whose head is on c can move to next turn (its body as given, head first, blocks;
+// so does every dragon in view). -1: none, or more than one way on (unexplored edges and unknown portals count as ways).
+int forced_next(int c, std::vector<int> const& ownBody, int self)
+{
+    int only = -1, ways = 0;
+    for (int d = 0; d < 4; d++)
+    {
+        int const n = cross(c, d);
+        if (n == -1)
+            continue; // kelp
+        if (n < 0)
+        {
+            ways++; // unexplored or an unknown portal: maybe a way on
+            continue;
+        }
+        if (vis[n] && occId[n] >= 0 && occId[n] != self)
+            continue; // any dragon in view (our own body: by ownBody, as it will be)
+        if (std::find(ownBody.begin(), ownBody.end(), n) != ownBody.end())
+            continue;
+        ways++;
+        only = n;
+    }
+    return ways == 1 ? only : -1;
+}
+
 // Running guess of the round-500 tiebreaks: queen length, then longest
 // dragon, then total length. -1 = unknown.
 struct TieState
@@ -4950,6 +6130,11 @@ void decide(Controller& ct)
     claimTarget = -1;
     if (amQueen && ourQueenSpawn < 0)
         ourQueenSpawn = head;
+    if (amQueen && qosStartL < 0)
+        qosStartL = L; // QUEEN_OPEN_SPLIT: her starting length
+    if (static_cast<int>(visitR.size()) != N)
+        visitR.assign(N, -1000);
+    visitR[head] = R; // NO_BACKTRACK: our own trail
     if (L > lastLenSeen)
         lastEatR = R; // grew: ate something
     lastLenSeen = L;
@@ -5002,13 +6187,69 @@ void decide(Controller& ct)
         for (auto const& h : heads)
             if (h.mine && h.id == queenId)
                 ourQueenSpawn = h.cell;
-    if (HUNTERS && ourQueenSpawn >= 0 && (R % 20 == me % 20 || (amQueen && R < 5)))
+    if (SYM_SHARE && symKnown >= 0 && R % SS_EVERY == me % SS_EVERY)
+        queue_fact(msg_sym(), 50, 1); // SYM_SHARE: newborns and late joiners learn the symmetry without 80 checks of their own
+    if (HUNTERS && ourQueenSpawn >= 0 && (R % 20 == me % 20 || (amQueen && R < 5) || (QS_FAST_END > 0 && R < QS_FAST_END && R % 5 == me % 5) || (QS_FAST_END > 0 && R % 10 == me % 10)))
         queue_fact(msg_qspawn(ourQueenSpawn), amQueen ? 60 : 40, 1);
+    if (GOAL_SHARE)
+    {
+        // A way out: out in new ground, away from our queen's start, in the opening.
+        if (!amQueen && explore_first() && ourQueenSpawn >= 0 && manhattan(head, ourQueenSpawn) >= EXIT_MIN && R % 5 == me % 5)
+        {
+            bool fresh = false;
+            int const hx = head % W, hy = head / W;
+            for (int dy = -4; dy <= 4 && !fresh; dy++)
+                for (int dx = -4; dx <= 4 && !fresh; dx++)
+                {
+                    int const x = hx + dx, y = hy + dy;
+                    if (x >= 0 && y >= 0 && x < W && y < H && seenRound[y * W + x] < 0)
+                        fresh = true;
+                }
+            if (fresh)
+                queue_fact(msg_goal(0, head), 35, 1);
+        }
+        // A very rich spot: RICH_SEEN+ pearls in view at once.
+        int cnt = 0;
+        long sx = 0, sy = 0;
+        for (int c = 0; c < N; c++)
+            if (vis[c] && pearlState[c] == 1)
+            {
+                cnt++;
+                sx += c % W;
+                sy += c / W;
+            }
+        if (cnt >= RICH_SEEN)
+        {
+            int const rc = static_cast<int>(sy / cnt) * W + static_cast<int>(sx / cnt);
+            bool known = false; // new to us: tell the fleet at once (later: every 8 rounds)
+            for (auto const& g : richMem)
+                if (manhattan(g.cell, rc) <= 3 && R - g.round <= 30)
+                    known = true;
+            remember_goal(richMem, rc, R);
+            if (!known || R % 8 == me % 8)
+                queue_fact(msg_goal(1, rc), known ? 38 : RICH_NEW_PRIO, 2);
+        }
+    }
     if (EQ_DEATH_DETECT && enemyQueenDead && R % 8 == me % 8)
         queue_fact(msg_queen_dead(true), 55, 1); // keep telling: relays are lossy
     if (EQ_DEATH_DETECT && ourQueenDead && R % 8 == (me + 4) % 8)
         queue_fact(msg_queen_dead(false), 55, 1);
 
+    if (STALKER_LEN > 0 && amQueen)
+    {
+        // STALKER_LEN: a partly seen enemy hovering near her two rounds running is assumed long.
+        static std::unordered_map<int, std::pair<int, int>> stalk; // id -> (last round seen near, rounds running)
+        for (auto& h : heads)
+        {
+            if (h.mine || manhattan(h.cell, head) > STALKER_NEAR)
+                continue;
+            auto& st = stalk[h.id];
+            st.second = st.first == R - 1 ? st.second + 1 : 1;
+            st.first = R;
+            if (h.partial && st.second >= 2)
+                h.estLen = std::max(h.estLen, STALKER_LEN);
+        }
+    }
     if (amQueen && QUEEN_THREAT_MAP)
     {
         compute_queen_threat();
@@ -5140,8 +6381,31 @@ void decide(Controller& ct)
     for (auto const& h : heads)
         if (h.mine && h.id != me && manhattan(h.cell, head) <= 5)
             mateNearHead = true;
-    double const diveMin = mateNearHead && !amQueen ? DIVE_MATE_GAIN : DIVE_MIN_GAIN;
-    bool const diving = bestDive >= diveMin;
+    bool const cheapDive = DIVE_CHEAP_LEN > 0 && !amQueen && L <= DIVE_CHEAP_LEN;
+    // DIVE_CHEAP_LEN: a short dragon's break-even dive needs an upside - cells in the pocket not seen lately. With a
+    // teammate near, the older rule (DIVE_MATE_GAIN: the stub's drops are recycled) already accepts it: left as it is.
+    if (cheapDive && !mateNearHead)
+    {
+        bestDive = -1e9;
+        for (auto& cd : cands)
+        {
+            if (cd.dive > -1e9 && cd.dive >= 0 && cd.dive < 1 && !pocket_has_unseen(cd.dest, head))
+                cd.dive = -0.5; // break-even and fully seen: nothing more to find in there
+            bestDive = std::max(bestDive, cd.dive);
+        }
+    }
+    double const diveMin = std::min<double>(mateNearHead && !amQueen ? DIVE_MATE_GAIN : DIVE_MIN_GAIN, cheapDive ? 0.0 : 1e9);
+    // PASSAGE_FIX: the dive search ends "back in open water" with eaten + 0.5 - a way through, nothing left behind.
+    auto const dive_ok = [&](double dv) {
+        if (dv >= diveMin)
+            return true;
+        if (!PASSAGE_FIX || dv < 0.5)
+            return false;
+        double const h = dv * 2.0;
+        long long const hr = std::llround(h);
+        return std::fabs(h - static_cast<double>(hr)) < 1e-6 && (hr % 2) != 0;
+    };
+    bool const diving = dive_ok(bestDive);
     // The queen with no safe move: still tell a corridor that leads on from a
     // known dead end (unexplored water counts as a way on here).
     if (QUEEN_SURV_RANK && amQueen && !anySafe)
@@ -5344,6 +6608,37 @@ void decide(Controller& ct)
         }
     }
 
+    // FEED_STRIKE (O1): from the harvest on, our dragons are about to die beside the queen anyway. One that can put its
+    // head on an enemy head near her does that first: the hunter dies with it, and both bodies drop as pearls by her.
+    if (FEED_STRIKE && !amQueen && !isLeader && !ourQueenDead && R >= harvest_start())
+    {
+        int qc = -1;
+        for (auto const& h : heads)
+            if (h.mine && h.id == queenId)
+                qc = h.cell;
+        auto const q = fleet.find(queenId);
+        if (qc < 0 && q != fleet.end() && R - q->second.round <= 2)
+            qc = q->second.cell;
+        if (qc >= 0)
+        {
+            std::vector<HeadInfo const*> near;
+            for (auto const& h : heads)
+                if (!h.mine && manhattan(h.cell, qc) <= FS_NEAR)
+                    near.push_back(&h);
+            std::sort(near.begin(), near.end(), [&](HeadInfo const* a, HeadInfo const* b) { return manhattan(a->cell, qc) < manhattan(b->cell, qc); });
+            int const reach = std::min(REGICIDE_MAX, free_steps() + std::max(0, L - 2));
+            for (auto const* h : near)
+            {
+                std::vector<int> const path = regicide_path(h->cell, reach);
+                set_body(body, L);
+                if (!path.empty())
+                {
+                    queue_fact(msg_danger(h->cell, 1), 75, 2);
+                    return act_moves(ct, path, "feed-strike");
+                }
+            }
+        }
+    }
     // Short teammates strike enemy heads that have our queen within their
     // reach (one of ours for one attacker; the queen moves first and cannot
     // dodge a sprint).
@@ -5421,6 +6716,11 @@ void decide(Controller& ct)
                     if (body[i] == n && i > bestKeep)
                         bestKeep = i;
             }
+            // QUEEN_PEEL (v5.1.0): a boxed-in queen peels 2 cells off her tail per round (splitting is not a move: she
+            // keeps her head and survives the turn) instead of cutting down to bestKeep at once - the big child is
+            // boxed in too and cannot free her (ladder Slithery Fight: 25 -> 7 -> 5 -> 3; theirs peeled 25 -> 7, won 7-4).
+            if (QUEEN_PEEL && amQueen && bestKeep >= 2 && L - 2 > bestKeep && split_allowed(ct, 2))
+                return act_split(ct, 2, "unwind-peel");
             if (bestKeep >= 2 && split_allowed(ct, L - bestKeep) && (!amQueen || bestKeep >= L - 2 || bestKeep >= 4 || L < 6))
                 return act_split(ct, L - bestKeep, "unwind-split");
         }
@@ -5650,7 +6950,8 @@ void decide(Controller& ct)
         {
             int const dPrev = distHead[lastPearl];
             int const dNew = pi >= 0 ? distHead[pearls[pi].cell] : INF;
-            bool const clearlyBetter = pi >= 0 && dNew + COMMIT_MARGIN <= dPrev && dNew * 10 <= dPrev * 7;
+            bool const clearlyBetter = (pi >= 0 && dNew + COMMIT_MARGIN <= dPrev && dNew * 10 <= dPrev * 7) ||
+                                       (COMMIT_NEAR > 0 && pi >= 0 && dNew <= COMMIT_NEAR && dNew + 2 <= dPrev); // a pearl right here first
             if (!clearlyBetter)
                 pi = prevIdx;
         }
@@ -5661,6 +6962,41 @@ void decide(Controller& ct)
         claimTarget = target;
         claimEta = distHead[target];
         why = "pearl";
+    }
+    // QUEEN_FOLLOW: the roaming queen follows the teammate furthest out from home along its trail.
+    if (QUEEN_FOLLOW)
+    {
+        for (auto const& h : heads)
+            if (h.mine)
+                note_mate(h.id, R, h.cell);
+        if (amQueen && queenRoam && target < 0 && ourQueenSpawn >= 0)
+        {
+            int leadId = -1, leadFar = -1;
+            for (auto const& [id, t] : mateTrail)
+                if (id != me && !t.empty() && R - t.back().first <= 5 && manhattan(t.back().second, ourQueenSpawn) > leadFar &&
+                    halfMargin(t.back().second) >= FOLLOW_HALF) // only a leader well on our half: never toward the contested middle
+                {
+                    leadFar = manhattan(t.back().second, ourQueenSpawn);
+                    leadId = id;
+                }
+            if (leadId >= 0)
+            {
+                auto const& t = mateTrail[leadId];
+                int pt = t.front().second; // where it was FOLLOW_LAG rounds ago (or the oldest we know)
+                for (auto const& [r, c] : t)
+                    if (r <= R - FOLLOW_LAG)
+                        pt = c;
+                bool tooClose = false;
+                for (auto const& h : heads)
+                    if (h.mine && manhattan(h.cell, head) <= FOLLOW_GAP)
+                        tooClose = true;
+                if (!tooClose && distHead[pt] < INF && pt != head)
+                {
+                    target = pt;
+                    why = "follow";
+                }
+            }
+        }
     }
     // Last rounds: a living queen beats any pearl (their queen is often dead
     // already and we cannot know it). Only pearls right next to her that no
@@ -5791,6 +7127,7 @@ void decide(Controller& ct)
     // even squeeze into its neck usefully): it would only crowd her.
     bool const feedPhase = !(SIZE_CAP_PLAN && capMode) && !isLeader && (L >= 3 || harvest) && R >= feedStart && mode != MODE_COMBAT && localThreat == 0 &&
                            !(isGuard && bunkerFresh) && // her posts come first
+                           !(WATCH_KEEP && (isScreen || (WATCH_GUARDS && isGuard)) && !ourQueenDead) && // G1: the watch stays to the end
                            !(majorityHunt && earlyFeed) && // winning on numbers: keep hunting until the last rounds
                            !(earlyFeed && ((isGuard && !(DYN_ALLOC && switched && !isScreen)) || isHunter || isDefender)) && !(FEED_ONLY_IF_CONTEST && enemyQueenDead && !ourQueenDead);
     if (feedPhase)
@@ -6120,22 +7457,46 @@ void decide(Controller& ct)
                 // Line up with her: a ping only reaches a dragon on the same
                 // row or column, so a guard there can pass her its reports.
                 int const qx = qCellG % W, qy = qCellG / W, hx = head % W, hy = head / W;
-                if (SCREENS_MORE && target < 0 && hx != qx && hy != qy)
+                // LOOKOUT_RING: each guard takes the arm of her cross (north, east, south, west) with the fewest of us on
+                // it, LR_MIN..GUARD_RING out - watchers on all four sides instead of a clump on the nearest one.
+                bool shared = false;
+                if (LOOKOUT_RING && target < 0)
+                    for (auto const& h : heads)
+                        if (h.mine && h.id != me && h.id != queenId && manhattan(h.cell, head) <= 2)
+                            shared = true;
+                if (SCREENS_MORE && target < 0 && ((hx != qx && hy != qy) || shared))
                 {
                     int best = -1, bd = INF;
+                    double bs = 1e18;
                     for (int axis = 0; axis < 2; axis++)
                         for (int off = -GUARD_RING; off <= GUARD_RING; off++)
                         {
-                            if (std::abs(off) < 3)
+                            if (std::abs(off) < (LOOKOUT_RING ? LR_MIN : 3))
                                 continue;
                             int const c = axis == 0 ? cell_of(((qx + off) % W + W) % W, qy) : cell_of(qx, ((qy + off) % H + H) % H);
-                            if (distHead[c] < bd && (!vis[c] || occId[c] < 0))
+                            if (distHead[c] >= INF || (vis[c] && occId[c] >= 0))
+                                continue;
+                            double sc = distHead[c];
+                            if (LOOKOUT_RING)
                             {
+                                int onArm = 0; // teammates (not her, not us) on this arm of her cross
+                                for (auto const& h : heads)
+                                    if (h.mine && h.id != me && h.id != queenId)
+                                    {
+                                        int const ox = h.cell % W, oy = h.cell / W;
+                                        bool const same = axis == 0 ? (oy == qy && (ox - qx) * off > 0) : (ox == qx && (oy - qy) * off > 0);
+                                        onArm += same || manhattan(h.cell, c) <= 2;
+                                    }
+                                sc += LR_ARM_W * onArm;
+                            }
+                            if (sc < bs)
+                            {
+                                bs = sc;
                                 bd = distHead[c];
                                 best = c;
                             }
                         }
-                    if (best >= 0 && bd <= 6)
+                    if (best >= 0 && bd <= (LOOKOUT_RING ? LR_TRAVEL : 6) && best != head)
                     {
                         target = best;
                         why = "guard-line";
@@ -6260,7 +7621,7 @@ void decide(Controller& ct)
         target = harvestDrop; // CAP_FIX: the feeders died for it
         why = "harvest-eat";
     }
-    if (QUEEN_HOME && amQueen && !bunkerMode && target < 0 && !queenStarving && ourQueenSpawn >= 0)
+    if (QUEEN_HOME && amQueen && !bunkerMode && target < 0 && !queenStarving && ourQueenSpawn >= 0 && !(queenRoam && !QUEEN_FOLLOW))
     {
         if (restCell < 0 || R % 25 == 0 || (vis[restCell] && occId[restCell] >= 0 && occId[restCell] != me) || distHead[restCell] >= INF)
             restCell = choose_rest();
@@ -6307,6 +7668,136 @@ void decide(Controller& ct)
             why = "portal";
         }
     }
+    // CORK (O2): their queen sealed in behind one crossing - the nearest of us holds the cell just outside it. Strikes,
+    // hunts, guard duty and feeding come first; not while outnumbered or in survival mode.
+    if (CORK && !amQueen && !isLeader && !isGuard && !enemyQueenDead && R >= CORK_START && units >= WT_MIN_UNITS && !survivalMode &&
+        !outnumbered && (target < 0 || std::string(why) == "explore" || std::string(why) == "portal" || (std::string(why) == "pearl" && distHead[target] > 2)))
+    {
+        int qc = -1, qr = -1;
+        for (auto const& h : heads)
+            if (!h.mine && h.id == enemyQueenId)
+                qc = h.cell, qr = R;
+        if (qc < 0)
+            for (auto const& e : enemyReps)
+                if (e.id == enemyQueenId && R - e.round <= CORK_FRESH && e.round > qr)
+                    qc = e.cell, qr = e.round;
+        int post = qc >= 0 ? cork_post(qc) : -1;
+        std::vector<int> corkSide = corkInside; // her side of the crossing
+        if (qc < 0 && ourQueenSpawn >= 0 && eq_home_k() >= 0)
+        {
+            bool seenOut = false; // her home, unless she was reported away from it lately
+            for (auto const& e : enemyReps)
+                if (e.id == enemyQueenId && R - e.round <= 60)
+                    seenOut = true;
+            if (!seenOut)
+            {
+                // Their side is mostly unexplored, ours is not: the crossing that seals her start is the mirror image of
+                // the one that seals our queen's start.
+                int const k = eq_home_k();
+                int const own = cork_post(ourQueenSpawn);
+                if (own >= 0)
+                {
+                    post = mirror_cell(k, own);
+                    corkSide.clear();
+                    for (int c : corkInside)
+                        corkSide.push_back(mirror_cell(k, c));
+                }
+            }
+        }
+        if (post >= 0 && distHead[post] < INF)
+        {
+            bool mine = true; // the nearest of us (short non-leaders) takes it; a sitting corker keeps it
+            int const myD = distHead[post] - (R - corkLastR <= 2 ? WT_HYST : 0);
+            for (auto const& h : heads)
+                if (h.mine && h.id != me && h.id != queenId && manhattan(h.cell, post) < myD)
+                    if (auto const f = fleet.find(h.id); f == fleet.end() || !f->second.leader)
+                        mine = false;
+            for (auto const& [id, st] : fleet)
+                if (id != me && id != queenId && !st.leader && R - st.round <= 4 && (manhattan(st.cell, post) < myD || (manhattan(st.cell, post) == myD && id < me)))
+                    mine = false;
+            if (mine)
+            {
+                corkLastR = R;
+                if (head != post)
+                {
+                    target = post;
+                    portalDir = -1;
+                    why = "cork";
+                }
+                else
+                {
+                    int best = -1, bd = INF; // on the mouth: circle beside it, never into her side
+                    for (int d = 0; d < 4; d++)
+                    {
+                        int const n = cross(head, d);
+                        if (n < 0 || (vis[n] && occId[n] >= 0) || std::find(corkSide.begin(), corkSide.end(), n) != corkSide.end())
+                            continue;
+                        int const k = open_sides(n);
+                        if (k < bd)
+                        {
+                            bd = k;
+                            best = n;
+                        }
+                    }
+                    if (best >= 0)
+                    {
+                        target = best;
+                        portalDir = -1;
+                        why = "cork";
+                    }
+                }
+            }
+        }
+    }
+    // WATCHTOWER: the watcher posts WT_DIST from their queen (her home until she is seen) - instead of exploring, far
+    // pearls or portal errands; strikes, hunts, guard duty and feeding come first. Paused after a fight there.
+    if (WATCHTOWER && !amQueen && !isLeader && !isGuard && !enemyQueenDead && R >= WT_START && units >= WT_MIN_UNITS &&
+        !survivalMode && L <= WT_MAX_LEN &&
+        (target < 0 || std::string(why) == "explore" || std::string(why) == "portal" || (std::string(why) == "pearl" && distHead[target] > 2)))
+    {
+        for (auto const& e : enemyReps)
+            if (e.id == enemyQueenId)
+                eq_home_evidence(e.cell, e.round);
+        int const home = eq_home();
+        int const focus = home >= 0 ? wt_focus(home) : -1;
+        bool hot = false;
+        for (auto const& dg : dangers)
+            if (dg.cause == 1 && R - dg.round <= WT_COOL && focus >= 0 && manhattan(dg.cell, focus) <= 4)
+                hot = true;
+        if (focus >= 0 && !hot && am_watcher(home))
+        {
+            wtLastR = R;
+            int const post = choose_watch_post(focus);
+            if (post >= 0 && post != head)
+            {
+                target = post;
+                portalDir = -1;
+                why = "watch";
+            }
+            else if (post == head)
+            {
+                int best = -1, bd = INF; // on post: step along the ring (a short dragon cannot stand still)
+                for (int d = 0; d < 4; d++)
+                {
+                    int const n = cross(head, d);
+                    if (n < 0 || (vis[n] && occId[n] >= 0) || cheb(n, focus) < WT_DIST || cheb(n, focus) > WT_DIST + 1)
+                        continue;
+                    int const k = cheb(n, focus) == WT_DIST ? 0 : 1;
+                    if (k < bd)
+                    {
+                        bd = k;
+                        best = n;
+                    }
+                }
+                if (best >= 0)
+                {
+                    target = best;
+                    portalDir = -1;
+                    why = "watch";
+                }
+            }
+        }
+    }
     if (AGGRO_EXPANSION && target < 0 && hunterSlot && expansionPhase && !isLeader && !isGuard && !(SAFE_TRADES && (survivalMode || outnumbered)))
     {
         // Take the middle early: idle hunter-group dragons head for the enemy
@@ -6330,24 +7821,93 @@ void decide(Controller& ct)
     }
     // Opening: pearls appear on spawn tiles, so an idle dragon waits by one
     // rather than wandering off to explore (we lost most opening pearl races).
-    if (target < 0 && R < OPEN_CAMP_ROUNDS && !amQueen && !isGuard && std::string(why) == "explore")
+    // CENTRE_RUSH: are we still on our way to the middle?
+    if (CENTRE_RUSH && !reachedCentre && manhattan(head, cell_of(W / 2, H / 2)) <= CR_RADIUS)
+        reachedCentre = true;
+    if (CENTRE_RUSH && !reachedCentre)
+        for (auto const& h : heads)
+            if (!h.mine && manhattan(h.cell, head) <= CR_ENEMY)
+                reachedCentre = true; // the middle is contested already: explore and eat elsewhere, no head-on race
+    bool const rushing = CENTRE_RUSH && !amQueen && !isGuard && !reachedCentre && R < CR_END;
+    if (COVERAGE && target < 0 && !amQueen && !isGuard && std::string(why) == "explore")
+    {
+        int const st = choose_station(rushing ? COV_RUSH_MIN : -1.0);
+        if (st >= 0)
+        {
+            target = st;
+            why = "cover"; // the richest ground per dragon: spread over the pearl fields
+        }
+    }
+    if (rushing && target < 0 && std::string(why) == "explore")
+    {
+        int const cc = centre_cell();
+        if (cc >= 0 && cc != head)
+        {
+            target = cc;
+            why = "centre"; // take the middle first, explore outward from there
+        }
+        else
+            reachedCentre = true; // the middle is where we stand (or out of reach): explore from here
+    }
+    if (RICH_HOLD && target < 0 && !amQueen && !isGuard && std::string(why) == "explore" && rich_spot(head))
     {
         int const cg = choose_camp_goal();
+        if (cg >= 0 && distHead[cg] <= 8 && rich_spot(cg))
+        {
+            target = cg;
+            why = "hold"; // a rich area: wait for its next pearl here
+        }
+    }
+    if (target < 0 && R < OPEN_CAMP_ROUNDS && !amQueen && !isGuard && std::string(why) == "explore")
+    {
+        int const cg = choose_camp_goal(false, explore_first() ? EF_CAMP_WAIT : INF);
         if (cg >= 0 && distHead[cg] <= 20)
         {
             target = cg;
             why = "camp";
         }
     }
-    if (target < 0 && !(GUARDS && amQueen && enemyQueenDead) && !(amQueen && QUEEN_AVOID_UNKNOWN && !queenStarving) && std::string(why) != "guard" &&
+    if (target < 0 && !(GUARDS && amQueen && enemyQueenDead) && !(amQueen && QUEEN_AVOID_UNKNOWN && !queenStarving && !(queenRoam && !QUEEN_FOLLOW)) && std::string(why) != "guard" &&
         std::string(why) != "regroup" && std::string(why) != "evade")
     {
         target = choose_explore_goal();
+        // PORTAL_EXPLORE (v5.1.12, user idea 1): a portal whose far end nobody has located is unexplored ground like any
+        // other - behind it lies a whole region (and the pair, which every route then uses). Same score as an unseen
+        // cell (travel, teammates near it); only dragons short enough to cross blind (they can turn in a 2x2).
+        if (PORTAL_EXPLORE && !amQueen && !isLeader && L <= BLIND_PORTAL_MAX_LEN)
+        {
+            int pd = -1;
+            int const pg = choose_portal_goal(pd);
+            if (pg >= 0)
+            {
+                std::vector<int> mates;
+                for (auto const& h : heads)
+                    if (h.mine && h.id != me)
+                        mates.push_back(h.cell);
+                for (auto const& [id, st] : fleet)
+                    if (id != me && R - st.round <= 10)
+                        mates.push_back(st.cell);
+                auto score = [&](int c) {
+                    int crowd = 0;
+                    for (int m : mates)
+                        if (manhattan(m, c) < 8)
+                            crowd++;
+                    return distHead[c] + 25.0 * crowd;
+                };
+                bool const nothing = target < 0 || seenRound[target] >= 0;
+                if (nothing || score(pg) <= score(target))
+                {
+                    target = pg;
+                    portalDir = pd;
+                    why = "portal";
+                }
+            }
+        }
         // Nothing unseen left to look at: wait by a spawn tile instead of
         // revisiting old ground (pearls appear there, not on the way).
-        if (IDLE_CAMP && !amQueen && !isGuard && (target < 0 || seenRound[target] >= 0))
+        if (IDLE_CAMP && !amQueen && !isGuard && std::string(why) != "portal" && (target < 0 || seenRound[target] >= 0))
         {
-            int const cg = choose_camp_goal();
+            int const cg = choose_camp_goal(false, explore_first() ? EF_CAMP_WAIT : INF);
             if (cg >= 0)
             {
                 target = cg;
@@ -6397,7 +7957,8 @@ void decide(Controller& ct)
 
     // ---- HARVEST (v2.14.9): the last rounds turn our nearby dragons into length for the queen ------------
     // (or, with her dead, for our longest dragon: ties to the lowest id; that dragon itself never dies for it).
-    if (HARVEST && R >= harvest_start() && !amQueen && L >= 2 && body.size() >= 2 && !(CAP_FIX && enemyQueenDead && !ourQueenDead))
+    if (HARVEST && R >= harvest_start() && !amQueen && L >= 2 && body.size() >= 2 && !(CAP_FIX && enemyQueenDead && !ourQueenDead) &&
+        !(WATCH_KEEP && (isScreen || (WATCH_GUARDS && isGuard)) && !ourQueenDead)) // G1: the watch keeps watching
     {
         int hId = -1, hCell = -1;
         bool hSeen = false;
@@ -6534,8 +8095,34 @@ void decide(Controller& ct)
         if (split_allowed(ct, child))
             return act_split(ct, child, "bunker-trim");
     }
+    // QUEEN_OPEN_SPLIT (user, v5.0.6): at the start a queen of length 4+ keeps 2 and the tail part goes off as a new dragon
+    // (it explores and eats by the usual rules). Once, within the first QOS_ROUNDS, on the first turn it is safe.
+    if (QUEEN_OPEN_SPLIT && amQueen && R <= QOS_ROUNDS && L >= 4 && !qosDone && qosStartL <= QOS_MAX_START && calm && !bunkerMode && !sealedNoSplit)
+    {
+        int const child = L - 2;
+        bool enemyClose = false;
+        for (auto const& h : heads)
+            if (!h.mine && manhattan(h.cell, head) <= 3)
+                enemyClose = true;
+        int realExits = 0; // the child stays on our tail cells this round: two ways on that are not dead ends
+        for (int d = 0; d < 4; d++)
+        {
+            int const n = cross(head, d);
+            if (n >= 0 && !(vis[n] && occId[n] >= 0) && !(n == nb(head, d) && pocket_ahead(head, n)))
+                realExits++;
+        }
+        if (anySafe && !enemyClose && realExits >= 2 && split_allowed(ct, child) && child_can_escape(child, true) && split_keeps_loop(child))
+        {
+            qosDone = true;
+            return act_split(ct, child, "queen-open-split");
+        }
+    }
     // SIZE_CAP_PLAN: before round X no dragon - the queen included - keeps length 4 or more: split it in two.
-    if (SIZE_CAP_PLAN && capMode && L >= 4 && calm && !(amQueen && (bunkerMode || sealedNoSplit)) && room_for_more() &&
+    bool const queenCap4 = QUEEN_CAP4 && amQueen && !capMode && R < std::clamp(switchRound, CAP_X_MIN, CAP_X_MAX) &&
+                           !(CAP4_SWITCH_END && !capOpen && DYN_ALLOC && switched); // congested maps: ends with the fleet's switch to length
+    bool const fleetCap4 = FLEET_CAP4 && !amQueen && !capMode && !isLeader && R < std::clamp(switchRound, CAP_X_MIN, CAP_X_MAX);
+    if (SIZE_CAP_PLAN && (capMode || queenCap4 || fleetCap4) && L >= 4 && calm && !(amQueen && (bunkerMode || sealedNoSplit)) &&
+        (capMode ? room_for_more() : units < unitLimit - QUEEN_SLOTS) &&
         !(CAP_FIX && amQueen && !capOpen && R >= CAP_LATCH_BY)) // CAP_FIX: the length she has by then stays hers
     {
         int const child = L / 2;
@@ -6728,6 +8315,24 @@ void decide(Controller& ct)
         cands[bunkerDir].ok1 = cands[bunkerDir].ok2 = true; // the box loop never traps a queen of length <= 3
         cands[bunkerDir].surv = true;
     }
+    // LONG_AVOID: last known spots of long enemies (latest per id; in view counts as now).
+    std::vector<std::pair<int, int>> longKnown; // (cell, id)
+    if (LONG_AVOID && amQueen)
+    {
+        std::unordered_map<int, std::pair<int, int>> last; // id -> (round, cell)
+        for (auto const& e : enemyReps)
+            if (R - e.round <= LONG_MEM && std::max(e.len, e.estLen) >= LONG_ENEMY_MIN)
+            {
+                auto const it = last.find(e.id);
+                if (it == last.end() || e.round > it->second.first)
+                    last[e.id] = {e.round, e.cell};
+            }
+        for (auto const& h : heads)
+            if (!h.mine && std::max(h.len, h.estLen) >= LONG_ENEMY_MIN)
+                last[h.id] = {R, h.cell};
+        for (auto const& [id, rc] : last)
+            longKnown.push_back({rc.second, id});
+    }
     // QUEEN_LOOK: her lines in contact (not while circling her bunker box).
     LookRes look;
     int lookBest = 0;
@@ -6793,8 +8398,8 @@ void decide(Controller& ct)
             int const lenAfter = L + (cd.eat ? 1 : 0);
             bool const canSave = lenAfter >= 4 && units < unitLimit;
             // No pearl compensates for losing the queen.
-            if (!amQueen && !cd.ok1 && cd.dive >= diveMin)
-                s += 2500.0 * cd.dive - 1500.0; // a dead end whose pearls pay for the split
+            if (!amQueen && !cd.ok1 && dive_ok(cd.dive))
+                s += 2500.0 * cd.dive - (cheapDive ? 0.0 : 1500.0 * (DIVE_SCORE_FIX ? std::clamp(cd.dive, 0.0, 1.0) : 1.0)); // a dead end whose pearls pay for the split
             else if (QUEEN_SURV_RANK && amQueen && !anySafe && !cd.ok2)
                 s -= cd.surv ? 5e5 : (QUEEN_HARD_THREAT ? QUEEN_TRAP_PEN : 1e6);
             else if (!cd.ok2)
@@ -6844,6 +8449,13 @@ void decide(Controller& ct)
             }
             if (amQueen && QUEEN_THREAT_MAP)
                 s -= queen_threat_pen(cd.dest);
+            if (LONG_AVOID && amQueen && cd.dest >= 0)
+                for (auto const& lk : longKnown)
+                {
+                    int const dn = manhattan(lk.first, head), dd = manhattan(lk.first, cd.dest);
+                    if (dn <= LONG_RADIUS && dd < dn)
+                        s -= LONG_AVOID_PEN * (LONG_RADIUS + 1 - dn) / static_cast<double>(LONG_RADIUS); // nearer ones count more
+                }
             int esc2 = -1; // P3c: two-turn-safe cells she can reach next turn (-1: not checked)
             if (QUEEN_LOOK2 && amQueen && QUEEN_THREAT_MAP && look2Active && cd.dest >= 0 && !cd.nb1.empty())
             {
@@ -6859,6 +8471,18 @@ void decide(Controller& ct)
             // is no better. Near them, open water beats hugging a wall.
             if (PURSUIT_SAFE && amQueen && cd.dest >= 0 && cd.d != bunkerDir)
             {
+                if (MATE_FORCED && mateForcedR != R)
+                {
+                    mateForcedR = R;
+                    mateForced.clear();
+                    for (auto const& h : heads)
+                        if (h.mine && h.id != me && manhattan(h.cell, head) <= 4)
+                        {
+                            int const f = forced_next(h.cell, {}, -1); // its own body blocks too
+                            if (f >= 0)
+                                mateForced.push_back(f);
+                        }
+                }
                 int nearE = INF, nearAny = INF;
                 for (auto const& h : heads)
                     if (h.id != me)
@@ -6872,7 +8496,7 @@ void decide(Controller& ct)
                 if (open_sides(cd.dest) <= 2 && open_sides(head) >= 3)
                     s -= (nearAny <= 6 ? CORR_ENTER_PEN : CORR_ENTER_PEN / 5);
                 {
-                    int ex = 0, exHit = 0;
+                    int ex = 0, exHit = 0, exForced = 0;
                     int const nl = L + (cd.eat ? 1 : 0);
                     for (int d2 = 0; d2 < 4; d2++)
                     {
@@ -6885,6 +8509,11 @@ void decide(Controller& ct)
                                 blocked = true;
                         if (blocked)
                             continue;
+                        if (MATE_FORCED && std::find(mateForced.begin(), mateForced.end(), n) != mateForced.end())
+                        {
+                            exForced++; // a teammate has no other move: it will be on this cell after her step
+                            continue;
+                        }
                         ex++;
                         for (auto const& h : heads)
                             if (!h.mine && manhattan(h.cell, n) <= 2 * std::max(1, (std::max(h.len, h.estLen) + 3) / 4))
@@ -6893,7 +8522,9 @@ void decide(Controller& ct)
                                 break;
                             }
                     }
-                    if (LOOK2_SKIP_CORNER && esc2 > 0)
+                    if (exForced > 0 && ex <= 1)
+                        s -= ex == 0 ? QUEEN_TRAP_PEN : CORNER_PEN; // MATE_FORCED: the lookahead does not see our own dragons
+                    else if (LOOK2_SKIP_CORNER && esc2 > 0)
                         ; // P3c: a two-turn-safe way on exists - the corner rules are only proxies for that
                     else if (ex <= 1)
                         s -= (nearE <= PURSUIT_DIST || nearAny <= 3) ? CORNER_PEN : CORNER_PEN / 5;
@@ -7026,6 +8657,21 @@ void decide(Controller& ct)
                         if (now < before && now < 2)
                             s -= QUEEN_EXIT_PEN; // never take one of the queen's last ways out
                     }
+            // MATE_FORCED: never step where our only way on next turn runs next to the queen - forced, we would take
+            // her last exit whatever the exit guard says (Portals: a scout in a 1-exit nook boxed her into a corner).
+            if (MATE_FORCED && !amQueen && !onPost && cd.dest >= 0 && !cd.nb1.empty())
+                for (auto const& h : heads)
+                    if (h.mine && h.id == queenId && manhattan(h.cell, cd.dest) <= MF_NEAR + 1)
+                    {
+                        std::vector<int> after(cd.nb1.begin(), cd.nb1.begin() + std::min<int>(cd.nb1.size(), L + (cd.eat ? 1 : 0)));
+                        int const f = forced_next(cd.dest, after, me);
+                        if (f >= 0 && manhattan(f, h.cell) <= MF_NEAR)
+                            s -= MF_PEN;
+                    }
+            if (FEED_CLEAR_FRONT && !amQueen && cd.dest >= 0 && std::string(why) == "feed")
+                for (auto const& h : heads)
+                    if (h.mine && h.id == queenId && h.dir >= 0 && cross(h.cell, h.dir) == cd.dest)
+                        s -= FEED_FRONT_PEN; // 2a: her way on stays open
             if (!amQueen && !onPost && (std::string(why) != "feed" || (consolidate && !(HARVEST && R >= harvest_start()))))
                 for (auto const& h : heads)
                     if (h.mine && h.id == queenId)
@@ -7040,6 +8686,31 @@ void decide(Controller& ct)
                     }
             if (cd.d == facing)
                 s += 3;
+            // v5.1.1 (user): exploring new ground - do not walk back along our own trail, and prefer open water ahead to a
+            // visible kelp wall. Only for an exploring move (no pearl, guard, hunt or feed errand), queen only while roaming.
+            if ((NO_BACKTRACK || OPEN_AHEAD) && cd.dest >= 0 && std::string(why) == "explore" && (!amQueen || queenRoam))
+            {
+                if (NO_BACKTRACK && R - visitR[cd.dest] <= BT_ROUNDS)
+                    s -= BT_PEN;
+                if (OPEN_AHEAD)
+                {
+                    int c = cd.dest, open = 0;
+                    for (int k = 0; k < 3; k++)
+                    {
+                        int const n = cross(c, cd.d);
+                        if (n == -2 || n == -3)
+                        {
+                            open++; // unexplored: new ground that way
+                            break;
+                        }
+                        if (n < 0 || (vis[n] && occId[n] >= 0))
+                            break;
+                        open++;
+                        c = n;
+                    }
+                    s += OPEN_AHEAD_W * open;
+                }
+            }
         }
         cd.score = s;
         if (s > bestScore)
@@ -7051,6 +8722,29 @@ void decide(Controller& ct)
     set_body(body, L);
     if (bestD < 0)
         bestD = facing;
+#ifdef QDEBUG2
+    if (amQueen)
+    {
+        std::string dbg = "QDBG2";
+        for (auto const& h : heads)
+            if (!h.mine)
+            {
+                auto const it = enemyLenMem.find(h.id);
+                dbg += " H" + std::to_string(h.id) + "@" + std::to_string(manhattan(h.cell, head)) + "l" + std::to_string(h.len) + "/" +
+                       std::to_string(h.estLen) + (h.partial ? "p" : "") +
+                       (it != enemyLenMem.end() ? "m" + std::to_string(it->second.len) + "a" + std::to_string(R - it->second.round) + (it->second.exact ? "x" : "") : "");
+            }
+        for (auto const& e : enemyReps)
+            if (R - e.round <= 6 && manhattan(e.cell, head) <= 24)
+            {
+                auto const it = enemyLenMem.find(e.id);
+                dbg += " R" + std::to_string(e.id) + "@" + std::to_string(manhattan(e.cell, head)) + "a" + std::to_string(R - e.round) + "l" +
+                       std::to_string(e.len) + "/" + std::to_string(e.estLen) +
+                       (it != enemyLenMem.end() ? "m" + std::to_string(it->second.len) + "a" + std::to_string(R - it->second.round) + (it->second.exact ? "x" : "") : "");
+            }
+        ct.output_log(dbg);
+    }
+#endif
 #ifdef QDEBUG
     if (amQueen)
     {
@@ -7087,24 +8781,42 @@ void decide(Controller& ct)
             if (cd.legal && !cd.blind && cd.dt < distHead[target])
             {
                 closer = true;
-                closerOk |= cd.ok1 || cd.dive >= diveMin;
+                closerOk |= cd.ok1 || dive_ok(cd.dive);
             }
         if (closer && !closerOk)
+        {
             skipPearl[target] = R + SKIP_PEARL_ROUNDS;
+            int const pk = POCKET_SKIP ? pocket_of(target) : -1;
+            if (pk >= 0)
+                for (auto const& pc : pearls)
+                    if (pocket_of(pc.cell) == pk)
+                        skipPearl[pc.cell] = R + SKIP_PEARL_ROUNDS; // the whole pocket: no circling at its mouth
+        }
     }
 
     // Free steps: keep going along the chosen direction while it pays (more
     // pearls, more progress) and the turn still ends somewhere safe.
     Cand const& c1 = cands[bestD];
-    if (DEADEND_STRICT && !amQueen && c1.legal && !c1.blind && !c1.ok1 && c1.dive >= std::max(diveMin, 1.0))
+    if (DEADEND_STRICT && !amQueen && c1.legal && !c1.blind && !c1.ok1 && c1.dive >= std::max(diveMin, cheapDive ? 0.0 : 1.0))
         miningTrip = true; // going in for pearls that pay for the stub: no split until the bottom
     // A paid step wins a pearl race an enemy head would otherwise win
     // (theirs do this constantly); never for the queen.
     bool paidRace = false;
+    int raceSteps = 2;
     if (PAID_PEARL_RACE && !amQueen && !survivalMode && L >= 3 && std::string(why) == "pearl" && target >= 0 && distHead[target] == 2)
         for (auto const& h : heads)
             if (!h.mine && manhattan(h.cell, target) <= 2)
                 paidRace = true;
+    // DROP_RACE (v5.1.9): a death drop 3 steps off that an enemy head is as near to: with 2 free steps (length 5+) one
+    // paid step takes it this turn - break-even for us, one pearl less for them.
+    if (DROP_RACE && !paidRace && !amQueen && !survivalMode && freeN == 2 && std::string(why) == "pearl" && target >= 0 &&
+        distHead[target] == 3 && pearlState[target] == 1 && obsNext[target] == -2)
+        for (auto const& h : heads)
+            if (!h.mine && manhattan(h.cell, target) <= 3)
+            {
+                paidRace = true;
+                raceSteps = 3;
+            }
     if ((freeN >= 2 || paidRace) && c1.legal && !c1.blind && c1.ok2 && target >= 0 && portalDir < 0 && !c1.nb1.empty() &&
         !(amQueen && SURVIVAL && survivalMode) && !campWait)
     {
@@ -7121,7 +8833,7 @@ void decide(Controller& ct)
         std::vector<int> dirs{bestD}, eatenCells;
         if (c1.eat)
             eatenCells.push_back(c1.dest);
-        sprint_dfs(c1.nb1, nl, 1, paidRace ? std::max(freeN, 2) : freeN, freeN, c1.eat ? 1 : 0, dirs, eatenCells, useGoal, g0, sp);
+        sprint_dfs(c1.nb1, nl, 1, paidRace ? std::max(freeN, raceSteps) : freeN, freeN, c1.eat ? 1 : 0, dirs, eatenCells, useGoal, g0, sp);
         set_body(body, L);
         bool sprintOk = sp.kill || (sp.value > v1 + 300 && sp.dirs.size() >= 2);
         if (paidRace && !sp.kill && sp.dirs.size() >= 2)
@@ -7278,6 +8990,44 @@ void send_sonars(Controller& ct)
     std::array<int, 4> dirOf{};
     for (int i = 0; i < 4; i++)
         dirOf[i] = (i + offset) & 3;
+    if (QUEEN_SONAR_AIM && amQueen && !body.empty())
+    {
+        // 3b: rank the directions by what her ray meets: a teammate in view (3), a teammate reported on that line (2),
+        // open water (1), kelp / her own body right away (0), an enemy first (-1). Her statuses go out first (out[0..1]).
+        std::array<int, 4> sc{};
+        for (int d = 0; d < 4; d++)
+        {
+            int c = body[0], v = 1;
+            for (int k = 1; k <= 16; k++)
+            {
+                int const n = cross(c, d);
+                if (n != nb(c, d) && n != -2)
+                {
+                    v = k == 1 ? 0 : 1; // kelp (or a portal): the ray stops
+                    break;
+                }
+                int const m = nb(c, d);
+                if (vis[m] && occId[m] >= 0)
+                {
+                    v = occId[m] == me ? (k == 1 ? 0 : 1) : occMine[m] ? 3 : -1;
+                    break;
+                }
+                bool mate = false;
+                if (!vis[m])
+                    for (auto const& [id, st] : fleet)
+                        if (id != me && R - st.round <= 3 && st.cell == m)
+                            mate = true;
+                if (mate)
+                {
+                    v = 2;
+                    break;
+                }
+                c = m;
+            }
+            sc[d] = v;
+        }
+        std::stable_sort(dirOf.begin(), dirOf.end(), [&](int a, int b) { return sc[a] > sc[b]; });
+    }
     // Aim the most urgent enemy news at the queen when she is on our row or
     // column (a ping stops at the first dragon it meets, so nearer is better).
     int const qd = AIM_REPORTS ? queen_sonar_dir() : -1;
@@ -7338,6 +9088,66 @@ void send_sonars(Controller& ct)
             out[i] = foreignMsgs[pick].msg;
             decoysSent++;
         }
+    // BIRTH_HANDOFF: a newborn knows nothing - not even where our queen started (the watcher, hunters and pushes all
+    // aim by it). A ray sent opposite our heading leaves from our tail in the direction the tail points; when that
+    // line meets the child we just split off, the child reads our queen's start on its very first turn.
+    std::uint64_t const birthMsg = SYM_SHARE && symKnown >= 0 ? msg_sym() : BIRTH_HANDOFF && ourQueenSpawn >= 0 ? msg_qspawn(ourQueenSpawn) : 0;
+    if (birthMsg != 0 && splitRound == R && !body.empty() && static_cast<int>(body.size()) >= L)
+    {
+        int const keep = L - splitChildLen;
+        if (keep >= 2 && splitChildLen >= 2)
+        {
+            int const t = body[keep - 1], t1 = body[keep - 2];
+            int td = -1;
+            for (int d = 0; d < 4; d++)
+                if (cross(t1, d) == t)
+                    td = d;
+            bool reaches = false;
+            int c = t;
+            for (int k = 0; td >= 0 && k < W + H; k++)
+            {
+                c = cross(c, td);
+                if (c < 0)
+                    break;
+                if (std::find(body.begin() + keep, body.begin() + L, c) != body.begin() + L)
+                {
+                    reaches = true;
+                    break;
+                }
+                if ((vis[c] && occId[c] >= 0) || std::find(body.begin(), body.begin() + keep, c) != body.begin() + keep)
+                    break;
+            }
+            int send = reaches ? (dir_index(ct.get_dir()) + 2) & 3 : -1;
+            for (int d = 0; d < 4 && send < 0; d++)
+            {
+                if (d == ((dir_index(ct.get_dir()) + 2) & 3))
+                    continue; // that ray leaves from the tail (above)
+                int x = body[0]; // other rays leave from the head: does one meet the child first?
+                for (int k = 0; k < W + H; k++)
+                {
+                    x = cross(x, d);
+                    if (x < 0)
+                        break;
+                    if (std::find(body.begin() + keep, body.begin() + L, x) != body.begin() + L)
+                    {
+                        send = d;
+                        break;
+                    }
+                    if ((vis[x] && occId[x] >= 0) || std::find(body.begin(), body.begin() + keep, x) != body.begin() + keep)
+                        break;
+                }
+            }
+            if (send >= 0)
+                for (int i = 0; i < 4; i++)
+                    if (dirOf[i] == send)
+                    {
+                        if (i >= static_cast<int>(out.size()))
+                            out.resize(i + 1, 0);
+                        out[i] = birthMsg; // SYM_SHARE: the symmetry first (every mirrored kelp edge and pearl timing hangs on it)
+                        birthSent++;
+                    }
+        }
+    }
     for (int i = 0; i < static_cast<int>(out.size()) && i < 4; i++)
         if (out[i] != 0)
             ct.send_sonar(dir_of(dirOf[i]), out[i]);
@@ -7390,7 +9200,9 @@ void init_world(Controller& ct, Game& game)
     obsEdge.assign(2 * N, E_UNK);
     edgePid.assign(2 * N, -1);
     edgePartner.assign(2 * N, -1);
+    pairDirect.assign(2 * N, 0);
     seenRound.assign(N, -1);
+    watchCnt.assign(N, 0);
     obsNext.assign(N, -1);
     nextSpawn.assign(N, -1);
     nextEst.assign(N, 0);

@@ -1,0 +1,17 @@
+====================================================================================================
+ECON  Ladder_v5 / Slithery_Fight
+  us: dragon-turns 19971; head within 1 of a spawn tile 39%; a pearl within 3: 56%; nearest pearl 10+ away: 2%; pearl adjacent at round start but not eaten by the side that round: 2001/3531
+  opp: dragon-turns 24508; head within 1 of a spawn tile 41%; a pearl within 3: 60%; nearest pearl 10+ away: 3%; pearl adjacent at round start but not eaten by the side that round: 3434/5612
+  our status words, rounds 1-50: [('pearl', 616), ('camp', 86), ('portal', 86), ('', 58), ('hunt', 56), ('rest', 33), ('explore', 29), ('push', 26)]
+  races lost while our head was nearer: 290; samples (appeared, eaten, cell, our id, our dist, their dist, our status):
+     r4->r6 (33, 0) #11 3 vs 6  "cmb war pearl L2"
+     r1->r17 (28, 1) #9 5 vs 6  ""
+     r1->r18 (30, 0) #9 4 vs 5  ""
+     r1->r18 (28, 0) #9 4 vs 6  ""
+     r3->r19 (58, 13) #18 3 vs 14  "col nrm explore L3"
+     r5->r20 (58, 14) #18 6 vs 10  "col nrm pearl L3"
+     r8->r20 (33, 0) #11 4 vs 5  "cmb war hunt L2 s2"
+     r3->r22 (57, 14) #18 3 vs 14  "col nrm explore L3"
+     r1->r23 (57, 13) #3 6 vs 17  ""
+     r28->r30 (58, 13) #26 3 vs 8  "exp war camp L2 s2"
+  what our nearest dragon was doing in those lost races: [('pearl', 166), ('hunt', 41), ('', 20), ('explore', 9), ('save-split', 9), ('unwind-split', 9), ('defend', 8), ('screen', 7)]
