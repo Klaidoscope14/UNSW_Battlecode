@@ -991,6 +991,133 @@ using namespace unswbc;
                        // r12, while theirs ate 16 pearls to our 2 by r25): before OPEN_FARM_ROUND the war-mode hunt chase waits too
                        // (as the packs already do) - everyone farms; all-in and majority hunts still go
 #endif
+#ifndef DROP_BOOST
+#define DROP_BOOST 1.6 // vs v5.1.30: h2h 14-12, growth r150 3786 v 3821 (neutral; ladder-motivated). v5.1.31 (user; vs a +200 team we ate back 61-67% of our own death drops within 15 rounds, they 71-75%, and they took
+                       // 22% of ours): for non-queens a death drop (a pearl on a tile that never spawns) is worth this many times a pearl
+                       // when choosing - drops are one-off and contested (1 = off)
+#endif
+#ifndef POCKET_GUARD
+#define POCKET_GUARD 3 // v5.1.31 (user; vs a +200 team ~3 of our dragons a game died 'doomed' right after chasing a pearl, mostly on crowded
+                       // maps): a non-queen skips a pearl inside a 1-wide dead end when an enemy head is within this of it - it can seal
+                       // the mouth behind us (teammates too gutted Stripes: r150 pearls 162 v 332) (0 = off)
+#endif
+#ifndef EQ_PAIR
+#define EQ_PAIR 0 // OFF: 16 kill-map games vs v5.1.31 - radius 2 changed nothing, radius 5 bunkered-after 2 v 3 of 6. v5.1.32 idea // v5.1.32 (user; v5.1.30 ladder: our regicides killed their queen at r50 (Devil) and r118 (Autarky) with our dragons
+                  // watching, yet ours never bunkered - her drop often lands on her new head, not the body we remembered): she is out
+                  // of view and a teammate whose head was within EQ_PAIR of hers last round (a strike reaches 5 with paid steps) vanished from our view this round - a head-on,
+                  // and a head-on kills both
+#endif
+#ifndef HUDDLE
+#define HUDDLE 0 // OFF: could not be checked locally (we are never 4:1 down at home); 26 h2h vs v5.1.32 13-13 without it firing. v5.1.33 idea // v5.1.33 (user; ladder v5.1.31: our strikes killed their queen in 5 of 5 games, seen in 1; every loss came after our
+                 // queen died with our fleet gone - 4 v 58, 5 v 58, 8 v 51 - and no teammate within 3 of her): from HD_ROUND, outnumbered
+                 // HD_RATIO to 1 or worse, our other dragons stand by her instead of farming. Their queen is then most likely dead
+                 // already, and if she is not, farming at those odds does not win either. Not when their queen was seen within
+                 // HD_SEEN rounds and is known to be longer than ours (then only length or her death still wins)
+#endif
+#ifndef HD_ROUND
+#define HD_ROUND 150
+#endif
+#ifndef HD_RATIO
+#define HD_RATIO 4
+#endif
+#ifndef HD_SEEN
+#define HD_SEEN 30
+#endif
+#ifndef SAFE_FIELD
+#define SAFE_FIELD 1 // vs v5.1.31: h2h 13-13 (queen deaths 15 v 16), sparring queen deaths 11 v 13 of 52. v5.1.33 (user: algorithms for the queen gap - most losses start with our queen dying to swarms or long hunters
+                     // that wait 2-5 cells off or strike from just out of view; Islands r14 she fled, then 'rest' walked her back):
+                     // multi-source BFS safety field (Tron / Battlesnake style). Each known enemy head (in view, or reported within 3
+                     // rounds, within SFD_RAD) gives turns-to-arrive per cell = path distance / its free steps per turn; ours likewise.
+                     // When an enemy could be on her cell within SFD_T turns she walks to the cell within QF_RANGE that an enemy
+                     // needs longest to reach, among cells she reaches first (enemy turns - ours >= 1), no pockets, open water, near teammates - and her resting spot moves there too
+#endif
+#ifndef LH_TRACK
+#define LH_TRACK 0 // OFF: vs v5.1.33 h2h 14-12, sparring queen deaths 12 = 12 of 52 (identical - rarely triggers in local games; a ladder-only situation). v5.1.37 (user: particle-model tracking, Weber et al. AIIDE 2011; ladder v5.1.32/34: our queen died late to long enemy
+                    // dragons (L9, L19) that struck from just out of view, while the field only counted enemies seen within 3 rounds):
+                    // long enemies (>= LH_MIN_LEN) seen or reported within this many rounds also count, as if they had come straight
+                    // at her since (their turns to arrive minus the rounds gone) (0 = off)
+#endif
+#ifndef LH_MIN_LEN
+#define LH_MIN_LEN 5
+#endif
+#ifndef SFD_T
+#define SFD_T 4
+#endif
+#ifndef SFD_RAD
+#define SFD_RAD 20
+#endif
+#ifndef CHICKEN
+#define CHICKEN 1.0 // OFF (ladder v5.1.35 vs a strong team 0-5: splits 16 v 104/game - yielding every tied pearl while outnumbered starves us). Was 0.4 in v5.1.34/35. vs v5.1.33: h2h 11-15 + 13-13 = 24-28; growth r150 3692 v 3635 (QoS 336 v 286, stripes 286 v 195, dragons 490 v 470). v5.1.34 (user: game theory - a tied pearl race is a game of chicken: both arrive, a head-on kills both, and an even
+                    // trade helps the side with more dragons; ladder: 17.5 of our head-on deaths a game were dragons chasing pearls):
+                    // a non-queen, with fewer dragons than they have, values a pearl this much when an enemy head is no farther from it
+                    // than we are (enemies clearly nearer are discounted already) (1 = off)
+#endif
+#ifndef EQ_BELIEF
+#define EQ_BELIEF 0 // OFF (reverted to v5.1.33 after v5.1.35 lost 0-5 to a strong team; fired once there - Autarky - and our queen still died). vs v5.1.33 (with CHICKEN on): 16 kill-map games - bunkered after her death 5/8 v 4/7, false alarms 0, wins 11 v 10; h2h 11-15 + 15-11 = 26-26 (queen deaths 23 v 24). First cut (1 step/turn, 0.1) gave 3 false alarms. v5.1.35 (user: DSA/probability; ladder v5.1.33: in all 4 losses their queen died to our strike first - 9 of 10 of
+                    // their queen deaths were our strikes, mostly unseen - and ours died later): each dragon keeps a probability map of
+                    // where their queen can be - set to her cell on a sighting or fresh report, spread each round at her speed, and wiped
+                    // on every cell we look at without her in it. Below EB_DEAD of the mass left, the dragon's status carries a 'their
+                    // queen is probably dead' bit; our queen, hearing it and with no sighting since, takes no pearl trips and circles her
+                    // bunker at her length (no trim: a false alarm costs only some growth)
+#endif
+#ifndef EB_DEAD
+#define EB_DEAD 0.05
+#endif
+#ifndef VOR_MATCH
+#define VOR_MATCH 0 // OFF: growth vs v5.1.33 - full: r150 3836 v 3567 but stripes 183 v 300, h2h 11-15; matching only: schooltime 1556 v 1168, stripes 186 v 305; matching with 6+ dragons: stripes fixed, schooltime gain gone, total 3453 v 3620. Swings by map, no robust gain. v5.1.36 (user: DSA - every ladder batch, their nearest head was closer than ours to about two thirds of new pearls):
+                    // pearl jobs are an assignment problem. (1) Voronoi per dragon: a pearl an enemy head reaches clearly first (by 2+)
+                    // costs VOR_PEN more for that dragon - before, the discount was measured from this dragon's head and hit the pearl
+                    // for every teammate; (2) the dragons-to-pearls matching is solved exactly (Hungarian, min total cost) instead of
+                    // cheapest-pair-first, so one dragon's grab no longer pushes a teammate to a far, lost race
+#endif
+#ifndef VM_MIN_AGENTS
+#define VM_MIN_AGENTS 6 // exact matching only with this many of us in the match (small fleets: Stripes r150 186 v 305 with it)
+#endif
+#ifndef VOR_VORONOI
+#define VOR_VORONOI 1 // part (1) of VOR_MATCH: the per-dragon "enemy reaches it first" cost (0: the old discount from our own head)
+#endif
+#ifndef VOR_PEN
+#define VOR_PEN 2.86 // = 1 / 0.35, the old discount
+#endif
+#ifndef VM_MATE_W
+#define VM_MATE_W 1.0 // (1.4 tried: worse everywhere - stripes r150 150 v 343, devil 594 v 1033). a teammate's steps are only a straight-line guess (ours are by path): count them this much longer, so the exact
+                      // matching does not hand pearls to teammates who are far by path (Stripes r150 pearls 183 v 300 without it)
+#endif
+#ifndef LANCHESTER
+#define LANCHESTER 0.6 // v5.1.38 (user: Lanchester square law, Stanescu/Barriga/Buro AIIDE 2015 - strength grows with the square of numbers;
+                       // ladder: they take ~half of our death drops, our dragons die chasing pearls where they have more heads): a non-queen
+                       // values a pearl this much when enemy heads within LAN_RAD of it outnumber ours there LAN_RATIO to 1 or more
+                       // (local, not the global count that made CHICKEN starve us against strong teams) (1 = off)
+#endif
+#ifndef LAN_RAD
+#define LAN_RAD 5
+#endif
+#ifndef LAN_RATIO
+#define LAN_RATIO 2
+#endif
+#ifndef EARLY_ESCORT
+#define EARLY_ESCORT 1 // vs v5.1.29 (EE_START 30, EE_MIN_UNITS 8): h2h 16-10 + 12-14 = 28-24, queen deaths 23 v 20; growth r100 1915 v 1834, r150 3667 v 3685. v5.1.30 (user; 22 games vs a +200 team: our queen died in 18, 11 before r110 at L2-3, and in 13 of 17 no teammate
+                       // was within 3 of her; their queens had 0.73 teammates within 3 (ours 0.36) and lived in 14): before OPEN_FARM_ROUND
+                       // (when the guards start), once we have EE_MIN_UNITS dragons, our EE_COUNT non-queen dragons nearest her stand
+                       // at her screen post (toward the nearest threat) instead of farming - a head-on there trades a dragon, not her
+#endif
+#ifndef EE_MIN_UNITS
+#define EE_MIN_UNITS 8 // (5 tried in v5.1.32: locally h2h 16-10, but on the ladder vs the same +54 team on the same maps 1-4 v 2-3 - eats per 100 dragon-turns 5.4 v 8.1, splits by r100 20 v 32, own drops eaten back 36% v 59%)
+#endif
+#ifndef EE_START
+#define EE_START 30 // not before the opening rush (at 6 dragons from r0 on Devil the escort cost half the opening pearls)
+#endif
+#ifndef EE_COUNT
+#define EE_COUNT 1
+#endif
+#ifndef EE_MAX_POST
+#define EE_MAX_POST 4 // her screen post must be this close to her, else the escort stands at the nearest free cell 3 from her
+                      // (QUEEN_SPACE_PEN keeps teammate heads out of the 2 round her own)
+#endif
+#ifndef NO_PAID_TRADE
+#define NO_PAID_TRADE 0 // OFF (with SF_ROUND 60 + escort from r0: h2h 22-30 vs v5.1.29; not tested alone - no time). v5.1.30 (user; same games: we paid 17-27 segments a game for sprints, they 0.2-0.4): snipes and pack strikes use
+                        // free steps only (a head-on trade is even; paying for it adds a loss), and PAID_PEARL_RACE is off
+#endif
 #ifndef SURVIVE_FIRST
 #define SURVIVE_FIRST 1 // v5.1.28 (user; 13 ladder games v5.1.27: our regicides killed their queen in 7 of 11 enemy-queen deaths, 5 unseen
                         // by any of ours - the striker dies with her - so we never knew; ours then died in 4 of them; 65 earlier games:
@@ -998,7 +1125,7 @@ using namespace unswbc;
                         // her in any mode (WAR_SAFE did it in war mode only), unless their queen is known alive and no shorter than ours
 #endif
 #ifndef SF_ROUND
-#define SF_ROUND 150
+#define SF_ROUND 150 // (60 tried in v5.1.30: cuts the queen's early splits - growth r150 3480 v 3907 with the other changes)
 #endif
 #ifndef OQ_CHASE
 #define OQ_CHASE 2 // v5.1.28 (user; QoS: our only spare dragon chased their queen r16-32 instead of farming): before OPEN_FARM_ROUND the
@@ -1500,6 +1627,8 @@ int queenId = 0, enemyQueenId = 1; // ids 0 and 1 are the queens; which is ours 
 bool amQueen = false;
 bool ourQueenDead = false, enemyQueenDead = false;
 bool sealedHeard = false; // SEALED_QUEEN: the queen (or a relay) told us her area is sealed
+bool myProbDead = false;   // EQ_BELIEF: my own map says their queen is probably dead
+int probDeadHeardR = -1000; // EQ_BELIEF: last round a teammate said so
 int prevEnemyQueenCell = -1;
 int prevEnemyQueenLen = 0;
 std::vector<int> prevEnemyQueenBody, eqBodyNow; // her body cells we saw last turn / this turn
@@ -1615,7 +1744,7 @@ int layout_bits(int type, std::uint64_t payload)
 {
     switch (type)
     {
-    case T_STATUS: return 47;
+    case T_STATUS: return 48;
     case T_PEARL: return 1 + (static_cast<int>(payload & 1) + 1) * 23;
     case T_PORTAL: return 26;
     case T_KELP: return 2 + static_cast<int>(payload & 3) * 13;
@@ -1716,6 +1845,7 @@ std::uint64_t msg_status()
     b.put(isLeader ? 1 : 0, 1);
     b.put(R, 9);
     b.put(SEALED_QUEEN && sealedHeard ? 1 : 0, 1); // SEALED_QUEEN: rides on every status, so the whole fleet hears it
+    b.put(EQ_BELIEF && myProbDead ? 1 : 0, 1);       // EQ_BELIEF: my map of their queen says she is probably dead
     return pack(T_STATUS, b.v);
 }
 std::uint64_t msg_portal(int a, int c)
@@ -2490,6 +2620,8 @@ bool apply_message(std::uint64_t m)
             return false;
         if (b.get(1) == 1)
             sealedHeard = true; // SEALED_QUEEN
+        if (b.get(1) == 1 && R - round <= 2)
+            probDeadHeardR = std::max(probDeadHeardR, round); // EQ_BELIEF
         if (id <= 1 && me > 1 && !queenSeen) // only teammates speak our protocol, so this is our queen
         {
             queenId = id;
@@ -2726,10 +2858,12 @@ void detect_teammate_deaths()
     for (int c = 0; c < N; c++)
         if (vis[c] && occId[c] >= 0)
             visibleIds.insert(occId[c]);
+    std::vector<int> goneMates; // EQ_PAIR: teammate heads that vanished from the middle of our view this round
     for (auto const& [id, cell] : prevTeamHeads)
     {
         if (visibleIds.count(id) || cheb(cell, head) > 2)
             continue;
+        goneMates.push_back(cell);
         int cause = 2;
         for (auto const& h : heads)
             if (!h.mine && manhattan(h.cell, cell) <= 2)
@@ -2751,6 +2885,9 @@ void detect_teammate_deaths()
     {
         int const fq = EQ_DEATH_DETECT ? std::max(1, (prevEnemyQueenLen + 3) / 4) : 1;
         bool dead = cheb(prevEnemyQueenCell, head) <= 3 - fq;
+        for (int g : goneMates)
+            if (EQ_PAIR > 0 && manhattan(g, prevEnemyQueenCell) <= EQ_PAIR)
+                dead = true; // our striker and her went together: a head-on
         for (int c = 0; c < N && !dead && EQ_DEATH_DETECT; c++)
         {
             if (!vis[c] || dropRound[c] != R)
@@ -3323,6 +3460,7 @@ struct PearlCand
 {
     int cell, appear;
     double conf;
+    int enemyEta = 1 << 29; // VOR_MATCH: steps for the nearest known enemy head
 };
 
 std::vector<int> distHead, distTmp;
@@ -3398,13 +3536,15 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
             else if (cl != claims.end() && cl->second.id == a.id)
                 eta = std::max(0, cl->second.eta - (R - cl->second.round));
             else
-                eta = manhattan(a.cell, p.cell);
+                eta = VOR_MATCH ? static_cast<int>(VM_MATE_W * manhattan(a.cell, p.cell) + 0.5) : manhattan(a.cell, p.cell);
             if (eta >= INF)
                 continue;
             int const wait = p.appear - R;
             // Future spawn: travel plus half the time spent waiting there.
             double cost = (CAMP_JOB && wait > 0 ? eta + 0.5 * std::max(0, wait - eta) : std::max(eta, wait)) + 1.0;
             cost /= p.conf;
+            if (VOR_MATCH && VOR_VORONOI && !amQueen && p.enemyEta + 1 < eta)
+                cost *= (AGGRO_EXPANSION && (expansionPhase || (SIZE_CAP_PLAN && capMode))) ? 1.25 : VOR_PEN; // their side of the line
             if (a.leader)
                 cost *= a.id == queenId ? (EXPANSION && queenSplits ? 1.0 : 0.3) : 0.6; // feed the queen (once she grows), then the leaders
             pairs.push_back({cost + a.id * 1e-7, ai, pi});
@@ -3414,6 +3554,82 @@ int choose_pearl(std::vector<PearlCand> const& pearls)
         {
             double const cost = std::max(0, cl->second.eta - (R - cl->second.round)) + 1.0;
             pairs.push_back({cost / p.conf, -1, pi});
+        }
+    }
+    if (VOR_MATCH && !pearls.empty() && static_cast<int>(agents.size()) >= VM_MIN_AGENTS)
+    {
+        // Rows: our agents, then one row per claim by a teammate we cannot see; columns: pearls, then one 'no job' column per row.
+        int const na = static_cast<int>(agents.size());
+        std::vector<int> claimRows; // pearl index reserved by an unseen claimant
+        for (auto const& pr : pairs)
+            if (pr.agent < 0)
+                claimRows.push_back(pr.pearl);
+        int const n = na + static_cast<int>(claimRows.size()), np = static_cast<int>(pearls.size()), m = np + n;
+        if (static_cast<long long>(n) * n * m <= 4000000LL)
+        {
+            double const BIG = 1e9, NOJOB = 1e6;
+            std::vector<std::vector<double>> a(n + 1, std::vector<double>(m + 1, BIG));
+            for (int i = 1; i <= n; i++)
+                for (int j = np + 1; j <= m; j++)
+                    a[i][j] = NOJOB;
+            for (auto const& pr : pairs)
+                if (pr.agent >= 0)
+                    a[pr.agent + 1][pr.pearl + 1] = std::min(a[pr.agent + 1][pr.pearl + 1], pr.cost);
+            for (int k = 0; k < static_cast<int>(claimRows.size()); k++)
+                for (auto const& pr : pairs)
+                    if (pr.agent < 0 && pr.pearl == claimRows[k])
+                        a[na + k + 1][pr.pearl + 1] = pr.cost;
+            // Hungarian (Kuhn-Munkres with potentials), O(n^2 m)
+            std::vector<double> u(n + 1, 0.0), v(m + 1, 0.0);
+            std::vector<int> pm(m + 1, 0), way(m + 1, 0);
+            for (int i = 1; i <= n; i++)
+            {
+                pm[0] = i;
+                int j0 = 0;
+                std::vector<double> minv(m + 1, 1e18);
+                std::vector<char> used(m + 1, 0);
+                do
+                {
+                    used[j0] = 1;
+                    int const i0 = pm[j0];
+                    double delta = 1e18;
+                    int j1 = 0;
+                    for (int j = 1; j <= m; j++)
+                        if (!used[j])
+                        {
+                            double const cur = a[i0][j] - u[i0] - v[j];
+                            if (cur < minv[j])
+                            {
+                                minv[j] = cur;
+                                way[j] = j0;
+                            }
+                            if (minv[j] < delta)
+                            {
+                                delta = minv[j];
+                                j1 = j;
+                            }
+                        }
+                    for (int j = 0; j <= m; j++)
+                        if (used[j])
+                        {
+                            u[pm[j]] += delta;
+                            v[j] -= delta;
+                        }
+                        else
+                            minv[j] -= delta;
+                    j0 = j1;
+                } while (pm[j0] != 0);
+                do
+                {
+                    int const j1 = way[j0];
+                    pm[j0] = pm[j1];
+                    j0 = j1;
+                } while (j0);
+            }
+            for (int j = 1; j <= np; j++)
+                if (pm[j] >= 1 && pm[j] <= na && agents[pm[j] - 1].id == me && a[pm[j]][j] < BIG)
+                    return j - 1;
+            return -1; // no job worth having (or every pearl is better taken by a teammate)
         }
     }
     std::sort(pairs.begin(), pairs.end(), [](Pair const& a, Pair const& b) { return a.cost < b.cost; });
@@ -3501,6 +3717,24 @@ std::vector<PearlCand> gather_pearls()
 {
     if (REGION_VALUE && !amQueen)
         update_region_value();
+    bool const behindN = CHICKEN < 1.0 && !amQueen && units < est_enemy_units(); // CHICKEN: fewer dragons than they have
+    std::vector<int> lanOurs, lanTheirs; // LANCHESTER: heads we know of, ours (incl. us) and theirs
+    if (LANCHESTER < 1.0 && !amQueen)
+    {
+        lanOurs.push_back(body[0]);
+        std::unordered_set<int> seenIds{me};
+        for (auto const& h : heads)
+        {
+            seenIds.insert(h.id);
+            (h.mine ? lanOurs : lanTheirs).push_back(h.cell);
+        }
+        for (auto const& [id, st] : fleet)
+            if (!seenIds.count(id) && R - st.round <= 3)
+                lanOurs.push_back(st.cell);
+        for (auto const& e : enemyReps)
+            if (!seenIds.count(e.id) && R - e.round <= 3)
+                lanTheirs.push_back(e.cell);
+    }
     std::vector<PearlCand> out;
     for (int c = 0; c < N; c++)
     {
@@ -3530,11 +3764,38 @@ std::vector<PearlCand> gather_pearls()
         if (!amQueen && explore_first() && appear - R > EF_CAMP_WAIT && !rich_spot(c))
             continue;
         // Contested: an enemy head is clearly closer.
+        int enemyEta = INF; // VOR_MATCH: the nearest enemy head's steps to it
         for (auto const& h : heads)
-            if (!h.mine && manhattan(h.cell, c) + 1 < eta)
+            if (!h.mine)
+                enemyEta = std::min(enemyEta, manhattan(h.cell, c));
+        for (auto const& h : heads)
+            if (!h.mine && manhattan(h.cell, c) + 1 < eta && !(VOR_MATCH && VOR_VORONOI && !amQueen))
                 conf *= (AGGRO_EXPANSION && (expansionPhase || (SIZE_CAP_PLAN && capMode)) && !amQueen) ? 0.8 : 0.35;
+            else if (!h.mine && behindN && manhattan(h.cell, c) <= eta)
+                conf *= CHICKEN; // a tie: both arrive, both die - give way while they have more dragons
         if (OWN_HALF && halfMargin(c) > 0)
             conf *= OWN_HALF_BONUS; // ours first: raiders feed on what we leave
+        if (POCKET_GUARD > 0 && !amQueen && in_pocket(c))
+        {
+            bool sealer = false;
+            for (auto const& h : heads)
+                if (!h.mine && manhattan(h.cell, c) <= POCKET_GUARD)
+                    sealer = true;
+            if (sealer)
+                continue; // an enemy head right there can shut the dead end on us
+        }
+        if (!lanTheirs.empty())
+        {
+            int o = 0, t = 0;
+            for (int x : lanOurs)
+                o += manhattan(x, c) <= LAN_RAD;
+            for (int x : lanTheirs)
+                t += manhattan(x, c) <= LAN_RAD;
+            if (t >= LAN_RATIO * std::max(o, 1))
+                conf *= LANCHESTER; // their ground: we lose the fight there, and they eat what we drop
+        }
+        if (DROP_BOOST > 1.0 && !amQueen && pearlState[c] == 1 && obsNext[c] == -2)
+            conf *= DROP_BOOST; // a death drop: one-off and contested, take it first
         // v2.14: the queen keeps to her home ground, away from enemy heads, and
         // never goes into a pocket (a dead end is where escorts finish her).
         bool const herDrop = FEED_FIX && amQueen && eta <= FEED_EAT_DIST && pearlState[c] == 1 && qThreat[c] >= INF;
@@ -3597,7 +3858,7 @@ std::vector<PearlCand> gather_pearls()
         for (auto const& dg : dangers)
             if (dg.cause == 1 && R - dg.round <= 20 && manhattan(dg.cell, c) <= 3)
                 conf *= isLeader ? 0.3 : 0.7;
-        out.push_back({c, appear, conf});
+        out.push_back({c, appear, conf, enemyEta});
     }
     if (out.size() > 60)
     {
@@ -5980,8 +6241,75 @@ std::vector<char> const& queen_box()
     return queenBox;
 }
 
+// EQ_BELIEF: where can their queen be? Mass 1 at her last sighting/report, spread at her speed, wiped where we look.
+std::vector<double> eqBel, eqBel2;
+bool eqBelOn = false;
+void update_eq_belief()
+{
+    myProbDead = false;
+    if (!EQ_BELIEF || enemyQueenDead)
+        return;
+    if (static_cast<int>(eqBel.size()) != N)
+    {
+        eqBel.assign(N, 0.0);
+        eqBel2.assign(N, 0.0);
+    }
+    int seen = -1;
+    for (auto const& h : heads)
+        if (!h.mine && h.id == enemyQueenId)
+            seen = h.cell;
+    for (auto const& e : enemyReps)
+        if (seen < 0 && e.id == enemyQueenId && R - e.round <= 1)
+            seen = e.cell;
+    if (seen >= 0)
+    {
+        std::fill(eqBel.begin(), eqBel.end(), 0.0);
+        eqBel[seen] = 1.0;
+        eqBelOn = true;
+        return;
+    }
+    if (!eqBelOn)
+        return; // never seen or reported: no map yet
+    int len = 2;
+    if (auto const it = enemyLenMem.find(enemyQueenId); it != enemyLenMem.end())
+        len = std::max(2, it->second.len);
+    int const sp = std::max(1, (len + 3) / 4) + 1; // one step more than her free steps: paid moves, unseen length
+    for (int k = 0; k < sp; k++)
+    {
+        std::fill(eqBel2.begin(), eqBel2.end(), 0.0);
+        for (int c = 0; c < N; c++)
+        {
+            if (eqBel[c] <= 0.0)
+                continue;
+            int nbs[4], cnt = 0;
+            for (int d = 0; d < 4; d++)
+            {
+                int n = cross(c, d);
+                if (n == -2)
+                    n = nb(c, d); // unexplored: assume open
+                if (n >= 0)
+                    nbs[cnt++] = n;
+            }
+            double const share = eqBel[c] / (1 + cnt);
+            eqBel2[c] += share;
+            for (int i = 0; i < cnt; i++)
+                eqBel2[nbs[i]] += share;
+        }
+        std::swap(eqBel, eqBel2);
+    }
+    double mass = 0.0;
+    for (int c = 0; c < N; c++)
+    {
+        if (vis[c])
+            eqBel[c] = 0.0; // looked there: she is not there
+        mass += eqBel[c];
+    }
+    myProbDead = mass < EB_DEAD;
+}
+
 void decide(Controller& ct)
 {
+    update_eq_belief(); // EQ_BELIEF
     int const head = body[0];
     int const facing = dir_index(ct.get_dir());
     claimTarget = -1;
@@ -6382,7 +6710,7 @@ void decide(Controller& ct)
             if (!h.mine && h.id != enemyQueenId && (majorityHunt || (TRADE_UP && outnumbered ? h.len >= TRADE_UP_RATIO * L : h.len >= L)))
                 targets.push_back(&h);
         std::sort(targets.begin(), targets.end(), [](HeadInfo const* a, HeadInfo const* b) { return a->len > b->len; });
-        int const reach = std::min(REGICIDE_MAX, free_steps() + std::max(0, L - 2));
+        int const reach = std::min(REGICIDE_MAX, free_steps() + (NO_PAID_TRADE ? 0 : std::max(0, L - 2)));
         for (auto const* h : targets)
         {
             std::vector<int> const path = regicide_path(h->cell, reach);
@@ -6405,7 +6733,7 @@ void decide(Controller& ct)
         for (auto const& h : heads)
             if (!h.mine && h.id != enemyQueenId && (h.id == preyId || h.len >= std::max(PREY_MIN_LEN, L + 4)))
             {
-                int const reach = std::min(REGICIDE_MAX, free_steps() + std::max(0, L - 2));
+                int const reach = std::min(REGICIDE_MAX, free_steps() + (NO_PAID_TRADE ? 0 : std::max(0, L - 2)));
                 std::vector<int> const path = regicide_path(h.cell, reach);
                 set_body(body, L);
                 if (!path.empty())
@@ -6757,7 +7085,10 @@ void decide(Controller& ct)
         TieState const st = tie_state();
         survFirst = !(st.theirQ >= 0 && st.theirQ >= L && !enemyQueenDead); // theirs known alive and no shorter: she may still eat
     }
-    if (amQueen && (lateSafe || leadSafe || warSafe || survFirst) && target >= 0)
+    // EQ_BELIEF: our maps say their queen is probably dead and nobody has seen her since: a living queen is all we need.
+    bool const probDeadQ = EQ_BELIEF && amQueen && !ourQueenDead && !enemyQueenDead && (myProbDead || R - probDeadHeardR <= 6) &&
+                           R - lastEqSeenR > 6;
+    if (amQueen && (lateSafe || leadSafe || warSafe || survFirst || probDeadQ) && target >= 0)
     {
         bool risky = distHead[target] > 3 || (QUEEN_THREAT_MAP && qThreat[target] < INF);
         for (auto const& e : enemyReps)
@@ -7301,7 +7632,7 @@ void decide(Controller& ct)
                 harvestDrop = c;
     if (harvestDrop >= 0)
         tieBunker = false;
-    bool const lateBunker = LATE_SAFE && BUNKER && amQueen && lateSafe && L <= 3 && !ourQueenDead && harvestDrop < 0; // circle at her length
+    bool const lateBunker = LATE_SAFE && BUNKER && amQueen && (lateSafe || probDeadQ) && L <= 3 && !ourQueenDead && harvestDrop < 0; // circle at her length
     bool const bunkerMode = BUNKER && amQueen && (enemyQueenDead || tieBunker || lateBunker) && !ourQueenDead;
     int bunkerDir = -1;
     bool inBox = false;
@@ -7349,8 +7680,96 @@ void decide(Controller& ct)
 
     // v2.14 rest: with nothing safe to eat she waits in open water near home
     // (drifting along walls with no goal is how queens end up in corners).
+    // SAFE_FIELD: turns until any known enemy head could be on each cell, against our own turns to get there.
+    bool fieldDone = false;
+    if (SAFE_FIELD && amQueen && !ourQueenDead)
+    {
+        static std::vector<int> eTurns, dd;
+        eTurns.assign(N, INF);
+        struct Src
+        {
+            int cell, len, age;
+        };
+        std::vector<Src> src; // enemy heads we know of: in view (age 0) or reported
+        std::unordered_set<int> ids;
+        for (auto const& h : heads)
+            if (!h.mine && manhattan(h.cell, head) <= SFD_RAD)
+            {
+                src.push_back({h.cell, std::max(h.len, h.estLen), 0});
+                ids.insert(h.id);
+            }
+        for (auto const& e : enemyReps)
+        {
+            int const age = R - e.round, len = std::max(e.len, e.estLen);
+            bool const fresh = age <= 3, longGone = LH_TRACK > 0 && age <= LH_TRACK && len >= LH_MIN_LEN; // LH_TRACK
+            if ((fresh || longGone) && !ids.count(e.id) && manhattan(e.cell, head) <= SFD_RAD + (longGone ? age * ((len + 3) / 4) : 0))
+            {
+                src.push_back({e.cell, len, fresh ? 0 : age});
+                ids.insert(e.id);
+            }
+        }
+        for (auto const& sv : src)
+        {
+            int const sc0 = sv.cell, len = sv.len;
+            int const sp = std::max(1, (len + 3) / 4); // free steps per turn
+            dd.assign(N, INF);
+            std::vector<int> q{sc0};
+            dd[sc0] = 0;
+            for (std::size_t i = 0; i < q.size(); i++)
+            {
+                int const c = q[i];
+                if (dd[c] >= 4 * SFD_RAD)
+                    continue;
+                for (int d = 0; d < 4; d++)
+                {
+                    int n = cross(c, d);
+                    if (n == -2)
+                        n = nb(c, d); // unexplored: assume open
+                    if (n < 0 || dd[n] != INF)
+                        continue;
+                    dd[n] = dd[c] + 1;
+                    q.push_back(n);
+                }
+            }
+            for (int c = 0; c < N; c++)
+                if (dd[c] < INF)
+                    eTurns[c] = std::min(eTurns[c], std::max(0, (dd[c] + sp - 1) / sp - sv.age)); // LH_TRACK: it may be that much nearer
+        }
+        int const ours = std::max(1, (L + 3) / 4);
+        auto const margin = [&](int c) { return eTurns[c] >= INF ? 99 : eTurns[c] - (distHead[c] + ours - 1) / ours; };
+        if (eTurns[head] <= SFD_T)
+        {
+            fieldDone = true;
+            int best = -1;
+            double bs = -1e18;
+            for (int c = 0; c < N; c++)
+            {
+                if (distHead[c] > QF_RANGE || distHead[c] >= INF || in_pocket(c) || (QUEEN_THREAT_MAP && qThreat[c] < INF) || margin(c) < 1)
+                    continue; // only cells she reaches first
+                double sc = 10.0 * std::min(eTurns[c], 20) + 2.0 * open_sides(c) - 0.5 * distHead[c]; // furthest from any enemy in turns
+                int mates = 0;
+                for (auto const& h : heads)
+                    if (h.mine && h.id != me && manhattan(h.cell, c) <= 3)
+                        mates++;
+                sc += 3.0 * std::min(mates, 2);
+                if (sc > bs)
+                {
+                    bs = sc;
+                    best = c;
+                }
+            }
+            if (best >= 0 && best != head && eTurns[best] > eTurns[head] + 1)
+            {
+                target = best;
+                claimTarget = -1;
+                bunkerDir = -1;
+                restCell = best; // rest where she fled to, not back by the threat
+                why = "flee";
+            }
+        }
+    }
     // QUEEN_FLEE: an enemy is closing in - move off before it can reach her, do not wait at home.
-    if (QUEEN_FLEE && QUEEN_THREAT_MAP && amQueen && !ourQueenDead && qMargin[head] <= QF_MARGIN)
+    if (QUEEN_FLEE && QUEEN_THREAT_MAP && amQueen && !ourQueenDead && !fieldDone && qMargin[head] <= QF_MARGIN)
     {
         int best = -1;
         double bs = -1e18;
@@ -7591,6 +8010,88 @@ void decide(Controller& ct)
             if (!h.mine && manhattan(h.cell, head) <= CR_ENEMY)
                 reachedCentre = true; // the middle is contested already: explore and eat elsewhere, no head-on race
     bool const rushing = CENTRE_RUSH && !amQueen && !isGuard && !reachedCentre && R < CR_END;
+    // EARLY_ESCORT: our dragons nearest the queen stand by her from the first rounds (the guards only start at OPEN_FARM_ROUND).
+    if (EARLY_ESCORT && !amQueen && !isLeader && !isGuard && !ourQueenDead && R >= EE_START && R < OPEN_FARM_ROUND && units >= EE_MIN_UNITS &&
+        (std::string(why) == "pearl" || std::string(why) == "explore" || std::string(why) == "centre" || std::string(why) == "push" ||
+         std::string(why) == "hunt"))
+    {
+        int qc = -1;
+        for (auto const& h : heads)
+            if (h.mine && h.id == queenId)
+                qc = h.cell;
+        if (auto const q = fleet.find(queenId); qc < 0 && q != fleet.end() && R - q->second.round <= 5)
+            qc = q->second.cell;
+        if (qc >= 0)
+        {
+            int const myD = manhattan(head, qc);
+            std::unordered_set<int> counted{me, queenId};
+            int nearer = 0; // non-queen teammates nearer to her than us
+            for (auto const& h : heads)
+                if (h.mine && counted.insert(h.id).second && (manhattan(h.cell, qc) < myD || (manhattan(h.cell, qc) == myD && h.id < me)))
+                    nearer++;
+            for (auto const& [id, st] : fleet)
+                if (R - st.round <= 5 && counted.insert(id).second && (manhattan(st.cell, qc) < myD || (manhattan(st.cell, qc) == myD && id < me)))
+                    nearer++;
+            if (nearer < EE_COUNT)
+            {
+                int post = screen_post(qc);
+                if (post < 0 || manhattan(post, qc) > EE_MAX_POST)
+                {
+                    post = -1;
+                    for (int c = 0; c < N; c++)
+                        if (manhattan(c, qc) == 3 && distHead[c] < INF && !(vis[c] && occId[c] >= 0) &&
+                            (post < 0 || distHead[c] < distHead[post]))
+                            post = c;
+                }
+                if (post >= 0 && post != head)
+                {
+                    target = post;
+                    claimTarget = -1;
+                    why = "escort";
+                }
+                else if (post == head)
+                {
+                    target = -1;
+                    claimTarget = -1;
+                    why = "guard"; // on post: no exploring away from her
+                }
+            }
+        }
+    }
+    // HUDDLE: badly outnumbered late: everyone else stands by the queen (a living queen beats a dead one at round 500).
+    if (HUDDLE && !amQueen && !isLeader && !ourQueenDead && R >= HD_ROUND && units * HD_RATIO <= est_enemy_units())
+    {
+        std::string const w = why;
+        bool const freeJob = w == "pearl" || w == "explore" || w == "centre" || w == "hunt" || w == "push" || w == "watch" ||
+                             w == "cork" || w == "defend" || w == "cover" || w == "hold" || w == "camp" || w == "prod" || w == "portal";
+        TieState const tq = tie_state();
+        bool const theirsLonger = !enemyQueenDead && tq.theirQ >= 0 && tq.ourQ >= 0 && tq.theirQ > tq.ourQ && R - lastEqSeenR <= HD_SEEN;
+        int qc = -1;
+        for (auto const& h : heads)
+            if (h.mine && h.id == queenId)
+                qc = h.cell;
+        if (auto const q = fleet.find(queenId); qc < 0 && q != fleet.end() && R - q->second.round <= 10)
+            qc = q->second.cell;
+        if (freeJob && !theirsLonger && qc >= 0)
+        {
+            int post = -1;
+            for (int c = 0; c < N; c++)
+                if (manhattan(c, qc) == 3 && distHead[c] < INF && !(vis[c] && occId[c] >= 0) && (post < 0 || distHead[c] < distHead[post]))
+                    post = c;
+            if (post >= 0 && post != head)
+            {
+                target = post;
+                claimTarget = -1;
+                why = "huddle";
+            }
+            else if (post == head)
+            {
+                target = -1;
+                claimTarget = -1;
+                why = "guard"; // in place by her
+            }
+        }
+    }
     if (PROD_PULL && COVERAGE && R < PP_END && target >= 0 && !amQueen && !isGuard && !isLeader && std::string(why) == "pearl")
     {
         double here = 0, there = 0;
