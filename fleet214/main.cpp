@@ -1040,6 +1040,11 @@ using namespace unswbc;
 #ifndef LH_MIN_LEN
 #define LH_MIN_LEN 5
 #endif
+#ifndef SFD_FIX
+#define SFD_FIX 0 // v5.1.41 (ladder v5.1.38 Islands r199: an L2 closed 11 -> 1 while she kept resting - the field triggered, found no cell
+                  // 2+ turns safer and also switched QUEEN_FLEE off): with no field target QUEEN_FLEE still runs, and within 2 turns of
+                  // an enemy any safer cell (1+ turn) is a flee target
+#endif
 #ifndef SFD_T
 #define SFD_T 4
 #endif
@@ -7810,7 +7815,9 @@ void decide(Controller& ct)
                     best = c;
                 }
             }
-            if (best >= 0 && best != head && eTurns[best] > eTurns[head] + 1)
+            // SFD_FIX: right next to a threat any cell an enemy needs longer to reach is worth walking to
+            int const need = SFD_FIX && eTurns[head] <= 2 ? 0 : 1;
+            if (best >= 0 && best != head && eTurns[best] > eTurns[head] + need)
             {
                 target = best;
                 claimTarget = -1;
@@ -7818,6 +7825,8 @@ void decide(Controller& ct)
                 restCell = best; // rest where she fled to, not back by the threat
                 why = "flee";
             }
+            else if (SFD_FIX)
+                fieldDone = false; // no flee cell found: let QUEEN_FLEE try (before, she just kept resting)
         }
     }
     // QUEEN_FLEE: an enemy is closing in - move off before it can reach her, do not wait at home.
