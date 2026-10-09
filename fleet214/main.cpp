@@ -1104,6 +1104,36 @@ using namespace unswbc;
 #ifndef EE_MIN_UNITS
 #define EE_MIN_UNITS 8 // (5 tried in v5.1.32: locally h2h 16-10, but on the ladder vs the same +54 team on the same maps 1-4 v 2-3 - eats per 100 dragon-turns 5.4 v 8.1, splits by r100 20 v 32, own drops eaten back 36% v 59%)
 #endif
+#ifndef RESP_THRESH
+#define RESP_THRESH 0 // v5.1.39 (user: response threshold models, Castello et al. / Lee, Vaughan, Kim 2020): below EE_MIN_UNITS the escort is
+                      // not all-or-nothing - with RT_MIN_UNITS or more of us, each dragon takes the job with probability s^2/(s^2+theta^2),
+                      // s = enemy heads within RT_RAD of the queen, theta = its own threshold (0.5..2 by id), redrawn every RT_HOLD rounds
+#endif
+#ifndef INFLUENCE
+#define INFLUENCE 0 // v5.1.39 (user: influence maps + potential fields, Liu/Louis CIG 2013; Critch & Churchill CoG 2021): the queen's resting
+                    // spot scores IM_W x (our heads' influence minus theirs, IM_ENEMY_W each, capped at IM_CAP) - she rests where we are strong
+#endif
+#ifndef IM_RAD
+#define IM_RAD 6
+#endif
+#ifndef IM_W
+#define IM_W 1.0
+#endif
+#ifndef IM_ENEMY_W
+#define IM_ENEMY_W 1.5
+#endif
+#ifndef IM_CAP
+#define IM_CAP 12.0
+#endif
+#ifndef RT_MIN_UNITS
+#define RT_MIN_UNITS 4
+#endif
+#ifndef RT_RAD
+#define RT_RAD 8
+#endif
+#ifndef RT_HOLD
+#define RT_HOLD 8
+#endif
 #ifndef EE_START
 #define EE_START 30 // not before the opening rush (at 6 dragons from r0 on Devil the escort cost half the opening pearls)
 #endif
@@ -4572,6 +4602,26 @@ bool pocket_ahead(int from, int to)
 
 // The queen's resting spot: the most open known water inside her leash
 // (cells all round with four open sides), never in a pocket.
+// INFLUENCE: our heads minus theirs, each counting max(0, IM_RAD - distance) (influence maps, Liu/Louis CIG 2013).
+double influence_at(int c)
+{
+    double v = 0;
+    std::unordered_set<int> ids{me};
+    for (auto const& h : heads)
+    {
+        ids.insert(h.id);
+        if (h.id != me)
+            v += (h.mine ? 1.0 : -IM_ENEMY_W) * std::max(0, IM_RAD - manhattan(h.cell, c));
+    }
+    for (auto const& [id, st] : fleet)
+        if (!ids.count(id) && R - st.round <= 3)
+            v += std::max(0, IM_RAD - manhattan(st.cell, c));
+    for (auto const& e : enemyReps)
+        if (!ids.count(e.id) && R - e.round <= 3)
+            v -= IM_ENEMY_W * std::max(0, IM_RAD - manhattan(e.cell, c));
+    return v;
+}
+
 int choose_rest()
 {
     if (ourQueenSpawn < 0)
@@ -4596,6 +4646,8 @@ int choose_rest()
             for (auto const& e : enemyReps)
                 if (R - e.round <= 20 && manhattan(e.cell, c) <= 6)
                     sc -= 10;
+            if (INFLUENCE)
+                sc += IM_W * std::clamp(influence_at(c), -IM_CAP, IM_CAP); // rest on escorted ground
             if (sc > bestScore)
             {
                 bestScore = sc;
@@ -8011,7 +8063,38 @@ void decide(Controller& ct)
                 reachedCentre = true; // the middle is contested already: explore and eat elsewhere, no head-on race
     bool const rushing = CENTRE_RUSH && !amQueen && !isGuard && !reachedCentre && R < CR_END;
     // EARLY_ESCORT: our dragons nearest the queen stand by her from the first rounds (the guards only start at OPEN_FARM_ROUND).
-    if (EARLY_ESCORT && !amQueen && !isLeader && !isGuard && !ourQueenDead && R >= EE_START && R < OPEN_FARM_ROUND && units >= EE_MIN_UNITS &&
+    auto const rtFires = [&]() // RESP_THRESH: demand-driven escort below EE_MIN_UNITS
+    {
+        if (!RESP_THRESH || units < RT_MIN_UNITS)
+            return false;
+        int qc = -1;
+        for (auto const& h : heads)
+            if (h.mine && h.id == queenId)
+                qc = h.cell;
+        if (auto const q = fleet.find(queenId); qc < 0 && q != fleet.end() && R - q->second.round <= 5)
+            qc = q->second.cell;
+        if (qc < 0)
+            return false;
+        std::unordered_set<int> ids;
+        for (auto const& h : heads)
+            if (!h.mine && manhattan(h.cell, qc) <= RT_RAD)
+                ids.insert(h.id);
+        for (auto const& e : enemyReps)
+            if (R - e.round <= 3 && manhattan(e.cell, qc) <= RT_RAD)
+                ids.insert(e.id);
+        double const s = static_cast<double>(ids.size());
+        if (s <= 0)
+            return false;
+        std::uint64_t x = static_cast<std::uint64_t>(me) * 0x9E3779B97F4A7C15ULL;
+        double const theta = 0.5 + 0.5 * static_cast<double>((x >> 33) % 4); // this dragon's threshold
+        x ^= static_cast<std::uint64_t>(R / RT_HOLD + 1) * 0xBF58476D1CE4E5B9ULL;
+        x ^= x >> 31;
+        x *= 0x94D049BB133111EBULL;
+        x ^= x >> 29;
+        double const u = static_cast<double>(x % 10000) / 10000.0;
+        return u < s * s / (s * s + theta * theta);
+    };
+    if (EARLY_ESCORT && !amQueen && !isLeader && !isGuard && !ourQueenDead && R >= EE_START && R < OPEN_FARM_ROUND && (units >= EE_MIN_UNITS || rtFires()) &&
         (std::string(why) == "pearl" || std::string(why) == "explore" || std::string(why) == "centre" || std::string(why) == "push" ||
          std::string(why) == "hunt"))
     {
