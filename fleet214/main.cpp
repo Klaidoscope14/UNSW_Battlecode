@@ -1110,7 +1110,7 @@ using namespace unswbc;
                       // s = enemy heads within RT_RAD of the queen, theta = its own threshold (0.5..2 by id), redrawn every RT_HOLD rounds
 #endif
 #ifndef INFLUENCE
-#define INFLUENCE 0 // v5.1.39 (user: influence maps + potential fields, Liu/Louis CIG 2013; Critch & Churchill CoG 2021): the queen's resting
+#define INFLUENCE 1 // v5.1.39 (user: influence maps + potential fields, Liu/Louis CIG 2013; Critch & Churchill CoG 2021): the queen's resting
                     // spot scores IM_W x (our heads' influence minus theirs, IM_ENEMY_W each, capped at IM_CAP) - she rests where we are strong
 #endif
 #ifndef IM_RAD
