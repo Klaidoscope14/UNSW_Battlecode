@@ -1105,7 +1105,7 @@ using namespace unswbc;
 #define EE_MIN_UNITS 8 // (5 tried in v5.1.32: locally h2h 16-10, but on the ladder vs the same +54 team on the same maps 1-4 v 2-3 - eats per 100 dragon-turns 5.4 v 8.1, splits by r100 20 v 32, own drops eaten back 36% v 59%)
 #endif
 #ifndef RESP_THRESH
-#define RESP_THRESH 0 // v5.1.39 (user: response threshold models, Castello et al. / Lee, Vaughan, Kim 2020): below EE_MIN_UNITS the escort is
+#define RESP_THRESH 1 // v5.1.39 (user: response threshold models, Castello et al. / Lee, Vaughan, Kim 2020): below EE_MIN_UNITS the escort is
                       // not all-or-nothing - with RT_MIN_UNITS or more of us, each dragon takes the job with probability s^2/(s^2+theta^2),
                       // s = enemy heads within RT_RAD of the queen, theta = its own threshold (0.5..2 by id), redrawn every RT_HOLD rounds
 #endif
