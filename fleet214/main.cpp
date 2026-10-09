@@ -1045,6 +1045,9 @@ using namespace unswbc;
                   // 2+ turns safer and also switched QUEEN_FLEE off): with no field target QUEEN_FLEE still runs, and within 2 turns of
                   // an enemy any safer cell (1+ turn) is a flee target
 #endif
+#ifndef SFD_SPACE
+#define SFD_SPACE 0.0 // v5.1.43 (Tron Voronoi territory, a1k0n 2010): a flee cell scores this much per cell within 2 of it that she still reaches first
+#endif
 #ifndef QROOM
 #define QROOM 0 // v5.1.42: after their queen dies, non-queens leave the QR_DIST ring around ours free
 #endif
@@ -7815,6 +7818,18 @@ void decide(Controller& ct)
                     if (h.mine && h.id != me && manhattan(h.cell, c) <= 3)
                         mates++;
                 sc += 3.0 * std::min(mates, 2);
+                if (SFD_SPACE > 0)
+                {
+                    int room = 0; // SFD_SPACE: cells within 2 that she still reaches first (Voronoi territory, Tron)
+                    for (int dy = -2; dy <= 2; dy++)
+                        for (int dx = -2 + std::abs(dy); dx <= 2 - std::abs(dy); dx++)
+                        {
+                            int const n = cell_of(((c % W + dx) % W + W) % W, ((c / W + dy) % H + H) % H);
+                            if (distHead[n] < INF && margin(n) >= 1)
+                                room++;
+                        }
+                    sc += SFD_SPACE * room;
+                }
                 if (sc > bs)
                 {
                     bs = sc;
