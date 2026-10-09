@@ -1045,6 +1045,12 @@ using namespace unswbc;
                   // 2+ turns safer and also switched QUEEN_FLEE off): with no field target QUEEN_FLEE still runs, and within 2 turns of
                   // an enemy any safer cell (1+ turn) is a flee target
 #endif
+#ifndef QROOM
+#define QROOM 0 // v5.1.42: after their queen dies, non-queens leave the QR_DIST ring around ours free
+#endif
+#ifndef QR_DIST
+#define QR_DIST 2
+#endif
 #ifndef SFD_T
 #define SFD_T 4
 #endif
@@ -8181,6 +8187,28 @@ void decide(Controller& ct)
                 target = -1;
                 claimTarget = -1;
                 why = "guard"; // in place by her
+            }
+        }
+    }
+    // QROOM: their queen is dead - ours only has to live; keep our bodies out of her space (ladder v5.1.38 Around UNSW r393:
+    // no enemy within 8, 4 of ours within 3, no legal move -> self-kill in a won game; Battlesnake: keep the largest space)
+    if (QROOM && enemyQueenDead && !ourQueenDead && !amQueen)
+    {
+        int qc = -1;
+        for (auto const& h : heads)
+            if (h.mine && h.id == queenId)
+                qc = h.cell;
+        if (qc >= 0 && manhattan(head, qc) <= QR_DIST + 1 && (target < 0 || manhattan(target, qc) <= QR_DIST))
+        {
+            int post = -1;
+            for (int c = 0; c < N; c++)
+                if (manhattan(c, qc) == QR_DIST + 2 && distHead[c] < INF && !(vis[c] && occId[c] >= 0) && (post < 0 || distHead[c] < distHead[post]))
+                    post = c;
+            if (post >= 0)
+            {
+                target = post;
+                claimTarget = -1;
+                why = "qroom";
             }
         }
     }
